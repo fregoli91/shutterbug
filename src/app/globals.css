@@ -1,0 +1,33 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  color-scheme: light;
+  background: #faf7ef;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  background: #faf7ef;
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  background: #faf7ef;
+  color: #17231d;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: geometricPrecision;
+}
+
+.font-serif {
+  font-family: Georgia, 'Times New Roman', serif;
+}
+
+::selection {
+  background: #dfead8;
+}
