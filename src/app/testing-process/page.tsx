@@ -29,7 +29,7 @@ export default function TestingProcessPage() {
   return (
     <section className="px-4 py-14 sm:px-6 lg:px-8">
       <div className="mx-auto max-w-7xl">
-        <div className="grid gap-8 lg:grid-cols-[1fr_24rem] lg:items-end">
+        <div className="grid gap-8 lg:grid-cols-[1fr_28rem] lg:items-center">
           <div className="max-w-4xl">
             <p className="text-sm font-bold uppercase tracking-[0.28em] text-moss">Trust page</p>
             <h1 className="mt-3 font-serif text-5xl font-bold text-ink">How Shutterbug tests used cameras</h1>
@@ -38,12 +38,19 @@ export default function TestingProcessPage() {
               what is included, what flaws are visible, and what limitations still apply to older gear.
             </p>
           </div>
-          <div className="rounded-lg border border-ink/10 bg-white p-6 shadow-sm">
-            <p className="font-serif text-2xl font-bold text-ink">The promise</p>
-            <p className="mt-3 text-sm leading-7 text-ink/68">
+          <div className="overflow-hidden rounded-lg border border-ink/10 bg-white shadow-sm">
+            <img
+              src="/shutterbug-tested-cameras.png"
+              alt="Shutterbug character carefully testing a vintage camera"
+              className="aspect-square w-full bg-sand object-cover object-center"
+            />
+            <div className="p-6">
+              <p className="font-serif text-2xl font-bold text-ink">The promise</p>
+              <p className="mt-3 text-sm leading-7 text-ink/68">
               Tested gear is described as tested. Parts/repair gear is marked clearly. Flaws are part of the listing,
               not a surprise after delivery.
-            </p>
+              </p>
+            </div>
           </div>
         </div>
 

@@ -82,8 +82,16 @@ export function Header() {
         </div>
 
         <details className="relative lg:hidden">
-          <summary className="flex min-h-12 cursor-pointer list-none items-center justify-center rounded-full border border-ink/15 bg-white px-4 py-2.5 text-sm font-semibold text-ink shadow-sm transition hover:border-moss/40 [&::-webkit-details-marker]:hidden">
-            Menu
+          <summary
+            className="flex h-12 w-12 cursor-pointer list-none items-center justify-center rounded-full border border-ink/15 bg-white text-ink shadow-sm transition hover:border-moss/40 [&::-webkit-details-marker]:hidden"
+            aria-label="Open menu"
+          >
+            <span className="sr-only">Open menu</span>
+            <span className="grid gap-1.5" aria-hidden="true">
+              <span className="block h-0.5 w-5 rounded-full bg-ink" />
+              <span className="block h-0.5 w-5 rounded-full bg-ink" />
+              <span className="block h-0.5 w-5 rounded-full bg-ink" />
+            </span>
           </summary>
           <div className="absolute right-0 top-14 z-50 w-[min(22rem,calc(100vw-2rem))] rounded-lg border border-ink/10 bg-white p-4 shadow-soft">
             <div className="mb-3 flex items-center gap-3 border-b border-ink/10 pb-3">

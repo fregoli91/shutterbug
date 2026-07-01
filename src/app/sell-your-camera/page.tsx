@@ -45,40 +45,48 @@ export default function SellYourCameraPage() {
             </div>
           </div>
 
-          <form className="rounded-lg border border-ink/10 bg-white p-6 shadow-soft">
-            <p className="font-serif text-3xl font-bold text-ink">Start a Camera Quote</p>
-            <p className="mt-3 text-sm leading-6 text-ink/65">
-              No backend is connected yet, but this layout is ready for a form provider.
-            </p>
-            <div className="mt-6 grid gap-4">
-              <label className="grid gap-2 text-sm font-semibold text-ink">
-                Your name
-                <input className="rounded-lg border border-ink/15 bg-cream px-3 py-3 outline-none focus:border-moss" />
-              </label>
-              <label className="grid gap-2 text-sm font-semibold text-ink">
-                Email
-                <input type="email" className="rounded-lg border border-ink/15 bg-cream px-3 py-3 outline-none focus:border-moss" />
-              </label>
-              <label className="grid gap-2 text-sm font-semibold text-ink">
-                Camera brand and model
-                <input
-                  placeholder="Canon PowerShot SD1000"
-                  className="rounded-lg border border-ink/15 bg-cream px-3 py-3 outline-none focus:border-moss"
-                />
-              </label>
-              <label className="grid gap-2 text-sm font-semibold text-ink">
-                What is included?
-                <textarea
-                  rows={4}
-                  placeholder="Battery, charger, memory card, case, known flaws..."
-                  className="rounded-lg border border-ink/15 bg-cream px-3 py-3 outline-none focus:border-moss"
-                />
-              </label>
-              <button type="button" className="rounded-full bg-forest px-6 py-3 font-semibold text-white transition hover:bg-moss">
-                Start quote
-              </button>
-            </div>
-          </form>
+          <div className="grid content-start gap-5">
+            <img
+              src="/shutterbug-trade-in.png"
+              alt="Shutterbug trade-in counter accepting a vintage camera"
+              className="aspect-square w-full rounded-lg border border-ink/10 bg-sand object-cover object-center shadow-sm"
+            />
+
+            <form className="rounded-lg border border-ink/10 bg-white p-6 shadow-soft">
+              <p className="font-serif text-3xl font-bold text-ink">Start a Camera Quote</p>
+              <p className="mt-3 text-sm leading-6 text-ink/65">
+                No backend is connected yet, but this layout is ready for a form provider.
+              </p>
+              <div className="mt-6 grid gap-4">
+                <label className="grid gap-2 text-sm font-semibold text-ink">
+                  Your name
+                  <input className="rounded-lg border border-ink/15 bg-cream px-3 py-3 outline-none focus:border-moss" />
+                </label>
+                <label className="grid gap-2 text-sm font-semibold text-ink">
+                  Email
+                  <input type="email" className="rounded-lg border border-ink/15 bg-cream px-3 py-3 outline-none focus:border-moss" />
+                </label>
+                <label className="grid gap-2 text-sm font-semibold text-ink">
+                  Camera brand and model
+                  <input
+                    placeholder="Canon PowerShot SD1000"
+                    className="rounded-lg border border-ink/15 bg-cream px-3 py-3 outline-none focus:border-moss"
+                  />
+                </label>
+                <label className="grid gap-2 text-sm font-semibold text-ink">
+                  What is included?
+                  <textarea
+                    rows={4}
+                    placeholder="Battery, charger, memory card, case, known flaws..."
+                    className="rounded-lg border border-ink/15 bg-cream px-3 py-3 outline-none focus:border-moss"
+                  />
+                </label>
+                <button type="button" className="rounded-full bg-forest px-6 py-3 font-semibold text-white transition hover:bg-moss">
+                  Start quote
+                </button>
+              </div>
+            </form>
+          </div>
         </div>
 
         <div className="mt-14 rounded-lg border border-ink/10 bg-mint p-8">

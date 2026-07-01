@@ -3,6 +3,7 @@ import { ProductCard } from '@/components/ProductCard';
 import { SectionHeading } from '@/components/SectionHeading';
 import { categories, featuredCategorySlugs } from '@/lib/categories';
 import { formatPrice, getAvailabilityLabel, getCatalogProducts } from '@/lib/products';
+import { site } from '@/lib/seo';
 
 const brandLinks = [
   ['Canon PowerShot', '/categories/canon-powershot-cameras'],
@@ -19,17 +20,17 @@ const trustCards = [
   {
     title: 'Tested cameras',
     copy: 'Power, lens, screen, flash, buttons, and card checks are listed before sale.',
-    image: '/shutterbug-mascot-front.png'
+    image: '/shutterbug-tested-cameras.png'
   },
   {
     title: 'Photos and condition',
     copy: 'Real photos, included accessories, cosmetic notes, and flaws are easy to scan.',
-    image: '/shutterbug-mascot-wink.png'
+    image: '/shutterbug-storefront.png'
   },
   {
     title: 'Friendly support',
     copy: 'Ask about a model, an order, or a trade-in before you buy.',
-    image: '/shutterbug-mascot-wave.png'
+    image: '/shutterbug-customer-service.png'
   }
 ];
 
@@ -47,14 +48,15 @@ export default async function Home() {
   return (
     <>
       <section className="relative overflow-hidden bg-cream">
-        <div className="relative mx-auto grid max-w-7xl items-center gap-12 px-4 py-16 sm:px-6 lg:grid-cols-[1.08fr_0.92fr] lg:px-8 lg:py-24">
+        <div className="relative mx-auto grid max-w-7xl items-start gap-10 px-4 pb-12 pt-8 sm:px-6 sm:pb-14 sm:pt-10 lg:grid-cols-[1.08fr_0.92fr] lg:px-8 lg:pb-16 lg:pt-12">
           <div>
-            <p className="text-sm font-bold uppercase tracking-[0.3em] text-moss">Tested vintage camera shop</p>
+            <p className="text-sm font-bold uppercase tracking-[0.3em] text-moss">Vintage digital &amp; film cameras</p>
             <h1 className="mt-5 max-w-4xl font-serif text-5xl font-bold tracking-tight text-ink sm:text-7xl">
-              Used cameras you can trust before you shoot.
+              Tested cameras, ready for their next story.
             </h1>
             <p className="mt-6 max-w-2xl text-lg leading-8 text-ink/72">
-              Tested compact digitals, film cameras, electronics, and used gear with clear condition notes.
+              Shop carefully inspected Canon PowerShot, Olympus, Nikon, Sony, Kodak, film cameras, and camera gear with
+              real photos, clear condition notes, and honest testing details.
             </p>
 
             <form action="/shop" className="mt-8 max-w-2xl rounded-lg border border-ink/10 bg-white p-3 shadow-sm">
@@ -100,16 +102,16 @@ export default async function Home() {
           </div>
 
           <div className="rounded-lg border border-ink/10 bg-white p-4 shadow-soft sm:p-5">
+            <img
+              src="/shutterbug-storefront.png"
+              alt="Shutterbug ladybug character helping a customer choose a camera"
+              className="aspect-[4/3] w-full rounded-lg bg-sand object-cover object-center"
+            />
             <div className="flex items-center justify-between gap-4">
               <div>
-                <p className="text-sm font-bold uppercase tracking-[0.2em] text-moss">Camera shelf</p>
+                <p className="mt-5 text-sm font-bold uppercase tracking-[0.2em] text-moss">Camera shelf</p>
                 <h2 className="mt-2 font-serif text-3xl font-bold text-ink">Fresh finds, ready to browse.</h2>
               </div>
-              <img
-                src="/shutterbug-mascot-wave.png"
-                alt=""
-                className="h-20 w-20 shrink-0 rounded-full bg-sand object-cover object-center"
-              />
             </div>
 
             <div className="mt-5 grid gap-3">
@@ -145,6 +147,40 @@ export default async function Home() {
               Browse all cameras
             </Link>
           </div>
+        </div>
+      </section>
+
+      <section className="bg-cream px-4 py-8 sm:px-6 lg:px-8">
+        <div className="mx-auto grid max-w-7xl gap-5 rounded-lg border border-ink/10 bg-white p-5 shadow-sm sm:grid-cols-[5rem_1fr] sm:items-center lg:grid-cols-[6rem_1fr_auto] lg:p-6">
+          <img
+            src="/shutterbug-basic-character.png"
+            alt=""
+            className="h-20 w-20 rounded-full bg-sand object-cover object-center lg:h-24 lg:w-24"
+          />
+          <div>
+            <p className="font-serif text-2xl font-bold text-ink">Shop Shutterbug direct or at Amazon.com</p>
+            <p className="mt-2 max-w-3xl text-sm leading-6 text-ink/68">
+              Buy direct from Shutterbug Camera Shop here, with select camera listings also available through our
+              Amazon.com store for shoppers who prefer that checkout experience.
+            </p>
+          </div>
+          {site.amazonStoreUrl ? (
+            <a
+              href={site.amazonStoreUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex min-h-11 items-center justify-center rounded-full bg-forest px-5 text-sm font-semibold text-white transition hover:bg-moss sm:col-start-2 lg:col-start-auto"
+            >
+              Shop now at Amazon.com
+            </a>
+          ) : (
+            <Link
+              href="/contact"
+              className="inline-flex min-h-11 items-center justify-center rounded-full border border-ink/15 bg-cream px-5 text-sm font-semibold text-ink transition hover:border-moss hover:text-moss sm:col-start-2 lg:col-start-auto"
+            >
+              Ask what is available
+            </Link>
+          )}
         </div>
       </section>
 

@@ -27,41 +27,51 @@ export default async function CheckoutSuccessPage({ searchParams }: Props) {
   return (
     <section className="px-4 py-12 sm:px-6 lg:px-8">
       <ClearCartOnSuccess />
-      <div className="mx-auto max-w-3xl rounded-lg border border-ink/10 bg-white p-8 shadow-sm">
-        <p className="text-sm font-bold uppercase tracking-[0.22em] text-moss">Checkout</p>
-        <h1 className="mt-3 font-serif text-4xl font-bold text-ink">Thank you for your order</h1>
-        <p className="mt-4 leading-7 text-ink/70">
-          Stripe has returned you to Shutterbug Camera Shop. Payment confirmation is finalized by webhook, and your
-          order status will update automatically.
-        </p>
-
-        {order ? (
-          <div className="mt-6 rounded-lg bg-cream p-5">
-            <p className="font-semibold text-ink">Order {order.orderNumber}</p>
-            <p className="mt-2 text-sm text-ink/70">
-              {order.paymentStatus} · Total {formatCents(order.totalCents, order.currency)}
-            </p>
-            <div className="mt-4 grid gap-2 text-sm text-ink/70">
-              {order.items.map((item) => (
-                <p key={item.id}>
-                  {item.quantity} x {item.productTitle}
-                </p>
-              ))}
-            </div>
-          </div>
-        ) : (
-          <p className="mt-6 rounded-lg bg-cream p-4 text-sm text-ink/70">
-            Order details will appear here after database and webhook configuration are connected.
+      <div className="mx-auto grid max-w-5xl overflow-hidden rounded-lg border border-ink/10 bg-white shadow-sm lg:grid-cols-[20rem_1fr]">
+        <img
+          src="/shutterbug-checkout.png"
+          alt="Shutterbug character heading out with a camera order"
+          className="h-full min-h-72 w-full bg-sand object-cover object-center"
+        />
+        <div className="p-8">
+          <p className="text-sm font-bold uppercase tracking-[0.22em] text-moss">Checkout</p>
+          <h1 className="mt-3 font-serif text-4xl font-bold text-ink">Thank you for your order</h1>
+          <p className="mt-4 leading-7 text-ink/70">
+            Stripe has returned you to Shutterbug Camera Shop. Payment confirmation is finalized by webhook, and your
+            order status will update automatically.
           </p>
-        )}
 
-        <div className="mt-6 flex flex-wrap gap-3">
-          <Link href="/shop" className="rounded-full bg-forest px-5 py-3 text-sm font-semibold text-white">
-            Continue shopping
-          </Link>
-          <Link href="/contact" className="rounded-full border border-ink/15 bg-white px-5 py-3 text-sm font-semibold text-ink">
-            Contact support
-          </Link>
+          {order ? (
+            <div className="mt-6 rounded-lg bg-cream p-5">
+              <p className="font-semibold text-ink">Order {order.orderNumber}</p>
+              <p className="mt-2 text-sm text-ink/70">
+                {order.paymentStatus} - Total {formatCents(order.totalCents, order.currency)}
+              </p>
+              <div className="mt-4 grid gap-2 text-sm text-ink/70">
+                {order.items.map((item) => (
+                  <p key={item.id}>
+                    {item.quantity} x {item.productTitle}
+                  </p>
+                ))}
+              </div>
+            </div>
+          ) : (
+            <p className="mt-6 rounded-lg bg-cream p-4 text-sm text-ink/70">
+              Order details will appear here after database and webhook configuration are connected.
+            </p>
+          )}
+
+          <div className="mt-6 flex flex-wrap gap-3">
+            <Link href="/shop" className="rounded-full bg-forest px-5 py-3 text-sm font-semibold text-white">
+              Continue shopping
+            </Link>
+            <Link
+              href="/contact"
+              className="rounded-full border border-ink/15 bg-white px-5 py-3 text-sm font-semibold text-ink"
+            >
+              Contact support
+            </Link>
+          </div>
         </div>
       </div>
     </section>
