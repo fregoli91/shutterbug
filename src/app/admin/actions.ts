@@ -1,0 +1,170 @@
+'use server';
+
+import { revalidatePath } from 'next/cache';
+import { redirect } from 'next/navigation';
+import {
+  CameraFormat,
+  CameraType,
+  FulfillmentStatus,
+  ProductCondition,
+  ProductImageRole,
+  ProductStatus
+} from '@/generated/prisma/client';
+import { clearAdminSession, requireAdmin } from '@/lib/admin-auth';
+import { requirePrisma } from '@/lib/prisma';
+
+function field(formData: FormData, name: string) {
+  return String(formData.get(name) ?? '').trim();
+}
+
+function lines(formData: FormData, name: string) {
+  return field(formData, name)
+    .split(/\r?\n|,/)
+    .map((item) => item.trim())
+    .filter(Boolean);
+}
+
+function bool(formData: FormData, name: string) {
+  return formData.get(name) === 'on';
+}
+
+function slugify(value: string) {
+  return value
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/(^-|-$)+/g, '')
+    .slice(0, 90);
+}
+
+function parseProductForm(formData: FormData) {
+  const title = field(formData, 'title');
+  const model = field(formData, 'model');
+  const price = Number(field(formData, 'price') || '0');
+  const quantity = Number(field(formData, 'quantity') || '0');
+  const heroImage = field(formData, 'heroImage');
+  const galleryImages = lines(formData, 'galleryImages');
+  const slug = field(formData, 'slug') || slugify(`${field(formData, 'brand')} ${model || title}`);
+  const partsRepair = bool(formData, 'partsRepair') || field(formData, 'condition') === ProductCondition.FOR_PARTS;
+
+  return {
+    data: {
+      sku: field(formData, 'sku') || null,
+      slug,
+      title,
+      brand: field(formData, 'brand'),
+      model,
+      categorySlug: field(formData, 'categorySlug'),
+      categorySlugs: lines(formData, 'categorySlugs'),
+      cameraType: field(formData, 'cameraType') as CameraType,
+      format: field(formData, 'format') as CameraFormat,
+      condition: field(formData, 'condition') as ProductCondition,
+      conditionSummary: field(formData, 'conditionSummary'),
+      priceCents: Math.round(price * 100),
+      quantity: Number.isFinite(quantity) ? quantity : 0,
+      status: field(formData, 'status') as ProductStatus,
+      description: field(formData, 'description'),
+      shortDescription: field(formData, 'shortDescription'),
+      seoTitle: field(formData, 'seoTitle') || null,
+      seoDescription: field(formData, 'seoDescription'),
+      includesBattery: bool(formData, 'includesBattery'),
+      includesCharger: bool(formData, 'includesCharger'),
+      actualPhotos: bool(formData, 'actualPhotos'),
+      partsRepair,
+      featured: bool(formData, 'featured'),
+      badges: lines(formData, 'badges'),
+      included: lines(formData, 'included'),
+      tested: lines(formData, 'tested'),
+      goodFor: lines(formData, 'goodFor'),
+      cosmeticNotes: lines(formData, 'cosmeticNotes'),
+      functionalNotes: lines(formData, 'functionalNotes'),
+      flaws: lines(formData, 'flaws'),
+      notes: lines(formData, 'notes'),
+      shippingNote: field(formData, 'shippingNote'),
+      returnsNote: field(formData, 'returnsNote')
+    },
+    images: Array.from(new Set([heroImage, ...galleryImages].filter(Boolean))).map((url, index) => ({
+      url,
+      alt: title,
+      role: index === 0 ? ProductImageRole.HERO : ProductImageRole.GALLERY,
+      sortOrder: index
+    }))
+  };
+}
+
+export async function logoutAction() {
+  await clearAdminSession();
+  redirect('/admin/login');
+}
+
+export async function createProductAction(formData: FormData) {
+  await requireAdmin();
+  const prisma = requirePrisma();
+  const parsed = parseProductForm(formData);
+
+  const product = await prisma.product.create({
+    data: {
+      ...parsed.data,
+      images: {
+        create: parsed.images
+      }
+    }
+  });
+
+  revalidatePath('/');
+  revalidatePath('/shop');
+  redirect(`/admin/products/${product.id}/edit?created=1`);
+}
+
+export async function updateProductAction(formData: FormData) {
+  await requireAdmin();
+  const prisma = requirePrisma();
+  const id = field(formData, 'id');
+  const parsed = parseProductForm(formData);
+
+  await prisma.product.update({
+    where: { id },
+    data: {
+      ...parsed.data,
+      images: {
+        deleteMany: {},
+        create: parsed.images
+      }
+    }
+  });
+
+  revalidatePath('/');
+  revalidatePath('/shop');
+  revalidatePath(`/shop/${parsed.data.slug}`);
+  redirect(`/admin/products/${id}/edit?saved=1`);
+}
+
+export async function deleteProductAction(formData: FormData) {
+  await requireAdmin();
+  const prisma = requirePrisma();
+  const id = field(formData, 'id');
+  await prisma.product.delete({ where: { id } });
+
+  revalidatePath('/');
+  revalidatePath('/shop');
+  redirect('/admin/products?deleted=1');
+}
+
+export async function markOrderShippedAction(formData: FormData) {
+  await requireAdmin();
+  const prisma = requirePrisma();
+  const id = field(formData, 'id');
+  const trackingNumber = field(formData, 'trackingNumber');
+
+  await prisma.order.update({
+    where: { id },
+    data: {
+      fulfillmentStatus: FulfillmentStatus.SHIPPED,
+      trackingNumber,
+      history: {
+        create: { message: trackingNumber ? `Marked shipped: ${trackingNumber}` : 'Marked shipped' }
+      }
+    }
+  });
+
+  redirect(`/admin/orders/${id}?shipped=1`);
+}

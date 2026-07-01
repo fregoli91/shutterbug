@@ -9,13 +9,14 @@ const config: Config = {
   theme: {
     extend: {
       colors: {
-        ink: '#17231d',
-        cream: '#faf7ef',
-        sand: '#f6f2e8',
-        brass: '#2f6f4e',
+        ink: '#16231d',
+        cream: '#fde9cd',
+        sand: '#f7ddb8',
+        forest: '#24543a',
+        moss: '#2f6f4e',
         charcoal: '#20382b',
-        sage: '#dfead8',
-        moss: '#24543a',
+        sage: '#e6efd8',
+        mint: '#f2f8ea',
         white: '#ffffff'
       },
       boxShadow: {

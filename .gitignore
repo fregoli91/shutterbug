@@ -1,6 +1,7 @@
 node_modules
 .next
 out
+src/generated/prisma
 .env*.local
 .vercel
 .DS_Store

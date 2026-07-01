@@ -4,7 +4,7 @@
 
 :root {
   color-scheme: light;
-  background: #faf7ef;
+  background: #fde9cd;
 }
 
 * {
@@ -12,14 +12,14 @@
 }
 
 html {
-  background: #faf7ef;
+  background: #fde9cd;
 }
 
 body {
   margin: 0;
   min-height: 100vh;
-  background: #faf7ef;
-  color: #17231d;
+  background: #fde9cd;
+  color: #16231d;
   -webkit-font-smoothing: antialiased;
   text-rendering: geometricPrecision;
 }

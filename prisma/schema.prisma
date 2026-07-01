@@ -1,0 +1,182 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+enum ProductStatus {
+  IN_STOCK
+  SOLD_OUT
+  COMING_SOON
+  DRAFT
+}
+
+enum ProductCondition {
+  MINT
+  EXCELLENT
+  GOOD
+  FAIR
+  FOR_PARTS
+}
+
+enum CameraType {
+  VINTAGE_DIGITAL
+  FILM_CAMERA
+  ACCESSORY
+  PARTS_REPAIR
+}
+
+enum CameraFormat {
+  DIGITAL
+  FILM
+  ACCESSORY
+}
+
+enum ProductImageRole {
+  HERO
+  GALLERY
+}
+
+enum PaymentProvider {
+  STRIPE
+  PAYPAL
+  MANUAL
+}
+
+enum PaymentStatus {
+  PENDING
+  PAID
+  FAILED
+  REFUNDED
+  CANCELED
+}
+
+enum FulfillmentStatus {
+  UNFULFILLED
+  PROCESSING
+  SHIPPED
+  DELIVERED
+  CANCELED
+}
+
+model Product {
+  id                String           @id @default(cuid())
+  sku               String?          @unique
+  slug              String           @unique
+  title             String
+  brand             String
+  model             String
+  categorySlug      String
+  categorySlugs     String[]         @default([])
+  cameraType        CameraType       @default(VINTAGE_DIGITAL)
+  format            CameraFormat     @default(DIGITAL)
+  condition         ProductCondition @default(GOOD)
+  conditionSummary  String           @default("")
+  priceCents        Int
+  quantity          Int              @default(1)
+  status            ProductStatus    @default(DRAFT)
+  description       String           @default("")
+  shortDescription  String           @default("")
+  seoTitle          String?
+  seoDescription    String           @default("")
+  includesBattery   Boolean          @default(false)
+  includesCharger   Boolean          @default(false)
+  actualPhotos      Boolean          @default(false)
+  partsRepair       Boolean          @default(false)
+  featured          Boolean          @default(false)
+  badges            String[]         @default([])
+  included          String[]         @default([])
+  tested            String[]         @default([])
+  goodFor           String[]         @default([])
+  cosmeticNotes     String[]         @default([])
+  functionalNotes   String[]         @default([])
+  flaws             String[]         @default([])
+  notes             String[]         @default([])
+  shippingNote      String           @default("")
+  returnsNote       String           @default("")
+  checkoutUrl       String?
+  images            ProductImage[]
+  orderItems        OrderItem[]
+  createdAt         DateTime         @default(now())
+  updatedAt         DateTime         @updatedAt
+
+  @@index([slug])
+  @@index([status])
+  @@index([brand])
+  @@index([categorySlug])
+  @@index([featured])
+}
+
+model ProductImage {
+  id        String           @id @default(cuid())
+  productId String
+  product   Product          @relation(fields: [productId], references: [id], onDelete: Cascade)
+  url       String
+  alt       String           @default("")
+  role      ProductImageRole @default(GALLERY)
+  sortOrder Int              @default(0)
+  publicId  String?
+  createdAt DateTime         @default(now())
+
+  @@index([productId, role, sortOrder])
+}
+
+model Order {
+  id                String             @id @default(cuid())
+  orderNumber       String             @unique
+  customerEmail     String
+  customerName      String?
+  shippingAddress   Json?
+  billingAddress    Json?
+  provider          PaymentProvider    @default(STRIPE)
+  providerReference String?            @unique
+  paymentStatus     PaymentStatus      @default(PENDING)
+  fulfillmentStatus FulfillmentStatus  @default(UNFULFILLED)
+  currency          String             @default("USD")
+  subtotalCents     Int
+  shippingCents     Int                @default(0)
+  taxCents          Int                @default(0)
+  totalCents        Int
+  trackingNumber    String?
+  notes             String?
+  items             OrderItem[]
+  history           OrderStatusEvent[]
+  createdAt         DateTime           @default(now())
+  updatedAt         DateTime           @updatedAt
+
+  @@index([paymentStatus])
+  @@index([fulfillmentStatus])
+  @@index([createdAt])
+}
+
+model OrderItem {
+  id             String   @id @default(cuid())
+  orderId        String
+  order          Order    @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  productId      String?
+  product        Product? @relation(fields: [productId], references: [id], onDelete: SetNull)
+  productSlug    String
+  productTitle   String
+  conditionLabel String
+  imageUrl       String?
+  quantity       Int
+  unitPriceCents Int
+  totalPriceCents Int
+  createdAt      DateTime @default(now())
+
+  @@index([orderId])
+  @@index([productId])
+}
+
+model OrderStatusEvent {
+  id        String   @id @default(cuid())
+  orderId   String
+  order     Order    @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  message   String
+  createdAt DateTime @default(now())
+
+  @@index([orderId, createdAt])
+}
