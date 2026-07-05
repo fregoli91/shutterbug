@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import Stripe from 'stripe';
 import { PaymentProvider, PaymentStatus, ProductStatus } from '@/generated/prisma/client';
+import { getCustomerSession } from '@/lib/customer-auth';
 import { requirePrisma } from '@/lib/prisma';
 
 export const runtime = 'nodejs';
@@ -84,11 +85,14 @@ export async function POST(request: Request) {
   const subtotalCents = orderItems.reduce((sum, item) => sum + item.totalPriceCents, 0);
   const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || new URL(request.url).origin;
   const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
+  const customer = await getCustomerSession();
 
   const order = await prisma.order.create({
     data: {
       orderNumber: orderNumber(),
-      customerEmail: 'pending@stripe.checkout',
+      customerId: customer?.id,
+      customerEmail: customer?.email ?? 'pending@stripe.checkout',
+      customerName: customer?.name,
       provider: PaymentProvider.STRIPE,
       paymentStatus: PaymentStatus.PENDING,
       subtotalCents,
@@ -101,6 +105,7 @@ export async function POST(request: Request) {
   const session = await stripe.checkout.sessions.create({
     mode: 'payment',
     client_reference_id: order.id,
+    customer_email: customer?.email,
     line_items: lineItems,
     success_url: `${siteUrl}/checkout/success?session_id={CHECKOUT_SESSION_ID}`,
     cancel_url: `${siteUrl}/checkout/cancel`,

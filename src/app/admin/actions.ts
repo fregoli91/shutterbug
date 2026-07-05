@@ -43,7 +43,13 @@ function parseProductForm(formData: FormData) {
   const quantity = Number(field(formData, 'quantity') || '0');
   const heroImage = field(formData, 'heroImage');
   const galleryImages = lines(formData, 'galleryImages');
-  const slug = field(formData, 'slug') || slugify(`${field(formData, 'brand')} ${model || title}`);
+  const selectedBrand = field(formData, 'brand');
+  const customBrand = field(formData, 'customBrand');
+  const brand = selectedBrand === 'Other / Unlisted Brand' && customBrand ? customBrand : selectedBrand;
+  const categorySlug = field(formData, 'categorySlug');
+  const subcategorySlug = field(formData, 'subcategorySlug');
+  const categorySlugs = Array.from(new Set([...lines(formData, 'categorySlugs'), subcategorySlug].filter(Boolean)));
+  const slug = field(formData, 'slug') || slugify(`${brand} ${model || title}`);
   const partsRepair = bool(formData, 'partsRepair') || field(formData, 'condition') === ProductCondition.FOR_PARTS;
 
   return {
@@ -51,13 +57,17 @@ function parseProductForm(formData: FormData) {
       sku: field(formData, 'sku') || null,
       slug,
       title,
-      brand: field(formData, 'brand'),
+      brand,
+      manufacturer: field(formData, 'manufacturer') || brand,
       model,
-      categorySlug: field(formData, 'categorySlug'),
-      categorySlugs: lines(formData, 'categorySlugs'),
+      categorySlug,
+      categorySlugs,
+      subcategorySlug,
+      productType: field(formData, 'productType'),
       cameraType: field(formData, 'cameraType') as CameraType,
       format: field(formData, 'format') as CameraFormat,
       condition: field(formData, 'condition') as ProductCondition,
+      functionalStatus: field(formData, 'functionalStatus') || 'Tested',
       conditionSummary: field(formData, 'conditionSummary'),
       priceCents: Math.round(price * 100),
       quantity: Number.isFinite(quantity) ? quantity : 0,
@@ -66,11 +76,22 @@ function parseProductForm(formData: FormData) {
       shortDescription: field(formData, 'shortDescription'),
       seoTitle: field(formData, 'seoTitle') || null,
       seoDescription: field(formData, 'seoDescription'),
+      tags: lines(formData, 'tags'),
+      lensMount: field(formData, 'lensMount'),
+      filmFormat: field(formData, 'filmFormat'),
+      storageType: field(formData, 'storageType'),
       includesBattery: bool(formData, 'includesBattery'),
       includesCharger: bool(formData, 'includesCharger'),
+      includesMemoryCard: bool(formData, 'includesMemoryCard'),
+      includesCase: bool(formData, 'includesCase'),
+      includesStrap: bool(formData, 'includesStrap'),
+      includesManual: bool(formData, 'includesManual'),
+      includesOriginalBox: bool(formData, 'includesOriginalBox'),
       actualPhotos: bool(formData, 'actualPhotos'),
+      samplePhotos: bool(formData, 'samplePhotos'),
       partsRepair,
       featured: bool(formData, 'featured'),
+      newArrival: bool(formData, 'newArrival'),
       badges: lines(formData, 'badges'),
       included: lines(formData, 'included'),
       tested: lines(formData, 'tested'),

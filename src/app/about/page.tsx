@@ -1,7 +1,7 @@
 export const metadata = {
   title: 'About Shutterbug Camera Shop',
   description:
-    'Learn about Shutterbug Camera Shop, a focused used camera store built around tested vintage digital cameras and camera gear.'
+    'Learn about Shutterbug Camera Shop, a focused used camera store started in 2012 and built around tested vintage digital cameras and camera gear.'
 };
 
 export default function AboutPage() {
@@ -12,23 +12,24 @@ export default function AboutPage() {
           <div>
             <p className="text-sm font-bold uppercase tracking-[0.28em] text-moss">About</p>
             <h1 className="mt-3 font-serif text-5xl font-bold text-ink">
-              A real camera shop built for vintage camera buyers
+              Helping camera buyers since 2012
             </h1>
             <div className="mt-8 grid gap-6 text-lg leading-8 text-ink/72">
               <p>
-                Shutterbug Camera Shop specializes in tested vintage digital cameras, film cameras, and used camera
-                gear. The goal is simple: make buying a used camera feel clear, focused, and trustworthy.
+                Shutterbug Camera Shop started in 2012 with a simple goal: make buying used cameras feel clear,
+                focused, and trustworthy.
               </p>
               <p>
-                We care about the details buyers need before checkout: actual photos, included accessories, condition
-                grade, functional notes, cosmetic notes, and honest flaw disclosure.
+                We specialize in tested vintage digital cameras, film cameras, and used camera gear with the details
+                buyers need before checkout: actual photos, included accessories, condition grade, functional notes,
+                cosmetic notes, and honest flaw disclosure.
               </p>
             </div>
           </div>
           <img
-            src="/shutterbug-storefront.png"
-            alt="Shutterbug ladybug character welcoming a customer at the camera shop"
-            className="aspect-square w-full rounded-lg border border-ink/10 bg-sand object-cover object-center shadow-sm"
+            src="/shutterbug-about-page.png"
+            alt="Shutterbug Camera Shop storefront with the ladybug mascot painting an established 2012 sign"
+            className="aspect-[4/3] w-full rounded-lg border border-ink/10 bg-sand object-cover object-center shadow-sm"
           />
         </div>
 

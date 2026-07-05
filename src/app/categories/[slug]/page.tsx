@@ -26,6 +26,7 @@ export default async function CategoryPage({ params }: Props) {
   if (!category) notFound();
   const categoryProducts = await getProductsByCategoryAsync(category.slug);
   const relatedCategories = getRelatedCategories(category.slug);
+  const categoryHeroImage = category.slug === 'parts-repair' ? '/shutterbug-parts-repair.png' : null;
 
   return (
     <section className="px-4 py-14 sm:px-6 lg:px-8">
@@ -37,6 +38,13 @@ export default async function CategoryPage({ params }: Props) {
             <p className="mt-5 text-lg leading-8 text-ink/70">{category.intro}</p>
           </div>
           <div className="rounded-lg border border-ink/10 bg-white p-5 shadow-sm">
+            {categoryHeroImage ? (
+              <img
+                src={categoryHeroImage}
+                alt="Shutterbug mascot repairing a vintage camera"
+                className="mb-5 aspect-square w-full rounded-lg bg-sand object-cover object-center"
+              />
+            ) : null}
             <p className="font-serif text-2xl font-bold text-ink">Shutterbug standard</p>
             <ul className="mt-4 grid list-disc gap-2 pl-5 text-sm leading-6 text-ink/70">
               <li>Tested gear is clearly marked.</li>

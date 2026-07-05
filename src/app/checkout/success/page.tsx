@@ -1,5 +1,6 @@
 import Link from 'next/link';
 import { ClearCartOnSuccess } from '@/components/cart/ClearCartOnSuccess';
+import { getCustomerSession } from '@/lib/customer-auth';
 import { formatCents } from '@/lib/money';
 import { getPrisma } from '@/lib/prisma';
 
@@ -19,6 +20,7 @@ export default async function CheckoutSuccessPage({ searchParams }: Props) {
   const params = searchParams ? await searchParams : {};
   const sessionId = asString(params.session_id);
   const prisma = getPrisma();
+  const customer = await getCustomerSession();
   const order =
     prisma && sessionId
       ? await prisma.order.findUnique({ where: { providerReference: sessionId }, include: { items: true } })
@@ -29,8 +31,8 @@ export default async function CheckoutSuccessPage({ searchParams }: Props) {
       <ClearCartOnSuccess />
       <div className="mx-auto grid max-w-5xl overflow-hidden rounded-lg border border-ink/10 bg-white shadow-sm lg:grid-cols-[20rem_1fr]">
         <img
-          src="/shutterbug-checkout.png"
-          alt="Shutterbug character heading out with a camera order"
+          src="/shutterbug-checkout-success.png"
+          alt="Shutterbug order complete celebration"
           className="h-full min-h-72 w-full bg-sand object-cover object-center"
         />
         <div className="p-8">
@@ -64,6 +66,12 @@ export default async function CheckoutSuccessPage({ searchParams }: Props) {
           <div className="mt-6 flex flex-wrap gap-3">
             <Link href="/shop" className="rounded-full bg-forest px-5 py-3 text-sm font-semibold text-white">
               Continue shopping
+            </Link>
+            <Link
+              href={customer ? '/account/orders' : '/signup?redirect=/account/orders'}
+              className="rounded-full border border-moss/30 bg-mint px-5 py-3 text-sm font-semibold text-ink"
+            >
+              {customer ? 'View order history' : 'Create account'}
             </Link>
             <Link
               href="/contact"

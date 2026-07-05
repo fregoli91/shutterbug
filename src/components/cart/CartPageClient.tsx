@@ -32,7 +32,7 @@ export function CartPageClient() {
 
   if (items.length === 0) {
     return (
-      <div className="rounded-lg border border-ink/10 bg-white p-8 text-center shadow-sm">
+      <div className="rounded-lg border border-ink/10 bg-cream p-8 text-center shadow-sm">
         <h1 className="font-serif text-3xl font-bold text-ink">Your cart is empty</h1>
         <p className="mt-3 text-sm leading-6 text-ink/65">Browse tested used cameras and add one when it feels right.</p>
         <Link href="/shop" className="mt-6 inline-flex min-h-12 items-center rounded-full bg-forest px-6 text-sm font-semibold text-white">
@@ -46,7 +46,7 @@ export function CartPageClient() {
     <div className="grid gap-6 lg:grid-cols-[1fr_22rem]">
       <div className="grid gap-3">
         {items.map((item) => (
-          <div key={item.id} className="grid gap-3 rounded-lg border border-ink/10 bg-white p-4 shadow-sm sm:grid-cols-[6rem_1fr_auto]">
+          <div key={item.id} className="grid gap-3 rounded-lg border border-ink/10 bg-cream p-4 shadow-sm sm:grid-cols-[6rem_1fr_auto]">
             <img src={item.image} alt="" className="aspect-square w-24 rounded-lg bg-sand object-contain" />
             <div>
               <Link href={`/shop/${item.slug}`} className="font-semibold text-ink hover:text-moss">
@@ -72,7 +72,7 @@ export function CartPageClient() {
         ))}
       </div>
 
-      <aside className="grid content-start gap-4 rounded-lg border border-ink/10 bg-white p-5 shadow-sm">
+      <aside className="grid content-start gap-4 rounded-lg border border-ink/10 bg-cream p-5 shadow-sm">
         <div>
           <p className="text-sm font-bold uppercase tracking-[0.18em] text-moss">Checkout</p>
           <p className="mt-3 flex items-center justify-between text-sm text-ink/70">
@@ -93,9 +93,32 @@ export function CartPageClient() {
           Clear cart
         </button>
         <div className="grid gap-2 border-t border-ink/10 pt-4 text-sm text-ink/65">
-          <p>Secure checkout processed by Stripe.</p>
-          <p>Real tested inventory is validated before payment.</p>
-          <p>Returns and contact support stay available before and after purchase.</p>
+          <p>
+            <span className="font-semibold text-ink">Secure checkout:</span> payment is processed by Stripe.
+          </p>
+          <p>
+            <span className="font-semibold text-ink">Real inventory:</span> stock is validated before payment.
+          </p>
+          <p>
+            <span className="font-semibold text-ink">Used-camera details:</span> condition and included accessories stay
+            visible before you buy.
+          </p>
+          <p>
+            <Link href="/login?redirect=/cart" className="font-semibold text-moss">
+              Log in
+            </Link>{' '}
+            before checkout to save this order to your account.
+          </p>
+          <p>
+            <Link href="/returns" className="font-semibold text-moss">
+              Returns
+            </Link>{' '}
+            and{' '}
+            <Link href="/contact" className="font-semibold text-moss">
+              customer support
+            </Link>{' '}
+            stay available before and after purchase.
+          </p>
         </div>
       </aside>
     </div>

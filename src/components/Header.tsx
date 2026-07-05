@@ -1,6 +1,9 @@
 import Link from 'next/link';
+import { AccountMenu } from '@/components/AccountMenu';
 import { categories, featuredCategorySlugs } from '@/lib/categories';
 import { CartLink } from '@/components/cart/CartLink';
+import { MobileMenu } from '@/components/MobileMenu';
+import { getCustomerSession } from '@/lib/customer-auth';
 
 const primaryNav = [
   { href: '/shop', label: 'Shop Cameras' },
@@ -15,15 +18,52 @@ const desktopCategories = featuredCategorySlugs
   .map((slug) => categories.find((category) => category.slug === slug))
   .filter(Boolean);
 
-export function Header() {
+const searchSuggestions = [
+  'Canon PowerShot',
+  'Olympus',
+  'Nikon Coolpix',
+  'Sony Cyber-shot',
+  'Kodak EasyShare',
+  'Panasonic Lumix',
+  'Film Cameras',
+  'Lenses',
+  'Battery Chargers',
+  'Parts Repair'
+];
+
+export async function Header() {
   const mobileCategories = desktopCategories.slice(0, 5);
+  const customer = await getCustomerSession();
+  const accountLabel = customer?.name?.trim() || customer?.email.split('@')[0] || 'My Account';
+  const accountItems = [
+    { href: '/account', label: 'Account Dashboard' },
+    { href: '/account/orders', label: 'Purchase History' },
+    { href: '/account/track', label: 'Track Orders' },
+    { href: '/account/addresses', label: 'Saved Addresses' },
+    { href: '/account/payment-methods', label: 'Payment Methods' },
+    { href: '/account/settings', label: 'Account Settings' },
+    { href: '/contact', label: 'Support / Contact' }
+  ];
+  const mobileNav = [
+    ...primaryNav,
+    ...(customer
+      ? []
+      : [
+          { href: '/login', label: 'Login' },
+          { href: '/signup', label: 'Sign Up' }
+        ]),
+    { href: '/returns', label: 'Returns' }
+  ];
 
   return (
     <header className="sticky top-0 z-40 border-b border-ink/10 bg-cream/95 backdrop-blur">
       <div className="hidden border-b border-ink/10 bg-cream lg:block">
         <div className="mx-auto flex h-8 max-w-7xl items-center justify-between px-8 text-xs text-ink/70">
-          <p className="font-medium">Tested vintage cameras, electronics, and friendly support.</p>
+          <p className="font-medium">Tested vintage cameras | Real photos | Friendly support</p>
           <nav className="flex items-center gap-5">
+            <Link href="/sell-your-camera" className="font-semibold text-moss transition hover:text-forest">
+              Sell Your Camera
+            </Link>
             <Link href="/testing-process" className="transition hover:text-ink">
               How We Test
             </Link>
@@ -33,18 +73,38 @@ export function Header() {
             <Link href="/contact" className="font-semibold text-moss transition hover:text-forest">
               Customer Service
             </Link>
+            {customer ? (
+              <Link href="/account/orders" className="transition hover:text-ink">
+                My Orders
+              </Link>
+            ) : (
+              <Link href="/signup" className="transition hover:text-ink">
+                Sign Up
+              </Link>
+            )}
           </nav>
         </div>
       </div>
 
-      <div className="mx-auto flex max-w-7xl items-center justify-between gap-3 px-4 py-2.5 sm:px-6 sm:py-3 lg:gap-5 lg:px-8">
+      <div className="mx-auto flex max-w-7xl items-center gap-1.5 px-2 py-2 sm:gap-2 sm:px-4 sm:py-3 lg:gap-5 lg:px-8">
         <Link href="/" className="flex shrink-0 items-center" aria-label="Shutterbug Camera Shop home">
           <img
             src="/shutterbug-header-logo-transparent.png"
             alt="Shutterbug Camera Shop"
-            className="h-11 w-48 object-contain object-left sm:h-14 sm:w-64"
+            className="h-11 w-28 object-contain object-left min-[430px]:h-12 min-[430px]:w-36 sm:h-14 sm:w-56 lg:h-16 lg:w-72"
           />
         </Link>
+
+        <SearchForm
+          id="mobile-header-search"
+          className="min-w-0 flex-1 lg:hidden"
+          placeholder="Search cameras, lenses..."
+          variant="mobile"
+        />
+
+        <div className="lg:hidden">
+          <CartLink compact />
+        </div>
 
         <SearchForm
           id="site-search"
@@ -53,77 +113,43 @@ export function Header() {
           variant="desktop"
         />
 
-        <div className="hidden items-center gap-3 lg:flex">
-          <Link
-            href="/contact"
-            className="rounded-lg border border-ink/10 bg-white px-4 py-2 text-sm leading-tight shadow-sm transition hover:border-moss/40"
-          >
-            <span className="block text-xs font-bold uppercase tracking-[0.16em] text-moss">Ask an expert</span>
-            <span className="block font-semibold text-ink">Customer service</span>
-          </Link>
-          <Link
-            href="/sell-your-camera"
-            className="rounded-lg border border-ink/10 bg-white px-4 py-2 text-sm leading-tight shadow-sm transition hover:border-moss/40"
-          >
-            <span className="block text-xs font-bold uppercase tracking-[0.16em] text-moss">Trade in</span>
-            <span className="block font-semibold text-ink">Sell your camera</span>
-          </Link>
+        <div className="hidden items-center gap-2 lg:flex">
+          {customer ? (
+            <AccountMenu label={accountLabel} email={customer.email} />
+          ) : (
+            <>
+              <Link
+                href="/login"
+                className="rounded-lg border border-ink/10 bg-white px-4 py-2 text-sm font-semibold text-ink shadow-sm transition hover:border-moss/40 hover:text-moss"
+              >
+                Login
+              </Link>
+              <Link
+                href="/signup"
+                className="rounded-lg border border-ink/10 bg-white px-4 py-2 text-sm font-semibold text-ink shadow-sm transition hover:border-moss/40 hover:text-moss"
+              >
+                Sign Up
+              </Link>
+            </>
+          )}
         </div>
 
         <Link
           href="/shop"
-          className="hidden rounded-full bg-forest px-5 py-2 text-sm font-semibold text-white shadow-sm transition hover:bg-moss sm:inline-flex"
+          className="hidden rounded-full bg-forest px-5 py-2 text-sm font-semibold text-white shadow-sm transition hover:bg-moss lg:inline-flex"
         >
           Shop Cameras
         </Link>
 
-        <div className="hidden sm:block">
+        <div className="hidden lg:block">
           <CartLink />
         </div>
 
-        <details className="relative lg:hidden">
-          <summary
-            className="flex h-12 w-12 cursor-pointer list-none items-center justify-center rounded-full border border-ink/15 bg-white text-ink shadow-sm transition hover:border-moss/40 [&::-webkit-details-marker]:hidden"
-            aria-label="Open menu"
-          >
-            <span className="sr-only">Open menu</span>
-            <span className="grid gap-1.5" aria-hidden="true">
-              <span className="block h-0.5 w-5 rounded-full bg-ink" />
-              <span className="block h-0.5 w-5 rounded-full bg-ink" />
-              <span className="block h-0.5 w-5 rounded-full bg-ink" />
-            </span>
-          </summary>
-          <div className="absolute right-0 top-14 z-50 w-[min(22rem,calc(100vw-2rem))] rounded-lg border border-ink/10 bg-white p-4 shadow-soft">
-            <div className="mb-3 flex items-center gap-3 border-b border-ink/10 pb-3">
-              <img src="/shutterbug-mascot-front.png" alt="" className="h-12 w-12 rounded-full bg-sand object-cover" />
-              <div>
-                <p className="text-sm font-bold text-ink">Shutterbug</p>
-                <p className="text-xs text-ink/60">Tested used camera gear</p>
-              </div>
-            </div>
-            <nav className="grid gap-1 text-sm font-semibold text-ink/78">
-              {primaryNav.map((item) => (
-                <Link
-                  key={item.href}
-                  href={item.href}
-                  className="min-h-11 rounded-md px-3 py-3 transition hover:bg-mint hover:text-ink"
-                >
-                  {item.label}
-                </Link>
-              ))}
-            </nav>
-            <div className="mt-3 border-t border-ink/10 pt-3 sm:hidden">
-              <CartLink />
-            </div>
-          </div>
-        </details>
-      </div>
-
-      <div className="border-t border-ink/10 px-4 pb-3 sm:px-6 lg:hidden">
-        <SearchForm
-          id="mobile-header-search"
-          placeholder="Search Canon, Nikon, Sony..."
-          variant="mobile"
+        <MobileMenu
+          items={mobileNav}
+          accountItems={customer ? accountItems : []}
+          signedIn={Boolean(customer)}
+          customerLabel={accountLabel}
         />
       </div>
 
@@ -154,6 +180,12 @@ export function Header() {
               {category!.navLabel}
             </Link>
           ))}
+          <Link href="/categories/lenses" className="transition hover:text-moss">
+            Lenses
+          </Link>
+          <Link href="/categories/camera-accessories" className="transition hover:text-moss">
+            Accessories
+          </Link>
           <Link href="/testing-process" className="ml-auto text-moss transition hover:text-forest">
             Tested Gear Promise
           </Link>
@@ -177,7 +209,17 @@ function SearchForm({
   const shellClass =
     variant === 'desktop'
       ? 'flex h-12 overflow-hidden rounded-lg border border-ink/15 bg-white shadow-sm focus-within:border-moss focus-within:ring-2 focus-within:ring-sage'
-      : 'flex min-h-12 overflow-hidden rounded-full border border-ink/15 bg-white shadow-sm focus-within:border-moss focus-within:ring-2 focus-within:ring-sage';
+      : 'flex min-h-11 overflow-hidden rounded-full border border-ink/15 bg-white shadow-sm focus-within:border-moss focus-within:ring-2 focus-within:ring-sage sm:min-h-12';
+
+  const inputClass =
+    variant === 'desktop'
+      ? 'min-w-0 flex-1 bg-transparent px-4 text-sm text-ink outline-none placeholder:text-ink/40'
+      : 'min-w-0 flex-1 bg-transparent px-3 text-sm text-ink outline-none placeholder:text-ink/40 sm:px-4 sm:text-base';
+
+  const buttonClass =
+    variant === 'desktop'
+      ? 'min-w-20 bg-forest px-5 text-sm font-semibold text-white transition hover:bg-moss'
+      : 'min-w-12 bg-forest px-3 text-xs font-semibold text-white transition hover:bg-moss sm:min-w-20 sm:px-5 sm:text-sm';
 
   return (
     <form action="/shop" className={className}>
@@ -189,14 +231,21 @@ function SearchForm({
           id={id}
           name="q"
           type="search"
+          list={`${id}-suggestions`}
           placeholder={placeholder}
-          className="min-w-0 flex-1 bg-transparent px-4 text-base text-ink outline-none placeholder:text-ink/40 lg:text-sm"
+          className={inputClass}
         />
+        <datalist id={`${id}-suggestions`}>
+          {searchSuggestions.map((suggestion) => (
+            <option key={suggestion} value={suggestion} />
+          ))}
+        </datalist>
         <button
           type="submit"
-          className="min-w-20 bg-forest px-4 text-sm font-semibold text-white transition hover:bg-moss sm:px-5"
+          className={buttonClass}
         >
-          Search
+          <span className="hidden sm:inline">Search</span>
+          <span className="sm:hidden">Go</span>
         </button>
       </div>
     </form>

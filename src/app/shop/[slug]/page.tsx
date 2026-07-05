@@ -115,6 +115,7 @@ export default async function ProductPage({ params }: Props) {
                 {category?.name ?? 'Camera Gear'}
               </Link>
               <span className="rounded-full bg-sage px-4 py-2 text-ink/70">{product.condition}</span>
+              <span className="rounded-full bg-white px-4 py-2 text-ink/70">{product.functionalStatus ?? 'Tested'}</span>
               <span className="rounded-full bg-white px-4 py-2 text-ink/70">{getAvailabilityLabel(product.status)}</span>
             </div>
 
@@ -153,8 +154,53 @@ export default async function ProductPage({ params }: Props) {
                     {badge}
                   </div>
                 ))}
+                <div className="rounded-lg bg-mint px-4 py-3 text-sm font-semibold text-forest">
+                  Secure checkout
+                </div>
+                <div className="rounded-lg bg-mint px-4 py-3 text-sm font-semibold text-forest">
+                  Ships from Shutterbug
+                </div>
+              </div>
+
+              <div className="mt-6 grid gap-2 border-t border-ink/10 pt-5 text-sm leading-6 text-ink/68">
+                <p>
+                  <span className="font-semibold text-ink">Functional status:</span> {product.functionalStatus ?? 'Tested'}
+                </p>
+                {product.productType ? (
+                  <p>
+                    <span className="font-semibold text-ink">Product type:</span> {product.productType}
+                  </p>
+                ) : null}
+                {product.lensMount ? (
+                  <p>
+                    <span className="font-semibold text-ink">Lens mount:</span> {product.lensMount}
+                  </p>
+                ) : null}
+                {product.filmFormat ? (
+                  <p>
+                    <span className="font-semibold text-ink">Film format:</span> {product.filmFormat}
+                  </p>
+                ) : null}
+                {product.storageType ? (
+                  <p>
+                    <span className="font-semibold text-ink">Storage/media:</span> {product.storageType}
+                  </p>
+                ) : null}
+                <Link href="/contact" className="font-semibold text-moss hover:text-ink">
+                  Questions about this camera? Ask before you buy.
+                </Link>
               </div>
             </div>
+
+            {product.partsRepair || product.condition === 'For Parts' ? (
+              <div className="mt-6 rounded-lg border border-ink/10 bg-sand p-4 text-sm leading-6 text-ink/75 shadow-sm">
+                <p className="font-serif text-xl font-bold text-ink">Parts / repair notice</p>
+                <p className="mt-2">
+                  This item is not presented as ready-to-shoot tested gear. Read the functional notes and flaws before
+                  purchasing, and contact Shutterbug if you need clarification.
+                </p>
+              </div>
+            ) : null}
 
             <div className="mt-8 grid gap-4 md:grid-cols-2">
               <InfoList title="Included" items={product.included} />

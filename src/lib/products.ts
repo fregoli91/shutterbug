@@ -6,10 +6,30 @@ import {
   ProductStatus as DbProductStatus,
   type Prisma
 } from '@/generated/prisma/client';
+import {
+  CAMERA_BRANDS,
+  FILM_FORMATS,
+  FUNCTIONAL_STATUSES,
+  LENS_MOUNTS,
+  PRODUCT_TYPES,
+  STORAGE_TYPES,
+  TOP_LEVEL_CATEGORIES
+} from '@/lib/catalog';
 import { getPrisma } from '@/lib/prisma';
 
 export type ProductStatus = 'in-stock' | 'sold-out' | 'coming-soon';
-export type ProductCondition = 'Mint' | 'Excellent' | 'Good' | 'Fair' | 'For Parts';
+export type ProductCondition =
+  | 'New'
+  | 'Open Box'
+  | 'Mint'
+  | 'Excellent'
+  | 'Very Good'
+  | 'Good'
+  | 'Fair'
+  | 'Heavily Used'
+  | 'For Parts'
+  | 'Untested'
+  | 'Refurbished';
 export type CameraType = 'Vintage Digital' | 'Film Camera' | 'Accessory' | 'Parts & Repair';
 export type CameraFormat = 'Digital' | 'Film' | 'Accessory';
 
@@ -19,12 +39,16 @@ export type Product = {
   sku: string;
   title: string;
   brand: string;
+  manufacturer?: string;
   model: string;
   categorySlug: string;
   categorySlugs: string[];
+  subcategorySlug?: string;
+  productType?: string;
   cameraType: CameraType;
   format: CameraFormat;
   condition: ProductCondition;
+  functionalStatus?: string;
   conditionSummary: string;
   price: number;
   priceCents?: number;
@@ -35,12 +59,23 @@ export type Product = {
   shortDescription: string;
   seoTitle?: string;
   seoDescription: string;
+  tags?: string[];
+  lensMount?: string;
+  filmFormat?: string;
+  storageType?: string;
   badges: string[];
   includesBattery: boolean;
   includesCharger: boolean;
+  includesMemoryCard?: boolean;
+  includesCase?: boolean;
+  includesStrap?: boolean;
+  includesManual?: boolean;
+  includesOriginalBox?: boolean;
   actualPhotos: boolean;
+  samplePhotos?: boolean;
   partsRepair?: boolean;
   featured?: boolean;
+  newArrival?: boolean;
   tested: string[];
   included: string[];
   goodFor: string[];
@@ -204,7 +239,19 @@ export const products: Product[] = [
 
 export const brands = Array.from(new Set(products.map((product) => product.brand))).sort();
 export const cameraTypes = Array.from(new Set(products.map((product) => product.cameraType)));
-export const conditions: ProductCondition[] = ['Mint', 'Excellent', 'Good', 'Fair', 'For Parts'];
+export const conditions: ProductCondition[] = [
+  'New',
+  'Open Box',
+  'Mint',
+  'Excellent',
+  'Very Good',
+  'Good',
+  'Fair',
+  'Heavily Used',
+  'For Parts',
+  'Untested',
+  'Refurbished'
+];
 
 const statusFromDb: Record<DbProductStatus, ProductStatus> = {
   [DbProductStatus.IN_STOCK]: 'in-stock',
@@ -214,11 +261,17 @@ const statusFromDb: Record<DbProductStatus, ProductStatus> = {
 };
 
 const conditionFromDb: Record<DbProductCondition, ProductCondition> = {
+  [DbProductCondition.NEW]: 'New',
+  [DbProductCondition.OPEN_BOX]: 'Open Box',
   [DbProductCondition.MINT]: 'Mint',
   [DbProductCondition.EXCELLENT]: 'Excellent',
+  [DbProductCondition.VERY_GOOD]: 'Very Good',
   [DbProductCondition.GOOD]: 'Good',
   [DbProductCondition.FAIR]: 'Fair',
-  [DbProductCondition.FOR_PARTS]: 'For Parts'
+  [DbProductCondition.HEAVILY_USED]: 'Heavily Used',
+  [DbProductCondition.FOR_PARTS]: 'For Parts',
+  [DbProductCondition.UNTESTED]: 'Untested',
+  [DbProductCondition.REFURBISHED]: 'Refurbished'
 };
 
 const cameraTypeFromDb: Record<DbCameraType, CameraType> = {
@@ -241,11 +294,17 @@ export const statusToDb: Record<ProductStatus, DbProductStatus> = {
 };
 
 export const conditionToDb: Record<ProductCondition, DbProductCondition> = {
+  New: DbProductCondition.NEW,
+  'Open Box': DbProductCondition.OPEN_BOX,
   Mint: DbProductCondition.MINT,
   Excellent: DbProductCondition.EXCELLENT,
+  'Very Good': DbProductCondition.VERY_GOOD,
   Good: DbProductCondition.GOOD,
   Fair: DbProductCondition.FAIR,
-  'For Parts': DbProductCondition.FOR_PARTS
+  'Heavily Used': DbProductCondition.HEAVILY_USED,
+  'For Parts': DbProductCondition.FOR_PARTS,
+  Untested: DbProductCondition.UNTESTED,
+  Refurbished: DbProductCondition.REFURBISHED
 };
 
 export const cameraTypeToDb: Record<CameraType, DbCameraType> = {
@@ -272,12 +331,16 @@ function dbProductToProduct(product: ProductWithImages): Product {
     sku: product.sku ?? product.id,
     title: product.title,
     brand: product.brand,
+    manufacturer: product.manufacturer || product.brand,
     model: product.model,
     categorySlug: product.categorySlug,
     categorySlugs: product.categorySlugs,
+    subcategorySlug: product.subcategorySlug || undefined,
+    productType: product.productType || undefined,
     cameraType: cameraTypeFromDb[product.cameraType],
     format: formatFromDb[product.format],
     condition: conditionFromDb[product.condition],
+    functionalStatus: product.functionalStatus || 'Tested',
     conditionSummary: product.conditionSummary,
     price: product.priceCents / 100,
     priceCents: product.priceCents,
@@ -288,12 +351,23 @@ function dbProductToProduct(product: ProductWithImages): Product {
     shortDescription: product.shortDescription || product.description,
     seoTitle: product.seoTitle ?? undefined,
     seoDescription: product.seoDescription || product.shortDescription || product.description,
+    tags: product.tags,
+    lensMount: product.lensMount || undefined,
+    filmFormat: product.filmFormat || undefined,
+    storageType: product.storageType || undefined,
     badges: product.badges,
     includesBattery: product.includesBattery,
     includesCharger: product.includesCharger,
+    includesMemoryCard: product.includesMemoryCard,
+    includesCase: product.includesCase,
+    includesStrap: product.includesStrap,
+    includesManual: product.includesManual,
+    includesOriginalBox: product.includesOriginalBox,
     actualPhotos: product.actualPhotos,
+    samplePhotos: product.samplePhotos,
     partsRepair: product.partsRepair,
     featured: product.featured,
+    newArrival: product.newArrival,
     tested: product.tested,
     included: product.included,
     goodFor: product.goodFor,
@@ -366,9 +440,20 @@ export async function getSimilarProductsAsync(product: Product, limit = 3) {
 }
 
 export function getFilterOptions(catalog: Product[]) {
+  const catalogBrands = catalog.map((product) => product.brand).filter(Boolean);
+  const catalogCategories = catalog.flatMap((product) => [product.categorySlug, ...product.categorySlugs]).filter(Boolean);
+
+  const unique = (values: string[]) => Array.from(new Set(values.filter(Boolean)));
+
   return {
-    brands: Array.from(new Set(catalog.map((product) => product.brand))).sort(),
+    brands: unique([...CAMERA_BRANDS, ...catalogBrands]),
+    categories: unique([...TOP_LEVEL_CATEGORIES.map((category) => category.slug), ...catalogCategories]),
     cameraTypes: Array.from(new Set(catalog.map((product) => product.cameraType))),
+    productTypes: unique([...PRODUCT_TYPES, ...catalog.map((product) => product.productType ?? '')]),
+    functionalStatuses: unique([...FUNCTIONAL_STATUSES, ...catalog.map((product) => product.functionalStatus ?? '')]),
+    lensMounts: unique([...LENS_MOUNTS, ...catalog.map((product) => product.lensMount ?? '')]),
+    filmFormats: unique([...FILM_FORMATS, ...catalog.map((product) => product.filmFormat ?? '')]),
+    storageTypes: unique([...STORAGE_TYPES, ...catalog.map((product) => product.storageType ?? '')]),
     conditions
   };
 }

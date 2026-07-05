@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import Stripe from 'stripe';
 import { PaymentStatus, ProductStatus, type Prisma } from '@/generated/prisma/client';
+import { normalizeEmail } from '@/lib/customer-auth';
 import { requirePrisma } from '@/lib/prisma';
 
 export const runtime = 'nodejs';
@@ -39,11 +40,18 @@ export async function POST(request: Request) {
       });
       if (!order || order.paymentStatus === PaymentStatus.PAID) return;
 
+      const email = session.customer_details?.email
+        ? normalizeEmail(session.customer_details.email)
+        : order.customerEmail;
+      const matchedCustomer =
+        email && email !== 'pending@stripe.checkout' ? await tx.customer.findUnique({ where: { email } }) : null;
+
       await tx.order.update({
         where: { id: order.id },
         data: {
+          customerId: order.customerId ?? matchedCustomer?.id,
           paymentStatus: PaymentStatus.PAID,
-          customerEmail: session.customer_details?.email ?? order.customerEmail,
+          customerEmail: email,
           customerName: session.customer_details?.name ?? order.customerName,
           shippingAddress: toJson(session.customer_details?.address),
           providerReference,

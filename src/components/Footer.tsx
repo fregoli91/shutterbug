@@ -75,6 +75,9 @@ export function Footer() {
             <Link href="/about" className="flex min-h-9 items-center transition hover:text-white">
               About Shutterbug
             </Link>
+            <Link href="/admin" className="flex min-h-9 items-center text-cream/45 transition hover:text-white">
+              Admin
+            </Link>
           </div>
         </div>
       </div>

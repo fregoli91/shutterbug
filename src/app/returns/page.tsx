@@ -6,10 +6,23 @@ export const metadata = {
 export default function ReturnsPage() {
   return (
     <section className="px-4 py-14 sm:px-6 lg:px-8">
-      <div className="mx-auto max-w-5xl">
-        <p className="text-sm font-bold uppercase tracking-[0.28em] text-moss">Buyer confidence</p>
-        <h1 className="mt-3 font-serif text-5xl font-bold text-ink">Returns and condition policy</h1>
-        <div className="mt-8 rounded-lg border border-ink/10 bg-white p-8 shadow-soft">
+      <div className="mx-auto max-w-7xl">
+        <div className="grid gap-8 lg:grid-cols-[1fr_34rem] lg:items-center">
+          <div>
+            <p className="text-sm font-bold uppercase tracking-[0.28em] text-moss">Buyer confidence</p>
+            <h1 className="mt-3 font-serif text-5xl font-bold text-ink">Returns and condition policy</h1>
+            <p className="mt-5 max-w-2xl text-lg leading-8 text-ink/72">
+              We want you to love your gear. If something arrives not as described, we will help make it right.
+            </p>
+          </div>
+          <img
+            src="/shutterbug-returns-page.png"
+            alt="Easy returns guide for Shutterbug Camera Shop"
+            className="aspect-[16/9] w-full rounded-lg border border-ink/10 bg-cream object-contain object-center shadow-sm"
+          />
+        </div>
+
+        <div className="mt-8 rounded-lg border border-ink/10 bg-cream p-8 shadow-soft">
           <p className="text-lg leading-8 text-ink/72">
             Used cameras should be described clearly before checkout. Return eligibility should be tied to whether the
             item arrives as described, while parts/repair items should be marked as-is before purchase.

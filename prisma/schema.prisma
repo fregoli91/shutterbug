@@ -15,11 +15,17 @@ enum ProductStatus {
 }
 
 enum ProductCondition {
+  NEW
+  OPEN_BOX
   MINT
   EXCELLENT
+  VERY_GOOD
   GOOD
   FAIR
+  HEAVILY_USED
   FOR_PARTS
+  UNTESTED
+  REFURBISHED
 }
 
 enum CameraType {
@@ -68,12 +74,16 @@ model Product {
   slug              String           @unique
   title             String
   brand             String
+  manufacturer      String           @default("")
   model             String
   categorySlug      String
   categorySlugs     String[]         @default([])
+  subcategorySlug   String           @default("")
+  productType       String           @default("")
   cameraType        CameraType       @default(VINTAGE_DIGITAL)
   format            CameraFormat     @default(DIGITAL)
   condition         ProductCondition @default(GOOD)
+  functionalStatus  String           @default("Tested")
   conditionSummary  String           @default("")
   priceCents        Int
   quantity          Int              @default(1)
@@ -82,11 +92,22 @@ model Product {
   shortDescription  String           @default("")
   seoTitle          String?
   seoDescription    String           @default("")
+  tags              String[]         @default([])
+  lensMount         String           @default("")
+  filmFormat        String           @default("")
+  storageType       String           @default("")
   includesBattery   Boolean          @default(false)
   includesCharger   Boolean          @default(false)
+  includesMemoryCard Boolean         @default(false)
+  includesCase      Boolean          @default(false)
+  includesStrap     Boolean          @default(false)
+  includesManual    Boolean          @default(false)
+  includesOriginalBox Boolean        @default(false)
   actualPhotos      Boolean          @default(false)
+  samplePhotos      Boolean          @default(false)
   partsRepair       Boolean          @default(false)
   featured          Boolean          @default(false)
+  newArrival        Boolean          @default(false)
   badges            String[]         @default([])
   included          String[]         @default([])
   tested            String[]         @default([])
@@ -107,7 +128,11 @@ model Product {
   @@index([status])
   @@index([brand])
   @@index([categorySlug])
+  @@index([subcategorySlug])
+  @@index([productType])
+  @@index([functionalStatus])
   @@index([featured])
+  @@index([newArrival])
 }
 
 model ProductImage {
@@ -124,9 +149,23 @@ model ProductImage {
   @@index([productId, role, sortOrder])
 }
 
+model Customer {
+  id           String   @id @default(cuid())
+  email        String   @unique
+  passwordHash String
+  name         String?
+  orders       Order[]
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  @@index([email])
+}
+
 model Order {
   id                String             @id @default(cuid())
   orderNumber       String             @unique
+  customerId        String?
+  customer          Customer?          @relation(fields: [customerId], references: [id], onDelete: SetNull)
   customerEmail     String
   customerName      String?
   shippingAddress   Json?
@@ -149,6 +188,8 @@ model Order {
 
   @@index([paymentStatus])
   @@index([fulfillmentStatus])
+  @@index([customerId])
+  @@index([customerEmail])
   @@index([createdAt])
 }
 

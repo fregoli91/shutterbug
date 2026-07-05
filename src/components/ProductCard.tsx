@@ -1,9 +1,20 @@
 import Link from 'next/link';
-import { Product, formatPrice, getAvailabilityLabel } from '@/lib/products';
+import { AddToCartButton } from '@/components/cart/AddToCartButton';
+import { Product, formatPrice, getAvailabilityLabel, isPurchasable } from '@/lib/products';
 
 export function ProductCard({ product }: { product: Product }) {
   const availabilityLabel = getAvailabilityLabel(product.status);
-  const isAvailable = product.status === 'in-stock';
+  const purchasable = isPurchasable(product);
+  const cartItem = {
+    id: product.id,
+    slug: product.slug,
+    title: product.title,
+    image: product.heroImage,
+    condition: product.condition,
+    priceCents: product.priceCents ?? Math.round(product.price * 100),
+    quantity: 1,
+    maxQuantity: product.quantity ?? 1
+  };
 
   return (
     <article className="group flex h-full flex-col overflow-hidden rounded-lg border border-ink/10 bg-white shadow-sm transition hover:-translate-y-1 hover:border-moss/35 hover:shadow-soft">
@@ -18,7 +29,8 @@ export function ProductCard({ product }: { product: Product }) {
 
       <div className="flex flex-1 flex-col p-3 sm:p-5">
         <div className="flex flex-wrap gap-1.5 text-[0.68rem] font-semibold sm:gap-2 sm:text-xs">
-          <span className="rounded-full bg-mint px-3 py-1 text-forest">Tested</span>
+          <span className="rounded-full bg-mint px-3 py-1 text-forest">{product.functionalStatus ?? 'Tested'}</span>
+          <span className="rounded-full bg-sage px-3 py-1 text-ink/70">{product.condition}</span>
           {product.includesBattery ? <span className="rounded-full bg-sage px-3 py-1 text-ink/70">Battery</span> : null}
           {product.includesCharger ? (
             <span className="hidden rounded-full bg-sage px-3 py-1 text-ink/70 sm:inline-flex">Charger</span>
@@ -40,26 +52,48 @@ export function ProductCard({ product }: { product: Product }) {
 
         <div className="mt-4 hidden gap-1 text-sm text-ink/68 sm:grid">
           <p>
-            <span className="font-semibold text-ink">Condition:</span> {product.condition}
+            <span className="font-semibold text-ink">Status:</span> {availabilityLabel}
           </p>
           <p>
             <span className="font-semibold text-ink">Note:</span> {product.conditionSummary}
           </p>
+          <p>
+            <span className="font-semibold text-ink">Ships:</span> from Shutterbug
+          </p>
         </div>
+        <label className="mt-3 hidden min-h-9 items-center gap-2 text-sm font-semibold text-ink/60 sm:inline-flex">
+          <input type="checkbox" className="h-4 w-4 rounded border-ink/20 accent-[#24543a]" />
+          Compare
+        </label>
 
-        <div className="mt-auto grid gap-3 pt-4 sm:flex sm:items-end sm:justify-between sm:gap-4 sm:pt-5">
+        <div className="mt-auto grid gap-3 pt-4 sm:gap-4 sm:pt-5">
           <div>
             <p className="text-[0.68rem] uppercase tracking-[0.14em] text-ink/50 sm:text-xs sm:tracking-[0.16em]">
               Price
             </p>
             <p className="text-lg font-bold text-ink sm:text-xl">{formatPrice(product.price)}</p>
           </div>
-          <Link
-            href={`/shop/${product.slug}`}
-            className="flex min-h-11 items-center justify-center rounded-full bg-forest px-3 py-2.5 text-center text-sm font-semibold text-white transition hover:bg-moss sm:px-4"
-          >
-            {isAvailable ? 'View Camera' : 'View Details'}
-          </Link>
+          <div className="grid gap-2 sm:grid-cols-2">
+            {purchasable ? (
+              <AddToCartButton
+                item={cartItem}
+                className="flex min-h-11 items-center justify-center rounded-full bg-forest px-3 py-2.5 text-center text-sm font-semibold text-white transition hover:bg-moss sm:px-4"
+              />
+            ) : (
+              <Link
+                href="/contact"
+                className="flex min-h-11 items-center justify-center rounded-full bg-forest px-3 py-2.5 text-center text-sm font-semibold text-white transition hover:bg-moss sm:px-4"
+              >
+                Alert me
+              </Link>
+            )}
+            <Link
+              href={`/shop/${product.slug}`}
+              className="flex min-h-11 items-center justify-center rounded-full border border-ink/15 bg-white px-3 py-2.5 text-center text-sm font-semibold text-ink transition hover:border-moss hover:text-moss sm:px-4"
+            >
+              Details
+            </Link>
+          </div>
         </div>
       </div>
     </article>
