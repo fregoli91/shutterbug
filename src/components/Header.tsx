@@ -37,6 +37,7 @@ export async function Header() {
   const accountLabel = customer?.name?.trim() || customer?.email.split('@')[0] || 'My Account';
   const accountItems = [
     { href: '/account', label: 'Account Dashboard' },
+    { href: '/account/likes', label: 'Liked Products' },
     { href: '/account/orders', label: 'Purchase History' },
     { href: '/account/track', label: 'Track Orders' },
     { href: '/account/addresses', label: 'Saved Addresses' },

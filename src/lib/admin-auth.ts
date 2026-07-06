@@ -20,10 +20,11 @@ function safeEqual(a: string, b: string) {
 }
 
 export function validateAdminCredentials(username: string, password: string) {
-  const expectedUsername = process.env.ADMIN_USERNAME || 'admin';
+  const submittedUsername = username.trim().toLowerCase();
+  const expectedUsername = (process.env.ADMIN_USERNAME || 'admin').trim().toLowerCase();
   const expectedPassword = process.env.ADMIN_PASSWORD;
   if (!expectedPassword) return false;
-  return safeEqual(username, expectedUsername) && safeEqual(password, expectedPassword);
+  return safeEqual(submittedUsername, expectedUsername) && safeEqual(password, expectedPassword);
 }
 
 export async function createAdminSession(username: string) {

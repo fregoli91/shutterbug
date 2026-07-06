@@ -1,6 +1,7 @@
 import { notFound } from 'next/navigation';
 import Link from 'next/link';
 import { AddToCartButton } from '@/components/cart/AddToCartButton';
+import { ProductLikeButton } from '@/components/ProductLikeButton';
 import { ProductCard } from '@/components/ProductCard';
 import {
   formatPrice,
@@ -11,6 +12,8 @@ import {
   products
 } from '@/lib/products';
 import { getCategory } from '@/lib/categories';
+import { getLikedProductIds } from '@/lib/customer-likes';
+import { getCustomerSession } from '@/lib/customer-auth';
 import { site } from '@/lib/seo';
 
 type Props = { params: Promise<{ slug: string }> };
@@ -42,6 +45,11 @@ export default async function ProductPage({ params }: Props) {
   if (!product) notFound();
   const category = getCategory(product.categorySlug);
   const similarProducts = await getSimilarProductsAsync(product);
+  const customer = await getCustomerSession();
+  const likedProductIds = await getLikedProductIds(
+    customer?.id,
+    [product.id, ...similarProducts.map((similar) => similar.id)]
+  );
   const galleryImages = Array.from(new Set([product.heroImage, ...product.gallery]));
   const purchasable = isPurchasable(product);
   const primaryActionLabel = purchasable ? 'Add to cart' : product.status === 'in-stock' ? 'Contact to buy' : 'Ask about restock';
@@ -133,19 +141,29 @@ export default async function ProductPage({ params }: Props) {
                   <p className="text-3xl font-bold text-ink sm:text-4xl">{formatPrice(product.price)}</p>
                   <p className="mt-2 text-sm text-ink/60">{product.conditionSummary}</p>
                 </div>
-                {purchasable ? (
-                  <AddToCartButton
-                    item={cartItem}
-                    className="hidden min-h-12 items-center justify-center rounded-full bg-forest px-8 py-3 text-center font-semibold text-white transition hover:bg-moss sm:inline-flex"
+                <div className="hidden gap-3 sm:flex sm:items-center">
+                  <ProductLikeButton
+                    productId={product.id}
+                    productSlug={product.slug}
+                    liked={likedProductIds.has(product.id)}
+                    signedIn={Boolean(customer)}
+                    redirectTo={`/shop/${product.slug}`}
+                    showText
                   />
-                ) : (
-                  <a
-                    href={primaryActionHref}
-                    className="hidden min-h-12 items-center justify-center rounded-full border border-ink/20 bg-white px-8 py-3 text-center font-semibold text-ink transition hover:border-moss hover:text-moss sm:inline-flex"
-                  >
-                    {primaryActionLabel}
-                  </a>
-                )}
+                  {purchasable ? (
+                    <AddToCartButton
+                      item={cartItem}
+                      className="inline-flex min-h-12 items-center justify-center rounded-full bg-forest px-8 py-3 text-center font-semibold text-white transition hover:bg-moss"
+                    />
+                  ) : (
+                    <a
+                      href={primaryActionHref}
+                      className="inline-flex min-h-12 items-center justify-center rounded-full border border-ink/20 bg-white px-8 py-3 text-center font-semibold text-ink transition hover:border-moss hover:text-moss"
+                    >
+                      {primaryActionLabel}
+                    </a>
+                  )}
+                </div>
               </div>
 
               <div className="mt-6 grid gap-3 sm:grid-cols-2">
@@ -250,7 +268,12 @@ export default async function ProductPage({ params }: Props) {
             </div>
             <div className="mt-8 grid grid-cols-2 gap-3 sm:gap-6 md:grid-cols-3">
               {similarProducts.map((similar) => (
-                <ProductCard key={similar.id} product={similar} />
+                <ProductCard
+                  key={similar.id}
+                  product={similar}
+                  liked={likedProductIds.has(similar.id)}
+                  signedIn={Boolean(customer)}
+                />
               ))}
             </div>
           </div>
@@ -263,6 +286,18 @@ export default async function ProductPage({ params }: Props) {
             <p className="text-xs font-semibold uppercase tracking-[0.14em] text-ink/55">{product.condition}</p>
             <p className="text-lg font-bold text-ink">{formatPrice(product.price)}</p>
           </div>
+          <ProductLikeButton
+            productId={product.id}
+            productSlug={product.slug}
+            liked={likedProductIds.has(product.id)}
+            signedIn={Boolean(customer)}
+            redirectTo={`/shop/${product.slug}`}
+            className={`flex h-12 w-12 shrink-0 items-center justify-center rounded-full border ${
+              likedProductIds.has(product.id)
+                ? 'border-forest bg-forest text-white'
+                : 'border-ink/15 bg-white text-ink'
+            }`}
+          />
           {purchasable ? (
             <AddToCartButton
               item={cartItem}

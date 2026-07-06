@@ -115,9 +115,9 @@ export async function getCustomerSession() {
   });
 }
 
-export async function requireCustomer() {
+export async function requireCustomer(redirectTo = '/account') {
   const customer = await getCustomerSession();
-  if (!customer) redirect('/login?redirect=/account');
+  if (!customer) redirect(`/login?redirect=${encodeURIComponent(redirectTo)}`);
   return customer;
 }
 

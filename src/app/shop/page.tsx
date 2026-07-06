@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import { ProductLikeButton } from '@/components/ProductLikeButton';
 import { ProductCard } from '@/components/ProductCard';
 import { AddToCartButton } from '@/components/cart/AddToCartButton';
 import { INCLUDE_FILTER_OPTIONS, POPULAR_CAMERA_BRANDS } from '@/lib/catalog';
@@ -12,6 +13,8 @@ import {
   isPurchasable,
   type Product
 } from '@/lib/products';
+import { getLikedProductIds } from '@/lib/customer-likes';
+import { getCustomerSession } from '@/lib/customer-auth';
 
 export const metadata = {
   title: 'Shop Tested Vintage Cameras',
@@ -308,6 +311,11 @@ export default async function ShopPage({ searchParams }: Props) {
     (minPrice ? 1 : 0) +
     (maxPrice ? 1 : 0);
   const hasActiveFilters = Boolean(query || activeFilterCount);
+  const customer = await getCustomerSession();
+  const likedProductIds = await getLikedProductIds(
+    customer?.id,
+    visibleProducts.map((product) => product.id)
+  );
 
   return (
     <section className="px-4 py-8 sm:px-6 sm:py-12 lg:px-8">
@@ -530,13 +538,23 @@ export default async function ShopPage({ searchParams }: Props) {
             view === 'list' ? (
               <div className="grid gap-4">
                 {visibleProducts.map((product) => (
-                  <ProductListResult key={product.id} product={product} />
+                  <ProductListResult
+                    key={product.id}
+                    product={product}
+                    liked={likedProductIds.has(product.id)}
+                    signedIn={Boolean(customer)}
+                  />
                 ))}
               </div>
             ) : (
               <div className="grid grid-cols-2 gap-3 sm:gap-5 xl:grid-cols-3">
                 {visibleProducts.map((product) => (
-                  <ProductCard key={product.id} product={product} />
+                  <ProductCard
+                    key={product.id}
+                    product={product}
+                    liked={likedProductIds.has(product.id)}
+                    signedIn={Boolean(customer)}
+                  />
                 ))}
               </div>
             )
@@ -651,8 +669,17 @@ function ActiveFilterChips({
   );
 }
 
-function ProductListResult({ product }: { product: Product }) {
+function ProductListResult({
+  product,
+  liked,
+  signedIn
+}: {
+  product: Product;
+  liked: boolean;
+  signedIn: boolean;
+}) {
   const purchasable = isPurchasable(product);
+  const productHref = `/shop/${product.slug}`;
   const keyDetails = [
     product.functionalStatus,
     product.conditionSummary,
@@ -672,9 +699,23 @@ function ProductListResult({ product }: { product: Product }) {
 
   return (
     <article className="grid gap-4 rounded-lg border border-ink/10 bg-white p-4 shadow-sm transition hover:border-moss/35 hover:shadow-soft md:grid-cols-[11rem_1fr_12rem]">
-      <Link href={`/shop/${product.slug}`} className="block rounded-lg bg-sand p-3">
+      <div className="relative rounded-lg bg-sand p-3">
+        <Link href={productHref} className="block">
         <img src={product.heroImage} alt={product.title} className="aspect-square w-full object-contain" />
-      </Link>
+        </Link>
+        <ProductLikeButton
+          productId={product.id}
+          productSlug={product.slug}
+          liked={liked}
+          signedIn={signedIn}
+          redirectTo={productHref}
+          className={`absolute right-2 top-2 flex h-10 w-10 items-center justify-center rounded-full border shadow-sm transition ${
+            liked
+              ? 'border-forest bg-forest text-white hover:bg-moss'
+              : 'border-ink/10 bg-white text-ink hover:border-moss hover:text-moss'
+          }`}
+        />
+      </div>
       <div className="min-w-0">
         <div className="flex flex-wrap gap-2 text-xs font-bold uppercase tracking-[0.12em]">
           <span className="rounded-full bg-mint px-3 py-1 text-forest">{getAvailabilityLabel(product.status)}</span>
@@ -684,7 +725,7 @@ function ProductListResult({ product }: { product: Product }) {
           ) : null}
         </div>
         <p className="mt-4 text-xs font-bold uppercase tracking-[0.16em] text-moss">{product.brand}</p>
-        <Link href={`/shop/${product.slug}`} className="mt-2 block">
+        <Link href={productHref} className="mt-2 block">
           <h2 className="font-serif text-2xl font-bold leading-tight text-ink transition hover:text-moss">{product.title}</h2>
         </Link>
         <p className="mt-3 line-clamp-2 text-sm leading-6 text-ink/66">{product.shortDescription}</p>
@@ -718,7 +759,7 @@ function ProductListResult({ product }: { product: Product }) {
           </Link>
         )}
         <Link
-          href={`/shop/${product.slug}`}
+          href={productHref}
           className="inline-flex min-h-11 w-full items-center justify-center rounded-full border border-ink/15 bg-white px-5 py-3 text-sm font-semibold text-ink transition hover:border-moss hover:text-moss"
         >
           View details

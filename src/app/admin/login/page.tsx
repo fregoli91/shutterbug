@@ -1,5 +1,7 @@
 import Link from 'next/link';
+import { redirect } from 'next/navigation';
 import { loginAction } from './actions';
+import { getAdminSession } from '@/lib/admin-auth';
 
 type Props = {
   searchParams?: Promise<Record<string, string | string[] | undefined>>;
@@ -10,6 +12,9 @@ export const metadata = {
 };
 
 export default async function AdminLoginPage({ searchParams }: Props) {
+  const admin = await getAdminSession();
+  if (admin) redirect('/admin');
+
   const params = searchParams ? await searchParams : {};
   const hasError = params.error === 'invalid';
 
@@ -30,9 +35,10 @@ export default async function AdminLoginPage({ searchParams }: Props) {
 
         <form action={loginAction} className="mt-6 grid gap-4">
           <label className="grid gap-2 text-sm font-semibold text-ink">
-            Username
+            Admin email
             <input
               name="username"
+              type="email"
               autoComplete="username"
               className="min-h-12 rounded-lg border border-ink/15 bg-cream px-3 text-base font-normal outline-none focus:border-moss"
               required

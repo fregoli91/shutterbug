@@ -1,5 +1,8 @@
 import Link from 'next/link';
+import { redirect } from 'next/navigation';
 import { signupAction } from './actions';
+import { getAdminSession } from '@/lib/admin-auth';
+import { getCustomerSession } from '@/lib/customer-auth';
 import { PASSWORD_MAX_LENGTH, PASSWORD_MIN_LENGTH } from '@/lib/password-policy';
 
 type Props = {
@@ -14,6 +17,11 @@ function asString(value: string | string[] | undefined) {
   return Array.isArray(value) ? value[0] ?? '' : value ?? '';
 }
 
+function cleanRedirect(value: string | string[] | undefined) {
+  const target = asString(value);
+  return target.startsWith('/') && !target.startsWith('//') ? target : '/account';
+}
+
 const errorMessages: Record<string, string> = {
   missing: 'Enter your email and password.',
   password: `Use a stronger password with at least ${PASSWORD_MIN_LENGTH} characters.`,
@@ -22,86 +30,144 @@ const errorMessages: Record<string, string> = {
   config: 'Customer accounts need a configured database before signup can work.'
 };
 
+const trustItems = ['Email verification', 'Order history', 'Saved liked products', 'Easier support'];
+
 export default async function SignupPage({ searchParams }: Props) {
   const params = searchParams ? await searchParams : {};
-  const redirectTo = asString(params.redirect) || '/account';
+  const redirectTo = cleanRedirect(params.redirect);
+  const admin = await getAdminSession();
+  if (admin) redirect('/admin');
+
+  const customer = await getCustomerSession();
+  if (customer) redirect(redirectTo);
+
   const error = errorMessages[asString(params.error)];
 
   return (
-    <section className="px-4 py-12 sm:px-6 lg:px-8">
-      <div className="mx-auto max-w-xl rounded-lg border border-ink/10 bg-white p-6 shadow-sm sm:p-8">
-        <img
-          src="/shutterbug-signup.png"
-          alt="Shutterbug welcoming a new customer account"
-          className="mx-auto h-20 w-20 rounded-full border border-ink/10 bg-sand object-cover object-center shadow-sm sm:h-24 sm:w-24"
-        />
-        <div className="mt-5 text-center">
-          <p className="text-sm font-bold uppercase tracking-[0.22em] text-moss">Customer account</p>
-          <h1 className="mt-3 font-serif text-4xl font-bold text-ink">Create your Shutterbug account</h1>
+    <section className="bg-cream px-4 py-10 sm:px-6 lg:px-8">
+      <div className="mx-auto grid max-w-6xl gap-6 lg:grid-cols-[0.9fr_1.1fr] lg:items-start">
+        <aside className="rounded-lg border border-ink/10 bg-white p-6 text-center shadow-sm sm:p-8 lg:sticky lg:top-32 lg:text-left">
+          <div className="flex justify-center lg:justify-start">
+            <img
+              src="/shutterbug-signup.png"
+              alt="Shutterbug welcoming a new customer account"
+              className="h-24 w-24 rounded-full border border-ink/10 bg-sand object-cover object-center shadow-sm sm:h-28 sm:w-28"
+            />
+          </div>
+          <p className="mt-6 text-sm font-bold uppercase tracking-[0.22em] text-moss">New customer</p>
+          <h1 className="mt-3 font-serif text-4xl font-bold leading-tight text-ink sm:text-5xl">
+            Join Shutterbug with confidence.
+          </h1>
           <p className="mt-4 leading-7 text-ink/70">
-            Create a verified customer profile for order history, tracking, and easier support after checkout.
+            Create one verified account for camera purchases, saved products, tracking, and support after checkout.
           </p>
+
+          <div className="mt-6 grid gap-2 sm:grid-cols-2 lg:grid-cols-1">
+            {trustItems.map((item) => (
+              <div key={item} className="rounded-lg border border-ink/10 bg-cream px-4 py-3 text-sm font-semibold text-ink/75">
+                {item}
+              </div>
+            ))}
+          </div>
+
+          <div className="mt-6 rounded-lg bg-mint p-4 text-sm leading-6 text-ink/72">
+            <p className="font-semibold text-ink">What happens next?</p>
+            <p className="mt-2">
+              We send a verification link to your email before account access. Your payment details stay with trusted
+              checkout providers, not stored in your Shutterbug account.
+            </p>
+          </div>
+        </aside>
+
+        <div className="rounded-lg border border-ink/10 bg-white p-6 shadow-sm sm:p-8">
+          <div className="text-center lg:text-left">
+            <div className="flex items-center justify-center gap-3 lg:justify-start">
+              <img src="/shutterbug-app-icon.png" alt="" className="h-14 w-14 rounded-full object-cover shadow-sm" />
+              <div>
+                <p className="text-sm font-bold uppercase tracking-[0.22em] text-moss">Customer account</p>
+                <p className="mt-1 font-serif text-2xl font-bold text-ink">Create your account</p>
+              </div>
+            </div>
+            <p className="mt-5 leading-7 text-ink/70">
+              Save time at checkout and keep your Shutterbug camera history connected.
+            </p>
+          </div>
 
           {error ? <p className="mt-5 rounded-lg bg-sand p-3 text-sm font-semibold text-ink">{error}</p> : null}
 
-          <form action={signupAction} className="mt-6 grid gap-4 text-left">
+          <form action={signupAction} className="mt-6 grid gap-4">
             <input type="hidden" name="redirect" value={redirectTo} />
-            <label className="grid gap-2 text-sm font-semibold text-ink">
-              Name
+            <label className="relative block">
+              <span className="sr-only">Name</span>
               <input
                 name="name"
                 autoComplete="name"
-                className="min-h-12 rounded-lg border border-ink/15 bg-cream px-3 outline-none focus:border-moss"
+                placeholder="Name"
+                className="min-h-14 w-full rounded-lg border border-ink/15 bg-cream px-4 pr-12 text-base text-ink outline-none transition placeholder:text-ink/55 focus:border-moss focus:ring-2 focus:ring-sage"
               />
+              <span className="pointer-events-none absolute right-4 top-1/2 -translate-y-1/2 text-ink/55">
+                <UserIcon />
+              </span>
             </label>
-            <label className="grid gap-2 text-sm font-semibold text-ink">
-              Email
+            <label className="relative block">
+              <span className="sr-only">Email address</span>
               <input
                 name="email"
                 type="email"
                 autoComplete="email"
+                placeholder="Email address"
                 required
-                className="min-h-12 rounded-lg border border-ink/15 bg-cream px-3 outline-none focus:border-moss"
+                className="min-h-14 w-full rounded-lg border border-ink/15 bg-cream px-4 pr-12 text-base text-ink outline-none transition placeholder:text-ink/55 focus:border-moss focus:ring-2 focus:ring-sage"
               />
+              <span className="pointer-events-none absolute right-4 top-1/2 -translate-y-1/2 text-ink/55">
+                <MailIcon />
+              </span>
             </label>
-            <label className="grid gap-2 text-sm font-semibold text-ink">
-              Password
+            <label className="relative block">
+              <span className="sr-only">Password</span>
               <input
                 name="password"
                 type="password"
                 autoComplete="new-password"
+                placeholder="Password"
                 minLength={PASSWORD_MIN_LENGTH}
                 maxLength={PASSWORD_MAX_LENGTH}
                 required
-                className="min-h-12 rounded-lg border border-ink/15 bg-cream px-3 outline-none focus:border-moss"
+                className="min-h-14 w-full rounded-lg border border-ink/15 bg-cream px-4 pr-12 text-base text-ink outline-none transition placeholder:text-ink/55 focus:border-moss focus:ring-2 focus:ring-sage"
               />
+              <span className="pointer-events-none absolute right-4 top-1/2 -translate-y-1/2 text-ink/55">
+                <LockIcon />
+              </span>
             </label>
-            <label className="grid gap-2 text-sm font-semibold text-ink">
-              Confirm password
+            <label className="relative block">
+              <span className="sr-only">Confirm password</span>
               <input
                 name="confirmPassword"
                 type="password"
                 autoComplete="new-password"
+                placeholder="Confirm password"
                 minLength={PASSWORD_MIN_LENGTH}
                 maxLength={PASSWORD_MAX_LENGTH}
                 required
-                className="min-h-12 rounded-lg border border-ink/15 bg-cream px-3 outline-none focus:border-moss"
+                className="min-h-14 w-full rounded-lg border border-ink/15 bg-cream px-4 pr-12 text-base text-ink outline-none transition placeholder:text-ink/55 focus:border-moss focus:ring-2 focus:ring-sage"
               />
+              <span className="pointer-events-none absolute right-4 top-1/2 -translate-y-1/2 text-ink/55">
+                <LockIcon />
+              </span>
             </label>
             <div className="rounded-lg border border-ink/10 bg-cream p-4 text-sm leading-6 text-ink/70">
-              <p className="font-semibold text-ink">Password rules</p>
-              <ul className="mt-2 list-disc space-y-1 pl-5">
-                <li>Use at least {PASSWORD_MIN_LENGTH} characters.</li>
-                <li>Passphrases are welcome. Symbols and numbers are allowed, but not required.</li>
-                <li>Avoid common passwords, repeated characters, your name, or your email.</li>
-              </ul>
+              <p className="font-semibold text-ink">Account protection</p>
+              <p className="mt-2">
+                Use at least {PASSWORD_MIN_LENGTH} characters. Passphrases are welcome. Avoid common passwords,
+                repeated characters, your name, or your email.
+              </p>
             </div>
-            <button className="min-h-12 rounded-full bg-forest px-6 font-semibold text-white transition hover:bg-moss">
+            <button className="min-h-14 rounded-lg bg-forest px-6 text-base font-semibold text-white shadow-sm transition hover:bg-moss">
               Create account
             </button>
           </form>
 
-          <p className="mt-5 text-sm text-ink/65">
+          <p className="mt-6 text-center text-sm text-ink/65">
             Already have an account?{' '}
             <Link href={`/login?redirect=${encodeURIComponent(redirectTo)}`} className="font-semibold text-moss">
               Log in
@@ -111,5 +177,32 @@ export default async function SignupPage({ searchParams }: Props) {
         </div>
       </div>
     </section>
+  );
+}
+
+function UserIcon() {
+  return (
+    <svg aria-hidden="true" viewBox="0 0 24 24" className="h-5 w-5 fill-none" stroke="currentColor" strokeWidth="2">
+      <path d="M20 21a8 8 0 0 0-16 0" />
+      <circle cx="12" cy="7" r="4" />
+    </svg>
+  );
+}
+
+function MailIcon() {
+  return (
+    <svg aria-hidden="true" viewBox="0 0 24 24" className="h-5 w-5 fill-none" stroke="currentColor" strokeWidth="2">
+      <path d="M4 6h16v12H4z" />
+      <path d="m4 7 8 6 8-6" />
+    </svg>
+  );
+}
+
+function LockIcon() {
+  return (
+    <svg aria-hidden="true" viewBox="0 0 24 24" className="h-5 w-5 fill-none" stroke="currentColor" strokeWidth="2">
+      <path d="M6 10h12v10H6z" />
+      <path d="M8 10V7a4 4 0 0 1 8 0v3" />
+    </svg>
   );
 }

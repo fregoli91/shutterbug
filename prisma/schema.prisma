@@ -120,6 +120,7 @@ model Product {
   returnsNote       String           @default("")
   checkoutUrl       String?
   images            ProductImage[]
+  customerLikes     CustomerProductLike[]
   orderItems        OrderItem[]
   createdAt         DateTime         @default(now())
   updatedAt         DateTime         @updatedAt
@@ -156,6 +157,7 @@ model Customer {
   name                    String?
   emailVerifiedAt         DateTime?
   emailVerificationTokens CustomerEmailVerificationToken[]
+  productLikes            CustomerProductLike[]
   orders                  Order[]
   createdAt               DateTime                         @default(now())
   updatedAt               DateTime                         @updatedAt
@@ -174,6 +176,19 @@ model CustomerEmailVerificationToken {
 
   @@index([customerId])
   @@index([expiresAt])
+}
+
+model CustomerProductLike {
+  id         String   @id @default(cuid())
+  customerId String
+  productId  String
+  customer   Customer @relation(fields: [customerId], references: [id], onDelete: Cascade)
+  product    Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
+  createdAt  DateTime @default(now())
+
+  @@unique([customerId, productId])
+  @@index([customerId, createdAt])
+  @@index([productId])
 }
 
 model Order {

@@ -2,6 +2,7 @@ import Link from 'next/link';
 
 const accountLinks = [
   { href: '/account', label: 'Dashboard', copy: 'Account overview' },
+  { href: '/account/likes', label: 'Liked Products', copy: 'Saved cameras' },
   { href: '/account/orders', label: 'My Orders', copy: 'Purchase history' },
   { href: '/account/track', label: 'Track Orders', copy: 'Shipping status' },
   { href: '/account/addresses', label: 'Saved Addresses', copy: 'Checkout details' },

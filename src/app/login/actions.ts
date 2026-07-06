@@ -1,6 +1,7 @@
 'use server';
 
 import { redirect } from 'next/navigation';
+import { createAdminSession, validateAdminCredentials } from '@/lib/admin-auth';
 import { createCustomerSession, normalizeEmail, verifyPassword } from '@/lib/customer-auth';
 import { getPrisma } from '@/lib/prisma';
 
@@ -15,6 +16,11 @@ export async function loginAction(formData: FormData) {
   const redirectTo = cleanRedirect(formData.get('redirect'));
 
   if (!email || !password) redirect(`/login?error=missing&redirect=${encodeURIComponent(redirectTo)}`);
+
+  if (validateAdminCredentials(email, password)) {
+    await createAdminSession(email);
+    redirect('/admin');
+  }
 
   const prisma = getPrisma();
   if (!prisma) redirect(`/login?error=config&redirect=${encodeURIComponent(redirectTo)}`);

@@ -2,6 +2,7 @@ import Link from 'next/link';
 import { ProductCard } from '@/components/ProductCard';
 import { SectionHeading } from '@/components/SectionHeading';
 import { categories, featuredCategorySlugs, type Category } from '@/lib/categories';
+import { getLikedProductIds } from '@/lib/customer-likes';
 import { getCustomerSession } from '@/lib/customer-auth';
 import { formatPrice, getAvailabilityLabel, getCatalogProducts, type Product } from '@/lib/products';
 import { site } from '@/lib/seo';
@@ -63,6 +64,7 @@ const accountBenefits = [
 
 const quickLinks = [
   ['Shop all cameras', '/shop'],
+  ['Liked products', '/account/likes'],
   ['View cart', '/cart'],
   ['My orders', '/account/orders'],
   ['Sell your camera', '/sell-your-camera']
@@ -78,6 +80,10 @@ export default async function Home() {
     .map((slug) => categories.find((category) => category.slug === slug))
     .filter((category): category is Category => Boolean(category));
   const customer = await getCustomerSession();
+  const likedProductIds = await getLikedProductIds(
+    customer?.id,
+    [...featured, ...newArrivals].map((product) => product.id)
+  );
 
   if (customer) {
     return (
@@ -86,6 +92,7 @@ export default async function Home() {
         featured={featured}
         newArrivals={newArrivals}
         featuredCategories={featuredCategories}
+        likedProductIds={likedProductIds}
       />
     );
   }
@@ -262,12 +269,14 @@ function LoggedInHome({
   customer,
   featured,
   newArrivals,
-  featuredCategories
+  featuredCategories,
+  likedProductIds
 }: {
   customer: CustomerSession;
   featured: Product[];
   newArrivals: Product[];
   featuredCategories: Category[];
+  likedProductIds: Set<string>;
 }) {
   const displayName = customer.name?.trim() || customer.email.split('@')[0] || 'friend';
 
@@ -332,6 +341,8 @@ function LoggedInHome({
         title="Fresh from the Shutterbug shelf"
         products={newArrivals}
         intro="Tested cameras and gear ready for a closer look."
+        signedIn
+        likedProductIds={likedProductIds}
       />
 
       <CategoryPills title="Recommended categories" />
@@ -341,6 +352,8 @@ function LoggedInHome({
         title="Picked for returning shoppers"
         products={featured}
         intro="A tighter set of current listings with photos, condition notes, and clear availability."
+        signedIn
+        likedProductIds={likedProductIds}
       />
 
       <section className="bg-cream px-4 py-16 sm:px-6 lg:px-8">
@@ -562,12 +575,16 @@ function FeaturedProducts({
   eyebrow,
   title,
   intro,
-  products
+  products,
+  signedIn = false,
+  likedProductIds = new Set<string>()
 }: {
   eyebrow: string;
   title: string;
   intro: string;
   products: Product[];
+  signedIn?: boolean;
+  likedProductIds?: Set<string>;
 }) {
   return (
     <section className="bg-cream px-4 py-16 sm:px-6 lg:px-8">
@@ -584,7 +601,12 @@ function FeaturedProducts({
         </div>
         <div className="mt-10 grid grid-cols-2 gap-3 sm:gap-6 md:grid-cols-3 lg:grid-cols-4">
           {products.map((product) => (
-            <ProductCard key={product.id} product={product} />
+            <ProductCard
+              key={product.id}
+              product={product}
+              liked={likedProductIds.has(product.id)}
+              signedIn={signedIn}
+            />
           ))}
         </div>
       </div>

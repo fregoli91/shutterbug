@@ -46,6 +46,10 @@ export function MobileMenu({
     };
   }, [open]);
 
+  const triggerClass = signedIn
+    ? 'flex h-11 max-w-[8rem] shrink-0 items-center gap-1.5 rounded-full border border-ink/15 bg-white px-1.5 pr-3 text-ink shadow-sm transition hover:border-moss/40 sm:h-12 sm:max-w-[10rem]'
+    : 'flex h-11 w-11 shrink-0 items-center justify-center rounded-full border border-ink/15 bg-white p-0.5 text-ink shadow-sm transition hover:border-moss/40 sm:h-12 sm:w-12';
+
   return (
     <div ref={menuRef} className="relative lg:hidden">
       <button
@@ -53,15 +57,27 @@ export function MobileMenu({
         aria-expanded={open}
         aria-label={open ? 'Close menu' : 'Open menu'}
         onClick={() => setOpen((current) => !current)}
-        className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full border border-ink/15 bg-white p-0.5 text-ink shadow-sm transition hover:border-moss/40 sm:h-12 sm:w-12"
+        className={triggerClass}
       >
         <span className="sr-only">{open ? 'Close menu' : 'Open menu'}</span>
-        <img
-          src="/shutterbug-menu-icon.png"
-          alt=""
-          className="h-full w-full rounded-full object-cover"
-          aria-hidden="true"
-        />
+        {signedIn ? (
+          <>
+            <img
+              src="/shutterbug-app-icon.png"
+              alt=""
+              className="h-8 w-8 rounded-full object-cover sm:h-9 sm:w-9"
+              aria-hidden="true"
+            />
+            <span className="min-w-0 truncate text-xs font-bold sm:text-sm">{customerLabel ?? 'Account'}</span>
+          </>
+        ) : (
+          <img
+            src="/shutterbug-menu-icon.png"
+            alt=""
+            className="h-full w-full rounded-full object-cover"
+            aria-hidden="true"
+          />
+        )}
       </button>
 
       {open ? (

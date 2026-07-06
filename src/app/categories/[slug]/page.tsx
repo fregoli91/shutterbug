@@ -2,6 +2,8 @@ import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { ProductCard } from '@/components/ProductCard';
 import { categories, getCategory, getRelatedCategories } from '@/lib/categories';
+import { getLikedProductIds } from '@/lib/customer-likes';
+import { getCustomerSession } from '@/lib/customer-auth';
 import { getProductsByCategoryAsync } from '@/lib/products';
 
 type Props = { params: Promise<{ slug: string }> };
@@ -25,6 +27,11 @@ export default async function CategoryPage({ params }: Props) {
   const category = getCategory(slug);
   if (!category) notFound();
   const categoryProducts = await getProductsByCategoryAsync(category.slug);
+  const customer = await getCustomerSession();
+  const likedProductIds = await getLikedProductIds(
+    customer?.id,
+    categoryProducts.map((product) => product.id)
+  );
   const relatedCategories = getRelatedCategories(category.slug);
   const categoryHeroImage = category.slug === 'parts-repair' ? '/shutterbug-parts-repair.png' : null;
 
@@ -68,7 +75,14 @@ export default async function CategoryPage({ params }: Props) {
 
         <div className="mt-12 grid grid-cols-2 gap-3 sm:gap-6 lg:grid-cols-3">
           {categoryProducts.length > 0 ? (
-            categoryProducts.map((product) => <ProductCard key={product.id} product={product} />)
+            categoryProducts.map((product) => (
+              <ProductCard
+                key={product.id}
+                product={product}
+                liked={likedProductIds.has(product.id)}
+                signedIn={Boolean(customer)}
+              />
+            ))
           ) : (
             <div className="col-span-2 rounded-lg border border-ink/10 bg-white p-8 text-ink/70 lg:col-span-3">
               <p className="font-serif text-2xl font-bold text-ink">No active inventory in this category yet</p>

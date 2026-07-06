@@ -16,6 +16,11 @@ function asString(value: string | string[] | undefined) {
 
 const accountCards = [
   {
+    href: '/account/likes',
+    title: 'Liked products',
+    copy: 'Review saved cameras, open product details, or remove items from your liked list.'
+  },
+  {
     href: '/account/orders',
     title: 'Orders',
     copy: 'View purchase history, order details, payment status, and fulfillment notes.'
