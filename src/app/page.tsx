@@ -19,59 +19,46 @@ const brandLinks = [
   ['Parts / Repair', '/categories/parts-repair']
 ];
 
-const trustCards = [
-  {
-    title: 'Tested before listing',
-    copy: 'Power, lens, screen, flash, buttons, and card checks are listed before sale.',
-    image: '/shutterbug-tested-cameras.png'
-  },
-  {
-    title: 'Real photos and notes',
-    copy: 'Exact item photos, included accessories, cosmetic notes, and flaws are easy to scan.',
-    image: '/shutterbug-storefront.png'
-  },
-  {
-    title: 'Friendly support',
-    copy: 'Ask about a model, an order, or a trade-in before you buy.',
-    image: '/shutterbug-customer-service.png'
-  }
-];
-
 const trustBadges = ['Tested gear', 'Actual photos', 'Condition notes', 'Secure checkout'];
 
 const offerCards = [
   {
     title: 'Vintage digital cameras',
-    copy: 'Canon PowerShot, Olympus, Nikon Coolpix, Sony Cyber-shot, Kodak EasyShare, and other compact digital finds.',
-    href: '/categories/vintage-digital-cameras'
+    copy: 'Pocketable digital finds from Canon, Olympus, Nikon, Sony, Kodak, and more.',
+    href: '/categories/vintage-digital-cameras',
+    image: '/shutterbug-category-digital.png'
   },
   {
     title: 'Film cameras',
-    copy: 'Classic 35mm cameras and point-and-shoot film gear with clear condition notes.',
-    href: '/categories/film-cameras'
+    copy: 'Classic 35mm cameras and film gear with clear condition notes.',
+    href: '/categories/film-cameras',
+    image: '/shutterbug-category-film.png'
   },
   {
     title: 'Accessories',
-    copy: 'Batteries, chargers, memory cards, straps, bags, and useful add-ons for older cameras.',
-    href: '/categories/camera-accessories'
+    copy: 'Chargers, batteries, cards, straps, bags, filters, and useful add-ons.',
+    href: '/categories/camera-accessories',
+    image: '/shutterbug-category-accessories-hero.png'
   },
   {
     title: 'Parts and repair',
-    copy: 'As-is cameras and gear are clearly marked so repair projects stay separate from ready-to-shoot listings.',
-    href: '/categories/parts-repair'
+    copy: 'As-is repair projects kept clearly separate from ready-to-shoot cameras.',
+    href: '/categories/parts-repair',
+    image: '/shutterbug-category-parts-repair.png'
   },
   {
     title: 'Sell or trade in',
-    copy: 'Send us your camera details and we will review it for a buyout or trade-in path.',
-    href: '/sell-your-camera'
+    copy: 'Send your camera details for a buyout or trade-in review.',
+    href: '/sell-your-camera',
+    image: '/shutterbug-category-trade-in.png'
   }
 ];
 
 const accountBenefits = [
-  'Track orders',
-  'View purchase history',
-  'Smoother checkout',
-  'Easier support for past purchases'
+  'Track your camera orders',
+  'View your purchase history',
+  'Save time at checkout',
+  'Get easier support for past purchases'
 ];
 
 const quickLinks = [
@@ -103,19 +90,15 @@ export default async function Home() {
     );
   }
 
-  return (
-    <LoggedOutHome featured={featured} shelfProducts={shelfProducts} featuredCategories={featuredCategories} />
-  );
+  return <LoggedOutHome featured={featured} shelfProducts={shelfProducts} />;
 }
 
 function LoggedOutHome({
   featured,
-  shelfProducts,
-  featuredCategories
+  shelfProducts
 }: {
   featured: Product[];
   shelfProducts: Product[];
-  featuredCategories: Category[];
 }) {
   return (
     <>
@@ -173,28 +156,43 @@ function LoggedOutHome({
         </div>
       </section>
 
-      <section className="bg-cream px-4 pb-8 sm:px-6 lg:px-8">
-        <div className="mx-auto max-w-7xl rounded-lg border border-ink/10 bg-white p-4 shadow-sm sm:p-5">
-          <div className="flex items-center justify-between gap-4">
-            <div>
-              <p className="text-sm font-bold uppercase tracking-[0.2em] text-moss">Quick picks</p>
-              <h2 className="mt-1 font-serif text-2xl font-bold text-ink">Fresh finds ready to browse</h2>
+      <section className="bg-cream px-4 pb-10 sm:px-6 lg:px-8">
+        <div className="mx-auto grid max-w-7xl gap-5 lg:grid-cols-[1.15fr_1fr] lg:items-stretch">
+          <Link
+            href="/shop?sort=newest"
+            className="group relative block min-h-72 overflow-hidden rounded-lg border border-ink/10 bg-sand shadow-sm"
+          >
+            <img
+              src="/shutterbug-shelf-cameras-display.png"
+              alt="Shutterbug shelf display of cameras, lenses, bags, and accessories"
+              className="h-full w-full object-cover object-center transition duration-500 group-hover:scale-[1.02]"
+            />
+            <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-ink/85 via-ink/35 to-transparent p-5 text-white">
+              <p className="text-xs font-bold uppercase tracking-[0.22em] text-cream">Fresh finds</p>
+              <h2 className="mt-2 font-serif text-3xl font-bold">Browse the Shutterbug shelf</h2>
             </div>
-            <Link href="/shop" className="hidden text-sm font-semibold text-moss hover:text-ink sm:inline-flex">
-              View all
-            </Link>
-          </div>
-          <div className="mt-4 grid gap-3 sm:grid-cols-3">
+          </Link>
+
+          <div className="grid content-start gap-3">
+            <div className="flex items-end justify-between gap-4">
+              <div>
+                <p className="text-sm font-bold uppercase tracking-[0.2em] text-moss">Quick picks</p>
+                <h2 className="mt-1 font-serif text-2xl font-bold text-ink">Ready to browse</h2>
+              </div>
+              <Link href="/shop" className="text-sm font-semibold text-moss hover:text-ink">
+                View all
+              </Link>
+            </div>
             {shelfProducts.map((product) => (
               <Link
                 key={product.id}
                 href={`/shop/${product.slug}`}
-                className="grid grid-cols-[4.5rem_1fr] gap-3 rounded-lg border border-ink/10 bg-cream p-3 transition hover:border-moss/35 hover:bg-white"
+                className="grid grid-cols-[4.5rem_1fr] gap-3 rounded-lg border border-ink/10 bg-white p-3 shadow-sm transition hover:border-moss/35"
               >
                 <img
                   src={product.heroImage}
                   alt={product.title}
-                  className="aspect-square w-full rounded-md bg-white object-cover object-center"
+                  className="aspect-square w-full rounded-md bg-cream object-cover object-center"
                 />
                 <div className="min-w-0">
                   <p className="text-xs font-bold uppercase tracking-[0.12em] text-moss">{product.brand}</p>
@@ -209,21 +207,33 @@ function LoggedOutHome({
 
       <DirectStoreCallout />
 
-      <section className="bg-cream px-4 py-16 sm:px-6 lg:px-8">
+      <section className="bg-cream px-4 py-14 sm:px-6 lg:px-8">
         <div className="mx-auto max-w-7xl">
-          <SectionHeading eyebrow="What we offer" title="Vintage cameras with the details buyers need">
-            Browse ready-to-shoot tested gear, clearly labeled accessories, and repair items that are never mixed in
-            with tested cameras.
-          </SectionHeading>
-          <div className="mt-10 grid gap-4 md:grid-cols-2 lg:grid-cols-5">
+          <div className="flex flex-col justify-between gap-4 sm:flex-row sm:items-end">
+            <div>
+              <p className="text-sm font-bold uppercase tracking-[0.24em] text-moss">Shop by category</p>
+              <h2 className="mt-3 font-serif text-4xl font-bold text-ink">Start with the gear you want.</h2>
+            </div>
+            <Link href="/shop" className="font-semibold text-moss hover:text-ink">
+              Shop all cameras &rarr;
+            </Link>
+          </div>
+          <div className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-5">
             {offerCards.map((card) => (
               <Link
                 key={card.title}
                 href={card.href}
-                className="rounded-lg border border-ink/10 bg-white p-5 shadow-sm transition hover:-translate-y-1 hover:border-moss/30 hover:shadow-soft"
+                className="group overflow-hidden rounded-lg border border-ink/10 bg-white shadow-sm transition hover:-translate-y-1 hover:border-moss/30 hover:shadow-soft"
               >
-                <p className="font-serif text-2xl font-bold text-ink">{card.title}</p>
-                <p className="mt-3 text-sm leading-6 text-ink/65">{card.copy}</p>
+                <img
+                  src={card.image}
+                  alt=""
+                  className="aspect-[4/3] w-full bg-sand object-cover object-center transition duration-500 group-hover:scale-[1.03]"
+                />
+                <div className="p-4">
+                  <p className="font-serif text-xl font-bold text-ink">{card.title}</p>
+                  <p className="mt-2 line-clamp-2 text-sm leading-6 text-ink/65">{card.copy}</p>
+                </div>
               </Link>
             ))}
           </div>
@@ -233,8 +243,6 @@ function LoggedOutHome({
       <TrustCards />
 
       <CategoryPills title="Popular searches" />
-
-      <CategoryGrid featuredCategories={featuredCategories} />
 
       <SignupCallout />
 
@@ -418,7 +426,7 @@ function DirectStoreCallout() {
     <section className="bg-cream px-4 py-8 sm:px-6 lg:px-8">
       <div className="mx-auto grid max-w-7xl gap-5 rounded-lg border border-ink/10 bg-white p-5 shadow-sm sm:grid-cols-[5rem_1fr] sm:items-center lg:grid-cols-[6rem_1fr_auto] lg:p-6">
         <img
-          src="/shutterbug-basic-character.png"
+          src="/shutterbug-accent-wave.png"
           alt=""
           className="h-20 w-20 rounded-full bg-sand object-cover object-center lg:h-24 lg:w-24"
         />
@@ -508,11 +516,13 @@ function SignupCallout() {
     <section className="bg-cream px-4 py-16 sm:px-6 lg:px-8">
       <div className="mx-auto grid max-w-7xl gap-8 rounded-lg border border-ink/10 bg-white p-6 shadow-sm lg:grid-cols-[1fr_20rem] lg:items-center lg:p-8">
         <div>
-          <p className="text-sm font-bold uppercase tracking-[0.24em] text-moss">Customer account</p>
-          <h2 className="mt-3 font-serif text-4xl font-bold text-ink">A simpler way to buy your next camera.</h2>
+          <p className="text-sm font-bold uppercase tracking-[0.24em] text-moss">Become a Shutterbug customer</p>
+          <h2 className="mt-3 font-serif text-4xl font-bold text-ink">Find a vintage camera worth keeping.</h2>
           <p className="mt-4 max-w-3xl leading-7 text-ink/70">
-            Create an account to keep your Shutterbug purchases, order tracking, and support history connected.
+            Create your account to shop tested digital and film cameras, track your orders, and keep every Shutterbug
+            purchase connected in one place.
           </p>
+          <p className="mt-5 text-sm font-bold uppercase tracking-[0.18em] text-moss">Why create an account?</p>
           <div className="mt-5 flex flex-wrap gap-2">
             {accountBenefits.map((benefit) => (
               <span
@@ -539,9 +549,9 @@ function SignupCallout() {
           </div>
         </div>
         <img
-          src="/shutterbug-signup.png"
-          alt="Shutterbug mascot at the customer signup desk"
-          className="aspect-[4/5] w-full rounded-lg bg-sand object-cover object-center"
+          src="/shutterbug-accent-camera.png"
+          alt="Shutterbug mascot holding a camera"
+          className="aspect-square w-full rounded-lg bg-sand object-cover object-center"
         />
       </div>
     </section>
@@ -584,15 +594,30 @@ function FeaturedProducts({
 
 function TrustCards() {
   return (
-    <section className="bg-cream px-4 py-16 sm:px-6 lg:px-8">
-      <div className="mx-auto grid max-w-7xl gap-8 lg:grid-cols-3">
-        {trustCards.map(({ title, copy, image }) => (
-          <div key={title} className="rounded-lg border border-ink/10 bg-white p-6 shadow-sm sm:p-8">
-            <img src={image} alt="" className="mb-6 aspect-[4/3] w-full rounded-lg bg-sand object-cover object-center" />
-            <p className="font-serif text-2xl font-bold text-ink">{title}</p>
-            <p className="mt-4 text-sm leading-7 text-ink/68">{copy}</p>
+    <section className="bg-cream px-4 py-14 sm:px-6 lg:px-8">
+      <div className="mx-auto grid max-w-7xl gap-6 lg:grid-cols-[1.4fr_0.6fr] lg:items-center">
+        <img
+          src="/shutterbug-trust-banner.png"
+          alt="Shutterbug trust promise with secure shopping, tested cameras, honest service, and careful handling"
+          className="aspect-[4/3] w-full rounded-lg border border-ink/10 bg-cream object-contain object-center shadow-sm sm:aspect-[16/9]"
+        />
+        <div className="rounded-lg border border-ink/10 bg-white p-6 shadow-sm">
+          <p className="text-sm font-bold uppercase tracking-[0.24em] text-moss">Buyer confidence</p>
+          <h2 className="mt-3 font-serif text-3xl font-bold text-ink">Trusted cameras, honest service.</h2>
+          <div className="mt-5 grid gap-2">
+            {['Secure shopping', 'Tested cameras', 'Honest service', 'Careful handling'].map((item) => (
+              <span key={item} className="rounded-full bg-cream px-4 py-2 text-sm font-semibold text-ink/72">
+                {item}
+              </span>
+            ))}
           </div>
-        ))}
+          <Link
+            href="/returns"
+            className="mt-6 inline-flex min-h-11 items-center justify-center rounded-full bg-forest px-5 text-sm font-semibold text-white transition hover:bg-moss"
+          >
+            Returns and support
+          </Link>
+        </div>
       </div>
     </section>
   );
