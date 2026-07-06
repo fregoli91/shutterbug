@@ -1,4 +1,4 @@
-import { randomBytes, scrypt as scryptCallback, timingSafeEqual, createHmac } from 'node:crypto';
+import { randomBytes, scrypt as scryptCallback, timingSafeEqual, createHmac, createHash } from 'node:crypto';
 import { promisify } from 'node:util';
 import { cookies } from 'next/headers';
 import { redirect } from 'next/navigation';
@@ -7,6 +7,7 @@ import { getPrisma, requirePrisma } from '@/lib/prisma';
 const scrypt = promisify(scryptCallback);
 const COOKIE_NAME = 'shutterbug_customer';
 const SESSION_TTL_SECONDS = 60 * 60 * 24 * 30;
+const EMAIL_VERIFICATION_TTL_HOURS = 24;
 
 type SessionPayload = {
   id: string;
@@ -30,6 +31,10 @@ function safeEqual(a: string, b: string) {
   const left = Buffer.from(a);
   const right = Buffer.from(b);
   return left.length === right.length && timingSafeEqual(left, right);
+}
+
+function hashVerificationToken(token: string) {
+  return createHash('sha256').update(token).digest('hex');
 }
 
 function encodePayload(payload: SessionPayload) {
@@ -106,7 +111,7 @@ export async function getCustomerSession() {
   if (!prisma) return null;
   return prisma.customer.findUnique({
     where: { id: token.id },
-    select: { id: true, email: true, name: true, createdAt: true }
+    select: { id: true, email: true, name: true, emailVerifiedAt: true, createdAt: true }
   });
 }
 
@@ -135,4 +140,47 @@ export async function createCustomerAccount({
       passwordHash
     }
   });
+}
+
+export async function createCustomerEmailVerificationToken(customerId: string) {
+  const prisma = requirePrisma();
+  const token = randomBytes(32).toString('base64url');
+  const tokenHash = hashVerificationToken(token);
+  const expiresAt = new Date(Date.now() + EMAIL_VERIFICATION_TTL_HOURS * 60 * 60 * 1000);
+
+  await prisma.customerEmailVerificationToken.create({
+    data: {
+      customerId,
+      tokenHash,
+      expiresAt
+    }
+  });
+
+  return token;
+}
+
+export async function verifyCustomerEmailToken(token: string) {
+  const prisma = requirePrisma();
+  const tokenHash = hashVerificationToken(token);
+  const record = await prisma.customerEmailVerificationToken.findUnique({
+    where: { tokenHash },
+    include: { customer: true }
+  });
+
+  if (!record || record.usedAt) return { status: 'invalid' as const };
+  if (record.expiresAt.getTime() < Date.now()) return { status: 'expired' as const, email: record.customer.email };
+
+  const verifiedAt = new Date();
+  const [, customer] = await prisma.$transaction([
+    prisma.customerEmailVerificationToken.updateMany({
+      where: { customerId: record.customerId, usedAt: null },
+      data: { usedAt: verifiedAt }
+    }),
+    prisma.customer.update({
+      where: { id: record.customerId },
+      data: { emailVerifiedAt: verifiedAt }
+    })
+  ]);
+
+  return { status: 'verified' as const, customer };
 }

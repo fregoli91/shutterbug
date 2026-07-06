@@ -6,6 +6,14 @@ export const metadata = {
   title: 'Customer Account'
 };
 
+type Props = {
+  searchParams?: Promise<Record<string, string | string[] | undefined>>;
+};
+
+function asString(value: string | string[] | undefined) {
+  return Array.isArray(value) ? value[0] ?? '' : value ?? '';
+}
+
 const accountCards = [
   {
     href: '/account/orders',
@@ -39,12 +47,19 @@ const accountCards = [
   }
 ];
 
-export default async function AccountPage() {
+export default async function AccountPage({ searchParams }: Props) {
   const customer = await requireCustomer();
+  const params = searchParams ? await searchParams : {};
+  const status = asString(params.status);
 
   return (
     <section className="px-4 py-12 sm:px-6 lg:px-8">
       <div className="mx-auto max-w-5xl">
+        {status === 'verified' ? (
+          <p className="mb-6 rounded-lg bg-mint p-4 text-sm font-semibold text-ink">
+            Your email is verified. Welcome to your Shutterbug customer account.
+          </p>
+        ) : null}
         <div className="grid gap-8 lg:grid-cols-[1fr_18rem] lg:items-center">
           <div>
             <p className="text-sm font-bold uppercase tracking-[0.22em] text-moss">Customer account</p>

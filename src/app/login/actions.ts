@@ -2,7 +2,7 @@
 
 import { redirect } from 'next/navigation';
 import { createCustomerSession, normalizeEmail, verifyPassword } from '@/lib/customer-auth';
-import { requirePrisma } from '@/lib/prisma';
+import { getPrisma } from '@/lib/prisma';
 
 function cleanRedirect(value: FormDataEntryValue | null) {
   const target = typeof value === 'string' ? value : '';
@@ -16,10 +16,18 @@ export async function loginAction(formData: FormData) {
 
   if (!email || !password) redirect(`/login?error=missing&redirect=${encodeURIComponent(redirectTo)}`);
 
-  const prisma = requirePrisma();
+  const prisma = getPrisma();
+  if (!prisma) redirect(`/login?error=config&redirect=${encodeURIComponent(redirectTo)}`);
+
   const customer = await prisma.customer.findUnique({ where: { email } });
   if (!customer || !(await verifyPassword(password, customer.passwordHash))) {
     redirect(`/login?error=invalid&redirect=${encodeURIComponent(redirectTo)}`);
+  }
+
+  if (!customer.emailVerifiedAt) {
+    redirect(
+      `/signup/check-email?email=${encodeURIComponent(customer.email)}&status=unverified&redirect=${encodeURIComponent(redirectTo)}`
+    );
   }
 
   await createCustomerSession({ id: customer.id, email: customer.email });

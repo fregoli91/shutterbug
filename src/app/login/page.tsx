@@ -15,7 +15,9 @@ function asString(value: string | string[] | undefined) {
 
 const errorMessages: Record<string, string> = {
   missing: 'Enter your email and password.',
-  invalid: 'That email and password did not match a customer account.'
+  invalid: 'That email and password did not match a customer account.',
+  config: 'Customer accounts need a configured database before login can work.',
+  'verify-invalid': 'That verification link is invalid or has already been used.'
 };
 
 export default async function LoginPage({ searchParams }: Props) {
@@ -41,6 +43,11 @@ export default async function LoginPage({ searchParams }: Props) {
 
           {status === 'logged-out' ? (
             <p className="mt-5 rounded-lg bg-mint p-3 text-sm font-semibold text-ink">You have been logged out.</p>
+          ) : null}
+          {status === 'verified' ? (
+            <p className="mt-5 rounded-lg bg-mint p-3 text-sm font-semibold text-ink">
+              Your email is verified. You can log in now.
+            </p>
           ) : null}
           {error ? <p className="mt-5 rounded-lg bg-sand p-3 text-sm font-semibold text-ink">{error}</p> : null}
 

@@ -150,15 +150,30 @@ model ProductImage {
 }
 
 model Customer {
-  id           String   @id @default(cuid())
-  email        String   @unique
-  passwordHash String
-  name         String?
-  orders       Order[]
-  createdAt    DateTime @default(now())
-  updatedAt    DateTime @updatedAt
+  id                      String                           @id @default(cuid())
+  email                   String                           @unique
+  passwordHash            String
+  name                    String?
+  emailVerifiedAt         DateTime?
+  emailVerificationTokens CustomerEmailVerificationToken[]
+  orders                  Order[]
+  createdAt               DateTime                         @default(now())
+  updatedAt               DateTime                         @updatedAt
 
   @@index([email])
+}
+
+model CustomerEmailVerificationToken {
+  id        String    @id @default(cuid())
+  customerId String
+  customer  Customer  @relation(fields: [customerId], references: [id], onDelete: Cascade)
+  tokenHash String    @unique
+  expiresAt DateTime
+  usedAt    DateTime?
+  createdAt DateTime  @default(now())
+
+  @@index([customerId])
+  @@index([expiresAt])
 }
 
 model Order {

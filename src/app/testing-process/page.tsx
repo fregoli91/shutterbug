@@ -40,9 +40,9 @@ export default function TestingProcessPage() {
           </div>
           <div className="overflow-hidden rounded-lg border border-ink/10 bg-white shadow-sm">
             <img
-              src="/shutterbug-tested-cameras.png"
+              src="/shutterbug-testing-process-hero.png"
               alt="Shutterbug character carefully testing a vintage camera"
-              className="aspect-square w-full bg-sand object-cover object-center"
+              className="aspect-[16/9] w-full bg-sand object-cover object-center"
             />
             <div className="p-6">
               <p className="font-serif text-2xl font-bold text-ink">The promise</p>
@@ -64,6 +64,11 @@ export default function TestingProcessPage() {
 
         <div className="mt-14 grid gap-8 lg:grid-cols-2">
           <div className="rounded-lg border border-ink/10 bg-white p-8 shadow-sm">
+            <img
+              src="/shutterbug-condition-grading.png"
+              alt="Shutterbug condition grading display for used cameras"
+              className="mb-6 aspect-[4/3] w-full rounded-lg bg-cream object-contain object-center"
+            />
             <p className="font-serif text-3xl font-bold text-ink">Condition grading</p>
             <div className="mt-6 grid gap-4">
               {conditionRules.map(([grade, copy]) => (
@@ -75,15 +80,22 @@ export default function TestingProcessPage() {
             </div>
           </div>
           <div className="rounded-lg border border-ink/10 bg-white p-8 shadow-sm">
-            <p className="font-serif text-3xl font-bold text-ink">Parts/repair language</p>
+            <p className="font-serif text-3xl font-bold text-ink">Parts / Repair Items</p>
             <p className="mt-4 leading-7 text-ink/70">
-              Parts/repair items are treated differently from ready-to-shoot cameras. They may power on partially, have
-              missing accessories, show lens/screen issues, or be useful only for repair projects. Those listings should
-              be marked as-is before checkout.
+              Parts/repair cameras are not treated the same as ready-to-shoot cameras. These items are sold as-is and
+              may have partial power, missing accessories, lens or screen issues, damaged parts, or untested functions.
             </p>
             <p className="mt-4 leading-7 text-ink/70">
-              For film cameras, testing may differ by model. Listings should explain whether shutter, meter, film
-              advance, lens, flash, or battery compartments were checked.
+              Every parts/repair listing should clearly explain what was checked, what was not checked, what is
+              included, and what issues are visible. If a function is unknown, we say so instead of guessing.
+            </p>
+            <p className="mt-4 leading-7 text-ink/70">
+              For film cameras, testing varies by model. Listings should note whether the shutter, film advance,
+              rewind, meter, lens, flash, battery compartment, and door/latch were checked when applicable.
+            </p>
+            <p className="mt-4 leading-7 text-ink/70">
+              Our goal is to make the condition clear before checkout, so buyers know whether they are purchasing a
+              ready-to-shoot camera or a repair/project item.
             </p>
           </div>
         </div>
