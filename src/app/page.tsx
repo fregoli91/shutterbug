@@ -258,6 +258,8 @@ function LoggedOutHome({
         title="Fresh camera finds"
         products={featured}
         intro="A few current finds from the Shutterbug shelf."
+        featureImage="/shutterbug-fresh-finds.png"
+        featureImageAlt="Shutterbug mascot showing a fresh crate of vintage camera finds"
       />
 
       <TestingProcessCallout />
@@ -576,6 +578,8 @@ function FeaturedProducts({
   title,
   intro,
   products,
+  featureImage,
+  featureImageAlt,
   signedIn = false,
   likedProductIds = new Set<string>()
 }: {
@@ -583,6 +587,8 @@ function FeaturedProducts({
   title: string;
   intro: string;
   products: Product[];
+  featureImage?: string;
+  featureImageAlt?: string;
   signedIn?: boolean;
   likedProductIds?: Set<string>;
 }) {
@@ -599,6 +605,13 @@ function FeaturedProducts({
             View all products &rarr;
           </Link>
         </div>
+        {featureImage ? (
+          <img
+            src={featureImage}
+            alt={featureImageAlt ?? ''}
+            className="mt-8 aspect-[4/3] w-full rounded-lg border border-ink/10 bg-sand object-cover object-center shadow-sm sm:aspect-[16/7]"
+          />
+        ) : null}
         <div className="mt-10 grid grid-cols-2 gap-3 sm:gap-6 md:grid-cols-3 lg:grid-cols-4">
           {products.map((product) => (
             <ProductCard
