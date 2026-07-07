@@ -53,6 +53,29 @@ export default function ContactPage() {
             </ul>
           </div>
         </div>
+
+        <div className="mt-8 grid gap-6 rounded-lg border border-ink/10 bg-cream p-6 shadow-soft lg:grid-cols-[1fr_1fr]">
+          <div>
+            <p className="text-sm font-bold uppercase tracking-[0.22em] text-moss">Support topics</p>
+            <h2 className="mt-3 font-serif text-3xl font-bold text-ink">We can help before and after checkout.</h2>
+            <div className="mt-5 grid gap-3 sm:grid-cols-2">
+              {['Order status', 'Condition questions', 'Included accessories', 'Returns', 'Shipping', 'Trade-ins'].map((topic) => (
+                <p key={topic} className="rounded-lg border border-ink/10 bg-white px-4 py-3 text-sm font-semibold text-ink">
+                  {topic}
+                </p>
+              ))}
+            </div>
+          </div>
+          <div className="rounded-lg border border-ink/10 bg-white p-5">
+            <p className="font-serif text-2xl font-bold text-ink">For fastest help</p>
+            <ul className="mt-4 grid list-disc gap-2 pl-5 text-sm leading-6 text-ink/68">
+              <li>For orders, include your order number and the email used at checkout.</li>
+              <li>For product questions, include the product title, brand, model, or listing URL.</li>
+              <li>For returns, include photos of the item, packaging, accessories, and the issue.</li>
+              <li>For trade-ins, include clear photos, model names, included accessories, and known issues.</li>
+            </ul>
+          </div>
+        </div>
       </div>
     </section>
   );

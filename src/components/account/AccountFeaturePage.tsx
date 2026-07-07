@@ -21,11 +21,14 @@ export function AccountFeaturePage({ eyebrow, title, intro, children }: AccountF
         <aside className="grid content-start gap-3 rounded-lg border border-ink/10 bg-white p-5 shadow-sm">
           <p className="font-serif text-2xl font-bold text-ink">Account tools</p>
           <AccountLink href="/account" label="Dashboard" />
-          <AccountLink href="/account/orders" label="My Orders" />
-          <AccountLink href="/account/track" label="Track Orders" />
-          <AccountLink href="/account/addresses" label="Saved Addresses" />
-          <AccountLink href="/account/payment-methods" label="Payment Methods" />
+          <AccountLink href="/account/likes" label="Liked products" />
+          <AccountLink href="/account/orders" label="Orders" />
+          <AccountLink href="/account/track" label="Tracking" />
+          <AccountLink href="/account/addresses" label="Addresses" />
+          <AccountLink href="/account/payment-methods" label="Payments" />
           <AccountLink href="/account/settings" label="Settings" />
+          <AccountLink href="/shipping" label="Shipping" />
+          <AccountLink href="/returns" label="Returns" />
           <AccountLink href="/contact" label="Support" />
         </aside>
       </div>

@@ -66,6 +66,9 @@ export function Footer() {
             <Link href="/returns" className="flex min-h-9 items-center transition hover:text-white">
               Returns
             </Link>
+            <Link href="/shipping" className="flex min-h-9 items-center transition hover:text-white">
+              Shipping
+            </Link>
             <Link href="/sell-your-camera" className="flex min-h-9 items-center transition hover:text-white">
               Sell Your Camera
             </Link>
@@ -74,6 +77,12 @@ export function Footer() {
             </Link>
             <Link href="/about" className="flex min-h-9 items-center transition hover:text-white">
               About Shutterbug
+            </Link>
+            <Link href="/privacy" className="flex min-h-9 items-center transition hover:text-white">
+              Privacy Policy
+            </Link>
+            <Link href="/terms" className="flex min-h-9 items-center transition hover:text-white">
+              Terms
             </Link>
             <Link href="/admin" className="flex min-h-9 items-center text-cream/45 transition hover:text-white">
               Admin

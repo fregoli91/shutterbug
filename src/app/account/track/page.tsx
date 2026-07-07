@@ -39,16 +39,14 @@ export default async function AccountTrackPage() {
                 </div>
                 <p className="font-bold text-forest">{formatCents(order.totalCents, order.currency)}</p>
               </div>
-              <div className="mt-4 rounded-lg bg-cream p-4 text-sm leading-6 text-ink/68">
-                <p>
-                  <span className="font-semibold text-ink">Tracking:</span> {order.trackingNumber || 'Not added yet'}
-                </p>
-                <p>
-                  <span className="font-semibold text-ink">Items:</span>{' '}
-                  {order.items.map((item) => item.productTitle).join(', ')}
-                </p>
+              <div className="mt-4 grid gap-3 rounded-lg bg-cream p-4 text-sm leading-6 text-ink/68">
+                <TrackingSteps paymentStatus={order.paymentStatus} fulfillmentStatus={order.fulfillmentStatus} trackingNumber={order.trackingNumber} />
+                <div>
+                  <p className="font-semibold text-ink">Items</p>
+                  <p>{order.items.map((item) => item.productTitle).join(', ')}</p>
+                </div>
               </div>
-              <Link href={`/account/orders/${order.id}`} className="mt-4 inline-flex text-sm font-semibold text-moss hover:text-ink">
+              <Link href={`/account/orders/${order.id}`} className="mt-4 inline-flex min-h-11 items-center rounded-full bg-forest px-5 text-sm font-semibold text-white transition hover:bg-moss">
                 View order details
               </Link>
             </article>
@@ -66,5 +64,44 @@ export default async function AccountTrackPage() {
         </div>
       )}
     </AccountFeaturePage>
+  );
+}
+
+function TrackingSteps({
+  paymentStatus,
+  fulfillmentStatus,
+  trackingNumber
+}: {
+  paymentStatus: string;
+  fulfillmentStatus: string;
+  trackingNumber: string | null;
+}) {
+  const paid = paymentStatus === 'PAID';
+  const shipped = fulfillmentStatus === 'SHIPPED';
+  const fulfilled = fulfillmentStatus === 'FULFILLED';
+  const canceled = fulfillmentStatus === 'CANCELED';
+  const steps = [
+    { label: 'Payment confirmed', complete: paid },
+    { label: 'Preparing camera', complete: paid && !canceled },
+    { label: 'Tracking added', complete: Boolean(trackingNumber) || shipped || fulfilled },
+    { label: 'Shipped', complete: shipped || fulfilled }
+  ];
+
+  return (
+    <div>
+      <div className="grid gap-2 sm:grid-cols-4">
+        {steps.map((step) => (
+          <div
+            key={step.label}
+            className={step.complete ? 'rounded-lg bg-mint p-3 font-semibold text-forest' : 'rounded-lg bg-white p-3 text-ink/58'}
+          >
+            {step.label}
+          </div>
+        ))}
+      </div>
+      <p className="mt-3">
+        <span className="font-semibold text-ink">Tracking:</span> {trackingNumber || 'Not added yet'}
+      </p>
+    </div>
   );
 }

@@ -53,7 +53,8 @@ export async function Header() {
           { href: '/login', label: 'Login' },
           { href: '/signup', label: 'Sign Up' }
         ]),
-    { href: '/returns', label: 'Returns' }
+    { href: '/returns', label: 'Returns' },
+    { href: '/shipping', label: 'Shipping' }
   ];
 
   return (
@@ -70,6 +71,9 @@ export async function Header() {
             </Link>
             <Link href="/returns" className="transition hover:text-ink">
               Returns
+            </Link>
+            <Link href="/shipping" className="transition hover:text-ink">
+              Shipping
             </Link>
             <Link href="/contact" className="font-semibold text-moss transition hover:text-forest">
               Customer Service

@@ -5,7 +5,18 @@ import { products } from '@/lib/products';
 
 export default function sitemap(): MetadataRoute.Sitemap {
   const now = new Date();
-  const staticRoutes = ['', '/shop', '/sell-your-camera', '/about', '/testing-process', '/returns', '/contact'].map((path) => ({
+  const staticRoutes = [
+    '',
+    '/shop',
+    '/sell-your-camera',
+    '/about',
+    '/testing-process',
+    '/returns',
+    '/shipping',
+    '/contact',
+    '/privacy',
+    '/terms'
+  ].map((path) => ({
     url: `${site.domain}${path}`,
     lastModified: now
   }));

@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import { AccountFeaturePage } from '@/components/account/AccountFeaturePage';
 import { ProductLikeButton } from '@/components/ProductLikeButton';
 import { getCustomerLikedProducts, getLikedProductHeroImage } from '@/lib/customer-likes';
 import { requireCustomer } from '@/lib/customer-auth';
@@ -13,23 +14,13 @@ export default async function AccountLikesPage() {
   const likes = await getCustomerLikedProducts(customer.id);
 
   return (
-    <section className="px-4 py-12 sm:px-6 lg:px-8">
-      <div className="mx-auto max-w-6xl">
-        <div className="flex flex-col justify-between gap-4 sm:flex-row sm:items-end">
-          <div>
-            <p className="text-sm font-bold uppercase tracking-[0.22em] text-moss">Customer account</p>
-            <h1 className="mt-3 font-serif text-5xl font-bold text-ink">Liked products</h1>
-            <p className="mt-4 max-w-2xl leading-7 text-ink/68">
-              Save cameras for later, compare options, and come back to product details when you are ready.
-            </p>
-          </div>
-          <Link href="/account" className="font-semibold text-moss hover:text-ink">
-            Account overview
-          </Link>
-        </div>
-
-        {likes.length ? (
-          <div className="mt-8 grid gap-4">
+    <AccountFeaturePage
+      eyebrow="Customer account"
+      title="Liked products"
+      intro="Save cameras for later, compare options, and come back to product details when you are ready."
+    >
+      {likes.length ? (
+          <div className="grid gap-4">
             {likes.map((like) => {
               const product = like.product;
               const productHref = `/shop/${product.slug}`;
@@ -82,8 +73,8 @@ export default async function AccountLikesPage() {
               );
             })}
           </div>
-        ) : (
-          <div className="mt-8 rounded-lg border border-ink/10 bg-white p-8 text-center shadow-sm">
+      ) : (
+          <div className="rounded-lg border border-ink/10 bg-white p-8 text-center shadow-sm">
             <img
               src="/shutterbug-basic-character.png"
               alt=""
@@ -100,9 +91,8 @@ export default async function AccountLikesPage() {
               Browse cameras
             </Link>
           </div>
-        )}
-      </div>
-    </section>
+      )}
+    </AccountFeaturePage>
   );
 }
 

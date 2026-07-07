@@ -67,6 +67,27 @@ export default async function AccountOrderDetailPage({ params }: Props) {
 
         <div className="grid gap-5 md:grid-cols-2">
           <div className="rounded-lg border border-ink/10 bg-white p-6 shadow-sm">
+            <p className="font-serif text-2xl font-bold text-ink">Order totals</p>
+            <div className="mt-4 grid gap-2 text-sm text-ink/68">
+              <PriceRow label="Subtotal" value={formatCents(order.subtotalCents, order.currency)} />
+              <PriceRow label="Shipping" value={formatCents(order.shippingCents, order.currency)} />
+              <PriceRow label="Tax" value={formatCents(order.taxCents, order.currency)} />
+              <div className="mt-2 border-t border-ink/10 pt-3">
+                <PriceRow label="Total" value={formatCents(order.totalCents, order.currency)} strong />
+              </div>
+            </div>
+          </div>
+
+          <div className="rounded-lg border border-ink/10 bg-white p-6 shadow-sm">
+            <p className="font-serif text-2xl font-bold text-ink">Shipping address</p>
+            <div className="mt-3 grid gap-1 text-sm leading-6 text-ink/68">
+              {formatAddress(order.shippingAddress).map((line) => (
+                <p key={line}>{line}</p>
+              ))}
+            </div>
+          </div>
+
+          <div className="rounded-lg border border-ink/10 bg-white p-6 shadow-sm">
             <p className="font-serif text-2xl font-bold text-ink">Tracking</p>
             <p className="mt-3 text-sm leading-6 text-ink/68">
               {order.trackingNumber || 'Tracking has not been added yet. This page will update when fulfillment details are available.'}
@@ -82,6 +103,20 @@ export default async function AccountOrderDetailPage({ params }: Props) {
             </Link>
           </div>
         </div>
+
+        {order.history.length ? (
+          <div className="rounded-lg border border-ink/10 bg-white p-6 shadow-sm">
+            <p className="font-serif text-2xl font-bold text-ink">Order updates</p>
+            <div className="mt-5 grid gap-3">
+              {order.history.map((event) => (
+                <div key={event.id} className="rounded-lg bg-cream p-4">
+                  <p className="font-semibold text-ink">{event.message}</p>
+                  <p className="mt-1 text-sm text-ink/55">{event.createdAt.toLocaleString('en-US')}</p>
+                </div>
+              ))}
+            </div>
+          </div>
+        ) : null}
       </div>
     </AccountFeaturePage>
   );
@@ -94,4 +129,32 @@ function StatusTile({ label, value }: { label: string; value: string }) {
       <p className="mt-2 font-semibold text-ink">{value}</p>
     </div>
   );
+}
+
+function PriceRow({ label, value, strong = false }: { label: string; value: string; strong?: boolean }) {
+  return (
+    <div className={strong ? 'flex justify-between gap-4 font-bold text-ink' : 'flex justify-between gap-4'}>
+      <span>{label}</span>
+      <span>{value}</span>
+    </div>
+  );
+}
+
+function formatAddress(address: unknown) {
+  if (!address || typeof address !== 'object' || Array.isArray(address)) {
+    return ['Shipping address will appear here after checkout confirmation.'];
+  }
+
+  const value = address as Record<string, unknown>;
+  const lines = [
+    value.name,
+    value.line1,
+    value.line2,
+    [value.city, value.state, value.postal_code].filter(Boolean).join(', '),
+    value.country
+  ]
+    .map((line) => String(line ?? '').trim())
+    .filter(Boolean);
+
+  return lines.length ? lines : ['Shipping address will appear here after checkout confirmation.'];
 }
