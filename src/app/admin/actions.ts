@@ -6,6 +6,7 @@ import {
   CameraFormat,
   CameraType,
   FulfillmentStatus,
+  OrderStatus,
   ProductCondition,
   ProductImageRole,
   ProductStatus
@@ -210,6 +211,7 @@ export async function markOrderShippedAction(formData: FormData) {
   await prisma.order.update({
     where: { id },
     data: {
+      status: OrderStatus.SHIPPED,
       fulfillmentStatus: FulfillmentStatus.SHIPPED,
       trackingNumber,
       history: {

@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
 import Stripe from 'stripe';
-import { PaymentStatus, ProductStatus, type Prisma } from '@/generated/prisma/client';
+import { OrderStatus, PaymentStatus, ProductStatus, type Prisma } from '@/generated/prisma/client';
 import { normalizeEmail } from '@/lib/customer-auth';
 import { requirePrisma } from '@/lib/prisma';
 
@@ -50,6 +50,7 @@ export async function POST(request: Request) {
         where: { id: order.id },
         data: {
           customerId: order.customerId ?? matchedCustomer?.id,
+          status: OrderStatus.PAID,
           paymentStatus: PaymentStatus.PAID,
           customerEmail: email,
           customerName: session.customer_details?.name ?? order.customerName,

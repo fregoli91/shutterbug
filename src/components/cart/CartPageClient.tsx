@@ -14,6 +14,7 @@ function isCartValidationResponse(payload: CartValidationResponse | { error?: st
 function placeholderItem(id: string, quantity: number): CartValidationItem {
   return {
     id,
+    sku: '',
     slug: '',
     title: 'Checking item...',
     image: '/placeholder-camera.svg',
@@ -194,20 +195,29 @@ export function CartPageClient() {
           </div>
         ) : null}
 
-        <button
-          type="button"
-          disabled
-          className="min-h-12 rounded-full bg-forest px-5 py-3 text-sm font-semibold text-white opacity-60"
-        >
-          Checkout coming soon
-        </button>
+        {hasBlockingIssue ? (
+          <button
+            type="button"
+            disabled
+            className="min-h-12 rounded-full bg-forest px-5 py-3 text-sm font-semibold text-white opacity-60"
+          >
+            Checkout unavailable
+          </button>
+        ) : (
+          <Link
+            href="/checkout"
+            className="inline-flex min-h-12 items-center justify-center rounded-full bg-forest px-5 py-3 text-sm font-semibold text-white transition hover:bg-moss"
+          >
+            Continue to checkout
+          </Link>
+        )}
         {hasBlockingIssue ? (
           <p className="text-sm leading-6 text-ink/65">
             Checkout will stay disabled until unavailable or over-quantity items are removed or updated.
           </p>
         ) : (
           <p className="text-sm leading-6 text-ink/65">
-            The cart is ready for the payment step once checkout is enabled.
+            Continue to create a pending order. Payment will be added in a later step.
           </p>
         )}
         <button type="button" onClick={clearCart} className="text-sm font-semibold text-moss">

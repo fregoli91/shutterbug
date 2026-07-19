@@ -1,9 +1,10 @@
-import { notFound } from 'next/navigation';
 import Image from 'next/image';
+import { notFound } from 'next/navigation';
 import { markOrderShippedAction } from '@/app/admin/actions';
 import { AdminShell } from '@/components/admin/AdminShell';
 import { requireAdmin } from '@/lib/admin-auth';
 import { formatCents } from '@/lib/money';
+import { orderStatusClassName, orderStatusLabel } from '@/lib/order-status';
 import { getPrisma } from '@/lib/prisma';
 
 type Props = { params: Promise<{ id: string }> };
@@ -29,26 +30,33 @@ export default async function AdminOrderDetailPage({ params }: Props) {
         <div className="rounded-lg border border-ink/10 bg-white p-5 shadow-sm">
           <p className="text-sm font-bold uppercase tracking-[0.18em] text-moss">Order</p>
           <h2 className="mt-2 font-serif text-3xl font-bold text-ink">{order.orderNumber}</h2>
-          <p className="mt-2 text-sm text-ink/65">
-            {order.paymentStatus} · {order.fulfillmentStatus}
-          </p>
+          <div className="mt-3 flex flex-wrap items-center gap-3">
+            <span className={orderStatusClassName(order.status)}>{orderStatusLabel(order.status)}</span>
+            <p className="text-sm text-ink/65">
+              {order.paymentStatus} | {order.fulfillmentStatus}
+            </p>
+          </div>
 
           <div className="mt-6 grid gap-3">
             {order.items.map((item) => (
               <div key={item.id} className="grid gap-3 rounded-lg bg-cream p-3 sm:grid-cols-[4rem_1fr_auto]">
                 <Image
                   src={item.imageUrl ?? '/placeholder-camera.svg'}
-                  alt=""
+                  alt={item.productTitle}
                   width={64}
                   height={64}
                   sizes="4rem"
-                  unoptimized={(item.imageUrl ?? '/placeholder-camera.svg').endsWith('.svg')}
+                  unoptimized={
+                    (item.imageUrl ?? '/placeholder-camera.svg').endsWith('.svg') ||
+                    (item.imageUrl ?? '').startsWith('http')
+                  }
                   className="aspect-square rounded-lg bg-white object-contain"
                 />
                 <div>
                   <p className="font-semibold text-ink">{item.productTitle}</p>
                   <p className="text-sm text-ink/60">
-                    Qty {item.quantity} · {item.conditionLabel}
+                    {item.productSku ? `${item.productSku} | ` : ''}
+                    Qty {item.quantity} | {item.conditionLabel}
                   </p>
                 </div>
                 <p className="font-bold text-ink">{formatCents(item.totalPriceCents, order.currency)}</p>
@@ -62,6 +70,7 @@ export default async function AdminOrderDetailPage({ params }: Props) {
             <p className="font-serif text-xl font-bold text-ink">Customer</p>
             <p className="mt-3 text-sm text-ink/70">{order.customerName || 'Name pending'}</p>
             <p className="text-sm text-ink/70">{order.customerEmail}</p>
+            {order.customerPhone ? <p className="text-sm text-ink/70">{order.customerPhone}</p> : null}
             <pre className="mt-4 whitespace-pre-wrap rounded-lg bg-cream p-3 text-xs text-ink/70">
               {order.shippingAddress ? JSON.stringify(order.shippingAddress, null, 2) : 'Shipping address pending'}
             </pre>

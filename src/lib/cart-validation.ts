@@ -1,4 +1,11 @@
+import {
+  ProductCondition as DbProductCondition,
+  ProductImageRole,
+  ProductStatus as DbProductStatus,
+  type Prisma
+} from '@/generated/prisma/client';
 import { getAvailabilityLabel, getCatalogProducts, isActiveProduct } from '@/lib/products';
+import { requirePrisma } from '@/lib/prisma';
 
 export type CartLineInput = {
   id?: string;
@@ -7,6 +14,7 @@ export type CartLineInput = {
 
 export type CartValidationItem = {
   id: string;
+  sku: string;
   slug: string;
   title: string;
   image: string;
@@ -28,6 +36,13 @@ export type CartValidationResponse = {
   warnings: string[];
 };
 
+type NormalizedCartLine = {
+  id: string;
+  quantity: number;
+};
+
+type DatabaseCartProduct = Prisma.ProductGetPayload<{ include: { images: true } }>;
+
 function normalizeCartLines(items: CartLineInput[]) {
   const lines = new Map<string, number>();
 
@@ -41,9 +56,106 @@ function normalizeCartLines(items: CartLineInput[]) {
   return Array.from(lines, ([id, quantity]) => ({ id, quantity: Math.min(quantity, 99) }));
 }
 
-export async function validateCartLines(items: CartLineInput[]): Promise<CartValidationResponse> {
+function issueResponse(id: string, quantity: number, issue: string): CartValidationItem {
+  return {
+    id,
+    sku: '',
+    slug: '',
+    title: 'Unavailable item',
+    image: '/placeholder-camera.svg',
+    condition: 'Unavailable',
+    statusLabel: 'Unavailable',
+    requestedQuantity: quantity,
+    validatedQuantity: 0,
+    availableQuantity: 0,
+    unitPriceCents: 0,
+    lineTotalCents: 0,
+    purchasable: false,
+    issue
+  };
+}
+
+function statusLabel(status: DbProductStatus) {
+  if (status === DbProductStatus.ACTIVE) return 'Active';
+  if (status === DbProductStatus.SOLD_OUT) return 'Sold out';
+  if (status === DbProductStatus.ARCHIVED) return 'Archived';
+  return 'Draft';
+}
+
+function conditionLabel(condition: DbProductCondition) {
+  if (condition === DbProductCondition.NEW) return 'New';
+  if (condition === DbProductCondition.OPEN_BOX) return 'Open Box';
+  if (condition === DbProductCondition.USED_EXCELLENT) return 'Used - Excellent';
+  if (condition === DbProductCondition.USED_GOOD) return 'Used - Good';
+  if (condition === DbProductCondition.USED_FAIR) return 'Used - Fair';
+  return 'For Parts';
+}
+
+function imageUrl(product: DatabaseCartProduct) {
+  const sortedImages = [...product.images].sort((a, b) => a.sortOrder - b.sortOrder);
+  const relationHero = sortedImages.find((image) => image.role === ProductImageRole.HERO)?.url ?? sortedImages[0]?.url;
+  return product.mainImageUrl || product.imageUrls[0] || relationHero || '/placeholder-camera.svg';
+}
+
+function validationFromDatabaseProducts(
+  lines: NormalizedCartLine[],
+  products: DatabaseCartProduct[]
+): CartValidationResponse {
+  const productsById = new Map(products.map((product) => [product.id, product]));
+  const items = lines.map(({ id, quantity }) => {
+    const product = productsById.get(id);
+    if (!product) return issueResponse(id, quantity, 'This item is no longer available.');
+
+    const availableQuantity = product.quantity;
+    const purchasable = product.status === DbProductStatus.ACTIVE && availableQuantity > 0;
+    const validatedQuantity = purchasable ? Math.min(quantity, availableQuantity) : 0;
+    const quantityIssue =
+      purchasable && quantity > availableQuantity ? `Only ${availableQuantity} available for this item.` : undefined;
+    const availabilityIssue = !purchasable ? `${product.title} is ${statusLabel(product.status).toLowerCase()}.` : undefined;
+
+    return {
+      id: product.id,
+      sku: product.sku ?? '',
+      slug: product.slug,
+      title: product.title,
+      image: imageUrl(product),
+      condition: conditionLabel(product.condition),
+      statusLabel: statusLabel(product.status),
+      requestedQuantity: quantity,
+      validatedQuantity,
+      availableQuantity,
+      unitPriceCents: product.priceCents,
+      lineTotalCents: product.priceCents * validatedQuantity,
+      purchasable,
+      issue: availabilityIssue ?? quantityIssue
+    };
+  });
+
+  const warnings = items.map((item) => item.issue).filter(Boolean) as string[];
+
+  return {
+    items,
+    subtotalCents: items.reduce((sum, item) => sum + item.lineTotalCents, 0),
+    hasBlockingIssue: warnings.length > 0,
+    warnings
+  };
+}
+
+export async function validateCartLines(
+  items: CartLineInput[],
+  options: { requireDatabase?: boolean } = {}
+): Promise<CartValidationResponse> {
   const lines = normalizeCartLines(items);
   if (!lines.length) return { items: [], subtotalCents: 0, hasBlockingIssue: false, warnings: [] };
+
+  if (options.requireDatabase) {
+    const prisma = requirePrisma();
+    const products = await prisma.product.findMany({
+      where: { id: { in: lines.map((line) => line.id) } },
+      include: { images: true }
+    });
+    return validationFromDatabaseProducts(lines, products);
+  }
 
   const catalog = await getCatalogProducts();
   const productsById = new Map(catalog.map((product) => [product.id, product]));
@@ -52,21 +164,7 @@ export async function validateCartLines(items: CartLineInput[]): Promise<CartVal
     const product = productsById.get(id);
 
     if (!product) {
-      return {
-        id,
-        slug: '',
-        title: 'Unavailable item',
-        image: '/placeholder-camera.svg',
-        condition: 'Unavailable',
-        statusLabel: 'Unavailable',
-        requestedQuantity: quantity,
-        validatedQuantity: 0,
-        availableQuantity: 0,
-        unitPriceCents: 0,
-        lineTotalCents: 0,
-        purchasable: false,
-        issue: 'This item is no longer available.'
-      };
+      return issueResponse(id, quantity, 'This item is no longer available.');
     }
 
     const availableQuantity = product.quantity ?? 1;
@@ -79,6 +177,7 @@ export async function validateCartLines(items: CartLineInput[]): Promise<CartVal
 
     return {
       id: product.id,
+      sku: product.sku,
       slug: product.slug,
       title: product.title,
       image: product.heroImage,

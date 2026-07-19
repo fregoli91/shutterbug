@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
 import Stripe from 'stripe';
-import { PaymentProvider, PaymentStatus, ProductStatus } from '@/generated/prisma/client';
+import { OrderStatus, PaymentProvider, PaymentStatus, ProductStatus } from '@/generated/prisma/client';
 import { getCustomerSession } from '@/lib/customer-auth';
 import { requirePrisma } from '@/lib/prisma';
 
@@ -73,6 +73,7 @@ export async function POST(request: Request) {
     orderItems.push({
       productId: product.id,
       productSlug: product.slug,
+      productSku: product.sku ?? '',
       productTitle: product.title,
       conditionLabel: product.condition,
       imageUrl: image,
@@ -94,6 +95,7 @@ export async function POST(request: Request) {
       customerEmail: customer?.email ?? 'pending@stripe.checkout',
       customerName: customer?.name,
       provider: PaymentProvider.STRIPE,
+      status: OrderStatus.PENDING_PAYMENT,
       paymentStatus: PaymentStatus.PENDING,
       subtotalCents,
       totalCents: subtotalCents,

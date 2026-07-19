@@ -63,6 +63,16 @@ enum FulfillmentStatus {
   CANCELED
 }
 
+enum OrderStatus {
+  PENDING_PAYMENT
+  PAID
+  PROCESSING
+  SHIPPED
+  DELIVERED
+  CANCELLED
+  REFUNDED
+}
+
 model Product {
   id                String           @id @default(cuid())
   sku               String?          @unique
@@ -199,10 +209,12 @@ model Order {
   customer          Customer?          @relation(fields: [customerId], references: [id], onDelete: SetNull)
   customerEmail     String
   customerName      String?
+  customerPhone     String?
   shippingAddress   Json?
   billingAddress    Json?
   provider          PaymentProvider    @default(STRIPE)
   providerReference String?            @unique
+  status            OrderStatus        @default(PENDING_PAYMENT)
   paymentStatus     PaymentStatus      @default(PENDING)
   fulfillmentStatus FulfillmentStatus  @default(UNFULFILLED)
   currency          String             @default("USD")
@@ -219,6 +231,7 @@ model Order {
 
   @@index([paymentStatus])
   @@index([fulfillmentStatus])
+  @@index([status])
   @@index([customerId])
   @@index([customerEmail])
   @@index([createdAt])
@@ -231,6 +244,7 @@ model OrderItem {
   productId      String?
   product        Product? @relation(fields: [productId], references: [id], onDelete: SetNull)
   productSlug    String
+  productSku     String   @default("")
   productTitle   String
   conditionLabel String
   imageUrl       String?

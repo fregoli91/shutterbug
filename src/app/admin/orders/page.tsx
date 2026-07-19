@@ -2,6 +2,7 @@ import Link from 'next/link';
 import { AdminShell } from '@/components/admin/AdminShell';
 import { requireAdmin } from '@/lib/admin-auth';
 import { formatCents } from '@/lib/money';
+import { orderStatusClassName, orderStatusLabel } from '@/lib/order-status';
 import { getPrisma } from '@/lib/prisma';
 
 export const metadata = {
@@ -35,15 +36,13 @@ export default async function AdminOrdersPage() {
               <p className="font-semibold text-ink">{order.orderNumber}</p>
               <p className="mt-1 text-sm text-ink/60">{order.customerEmail}</p>
             </div>
-            <p className="text-sm font-semibold text-ink/70">
-              {order.paymentStatus} · {order.fulfillmentStatus}
-            </p>
+            <span className={orderStatusClassName(order.status)}>{orderStatusLabel(order.status)}</span>
             <p className="font-bold text-ink">{formatCents(order.totalCents, order.currency)}</p>
           </Link>
         ))}
         {orders.length === 0 ? (
           <div className="rounded-lg border border-ink/10 bg-white p-6 text-sm leading-6 text-ink/70 shadow-sm">
-            No orders yet. Paid Stripe Checkout sessions will appear here after webhook confirmation.
+            No orders yet. Pending checkout orders will appear here after customers complete the review step.
           </div>
         ) : null}
       </div>
