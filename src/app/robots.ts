@@ -3,10 +3,13 @@ import { site } from '@/lib/seo';
 
 export default function robots(): MetadataRoute.Robots {
   return {
-    rules: {
-      userAgent: '*',
-      allow: '/'
-    },
+    rules: [
+      {
+        userAgent: '*',
+        allow: '/',
+        disallow: ['/admin', '/api', '/account', '/cart', '/checkout', '/login', '/signup']
+      }
+    ],
     sitemap: `${site.domain}/sitemap.xml`
   };
 }

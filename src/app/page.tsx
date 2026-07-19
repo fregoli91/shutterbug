@@ -10,14 +10,14 @@ import { site } from '@/lib/seo';
 type CustomerSession = NonNullable<Awaited<ReturnType<typeof getCustomerSession>>>;
 
 const brandLinks = [
-  ['Canon PowerShot', '/categories/canon-powershot-cameras'],
-  ['Olympus Digital', '/categories/olympus-digital-cameras'],
-  ['Nikon Coolpix', '/categories/nikon-coolpix-cameras'],
-  ['Sony Cyber-shot', '/categories/sony-cyber-shot-cameras'],
-  ['Kodak EasyShare', '/categories/kodak-easyshare-cameras'],
-  ['Fujifilm FinePix', '/categories/fujifilm-finepix-cameras'],
-  ['Film Cameras', '/categories/film-cameras'],
-  ['Parts / Repair', '/categories/parts-repair']
+  ['Canon', '/brands/canon'],
+  ['Olympus', '/brands/olympus'],
+  ['Nikon', '/brands/nikon'],
+  ['Sony', '/brands/sony'],
+  ['Kodak', '/brands/kodak'],
+  ['Fujifilm', '/brands/fujifilm'],
+  ['Panasonic', '/brands/panasonic'],
+  ['All brands', '/brands']
 ];
 
 const trustBadges = ['Tested gear', 'Actual photos', 'Condition notes', 'Secure checkout'];
@@ -249,7 +249,7 @@ function LoggedOutHome({
 
       <TrustCards />
 
-      <CategoryPills title="Popular searches" />
+      <CategoryPills title="Popular brands" />
 
       <SignupCallout />
 
@@ -347,7 +347,7 @@ function LoggedInHome({
         likedProductIds={likedProductIds}
       />
 
-      <CategoryPills title="Recommended categories" />
+      <CategoryPills title="Recommended brands" />
 
       <FeaturedProducts
         eyebrow="Featured cameras"
@@ -647,10 +647,10 @@ function TrustCards() {
             ))}
           </div>
           <Link
-            href="/returns"
+            href="/buyer-guarantee"
             className="mt-6 inline-flex min-h-11 items-center justify-center rounded-full bg-forest px-5 text-sm font-semibold text-white transition hover:bg-moss"
           >
-            Returns and support
+            Buyer guarantee
           </Link>
         </div>
       </div>

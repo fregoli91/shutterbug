@@ -46,6 +46,9 @@ export function Footer() {
             <Link href="/shop" className="flex min-h-9 items-center transition hover:text-white">
               All Cameras
             </Link>
+            <Link href="/brands" className="flex min-h-9 items-center transition hover:text-white">
+              Camera Brands
+            </Link>
             {categories.slice(0, 5).map((category) => (
               <Link
                 key={category.slug}
@@ -63,6 +66,9 @@ export function Footer() {
             <Link href="/testing-process" className="flex min-h-9 items-center transition hover:text-white">
               Testing Process
             </Link>
+            <Link href="/buyer-guarantee" className="flex min-h-9 items-center transition hover:text-white">
+              Buyer Guarantee
+            </Link>
             <Link href="/returns" className="flex min-h-9 items-center transition hover:text-white">
               Returns
             </Link>
@@ -71,6 +77,9 @@ export function Footer() {
             </Link>
             <Link href="/sell-your-camera" className="flex min-h-9 items-center transition hover:text-white">
               Sell Your Camera
+            </Link>
+            <Link href="/used-cameras-michigan" className="flex min-h-9 items-center transition hover:text-white">
+              Used Cameras Michigan
             </Link>
             <Link href="/contact" className="flex min-h-9 items-center transition hover:text-white">
               Customer Service

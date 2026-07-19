@@ -7,6 +7,7 @@ import { getCustomerSession } from '@/lib/customer-auth';
 
 const primaryNav = [
   { href: '/shop', label: 'Shop Cameras' },
+  { href: '/brands', label: 'Brands' },
   { href: '/categories/vintage-digital-cameras', label: 'Categories' },
   { href: '/sell-your-camera', label: 'Sell Your Camera' },
   { href: '/testing-process', label: 'Testing Process' },
@@ -68,6 +69,9 @@ export async function Header() {
             </Link>
             <Link href="/testing-process" className="transition hover:text-ink">
               How We Test
+            </Link>
+            <Link href="/buyer-guarantee" className="transition hover:text-ink">
+              Buyer Guarantee
             </Link>
             <Link href="/returns" className="transition hover:text-ink">
               Returns
@@ -190,6 +194,9 @@ export async function Header() {
           </Link>
           <Link href="/categories/camera-accessories" className="transition hover:text-moss">
             Accessories
+          </Link>
+          <Link href="/brands" className="transition hover:text-moss">
+            Brands
           </Link>
           <Link href="/testing-process" className="ml-auto text-moss transition hover:text-forest">
             Tested Gear Promise

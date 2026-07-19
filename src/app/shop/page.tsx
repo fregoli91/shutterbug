@@ -15,11 +15,21 @@ import {
 } from '@/lib/products';
 import { getLikedProductIds } from '@/lib/customer-likes';
 import { getCustomerSession } from '@/lib/customer-auth';
+import { site } from '@/lib/seo';
+import { buildBreadcrumbJsonLd, buildCollectionPageJsonLd, jsonLdGraph } from '@/lib/seo-utils';
 
 export const metadata = {
   title: 'Shop Tested Vintage Cameras',
   description:
-    'Shop tested vintage digital cameras, film cameras, lenses, accessories, parts and repair gear, and used camera equipment from Shutterbug Camera Shop.'
+    'Shop tested vintage digital cameras, film cameras, lenses, accessories, parts and repair gear, and used camera equipment from Shutterbug Camera Shop.',
+  alternates: { canonical: '/shop' },
+  openGraph: {
+    title: 'Shop Tested Vintage Cameras | Shutterbug Camera Shop',
+    description:
+      'Search tested vintage digital cameras, film cameras, lenses, accessories, and used camera gear with honest condition notes.',
+    url: `${site.domain}/shop`,
+    type: 'website'
+  }
 };
 
 type SearchParams = Record<string, string | string[] | undefined>;
@@ -316,9 +326,23 @@ export default async function ShopPage({ searchParams }: Props) {
     customer?.id,
     visibleProducts.map((product) => product.id)
   );
+  const structuredData = jsonLdGraph([
+    buildCollectionPageJsonLd({
+      name: query ? `Search results for ${query}` : 'Shop Tested Vintage Cameras',
+      description:
+        'Browse Shutterbug Camera Shop inventory with search, filters, prices, condition notes, and availability.',
+      url: '/shop',
+      products: visibleProducts
+    }),
+    buildBreadcrumbJsonLd([
+      { name: 'Home', url: '/' },
+      { name: 'Shop', url: '/shop' }
+    ])
+  ]);
 
   return (
     <section className="px-4 py-8 sm:px-6 sm:py-12 lg:px-8">
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }} />
       <div className="mx-auto max-w-7xl">
         <div className="grid gap-6 lg:grid-cols-[1fr_32rem] lg:items-center">
           <div className="max-w-3xl">
@@ -475,9 +499,9 @@ export default async function ShopPage({ searchParams }: Props) {
           </summary>
           <div className="max-h-[72svh] overflow-y-auto border-t border-ink/10 p-4">
             {hasActiveFilters ? (
-              <a href="/shop" className="inline-flex min-h-10 items-center text-sm font-semibold text-forest hover:text-moss">
+              <Link href="/shop" className="inline-flex min-h-10 items-center text-sm font-semibold text-forest hover:text-moss">
                 Clear all filters
-              </a>
+              </Link>
             ) : null}
             <FilterForm
               query={query}
@@ -507,9 +531,9 @@ export default async function ShopPage({ searchParams }: Props) {
               <div className="flex items-center justify-between gap-3">
                 <p className="text-sm font-bold uppercase tracking-[0.18em] text-moss">Filters</p>
                 {hasActiveFilters ? (
-                  <a href="/shop" className="text-sm font-semibold text-forest hover:text-moss">
+                  <Link href="/shop" className="text-sm font-semibold text-forest hover:text-moss">
                     Clear
-                  </a>
+                  </Link>
                 ) : null}
               </div>
               <FilterForm

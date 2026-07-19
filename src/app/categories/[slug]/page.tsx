@@ -5,6 +5,8 @@ import { categories, getCategory, getRelatedCategories } from '@/lib/categories'
 import { getLikedProductIds } from '@/lib/customer-likes';
 import { getCustomerSession } from '@/lib/customer-auth';
 import { getProductsByCategoryAsync } from '@/lib/products';
+import { site } from '@/lib/seo';
+import { buildBreadcrumbJsonLd, buildCollectionPageJsonLd, jsonLdGraph } from '@/lib/seo-utils';
 
 type Props = { params: Promise<{ slug: string }> };
 
@@ -18,7 +20,14 @@ export async function generateMetadata({ params }: Props) {
   if (!category) return {};
   return {
     title: category.seoTitle,
-    description: category.description
+    description: category.description,
+    alternates: { canonical: `/categories/${category.slug}` },
+    openGraph: {
+      title: `${category.seoTitle} | Shutterbug Camera Shop`,
+      description: category.description,
+      url: `${site.domain}/categories/${category.slug}`,
+      type: 'website'
+    }
   };
 }
 
@@ -34,9 +43,23 @@ export default async function CategoryPage({ params }: Props) {
   );
   const relatedCategories = getRelatedCategories(category.slug);
   const categoryHeroImage = category.slug === 'parts-repair' ? '/shutterbug-parts-repair.png' : null;
+  const structuredData = jsonLdGraph([
+    buildCollectionPageJsonLd({
+      name: category.seoTitle,
+      description: category.description,
+      url: `/categories/${category.slug}`,
+      products: categoryProducts
+    }),
+    buildBreadcrumbJsonLd([
+      { name: 'Home', url: '/' },
+      { name: 'Shop', url: '/shop' },
+      { name: category.name, url: `/categories/${category.slug}` }
+    ])
+  ]);
 
   return (
     <section className="px-4 py-14 sm:px-6 lg:px-8">
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }} />
       <div className="mx-auto max-w-7xl">
         <div className="grid gap-8 lg:grid-cols-[1fr_22rem] lg:items-end">
           <div className="max-w-3xl">

@@ -4,6 +4,7 @@ import { Header } from '@/components/Header';
 import { Footer } from '@/components/Footer';
 import { CartProvider } from '@/components/cart/CartProvider';
 import { site } from '@/lib/seo';
+import { buildOrganizationJsonLd, buildWebSiteJsonLd, jsonLdGraph } from '@/lib/seo-utils';
 
 export const metadata: Metadata = {
   metadataBase: new URL(site.domain),
@@ -59,9 +60,12 @@ export const viewport: Viewport = {
 };
 
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
+  const structuredData = jsonLdGraph([buildOrganizationJsonLd(), buildWebSiteJsonLd()]);
+
   return (
     <html lang="en">
       <body className="min-h-screen bg-cream text-ink">
+        <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }} />
         <CartProvider>
           <Header />
           <main>{children}</main>

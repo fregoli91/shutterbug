@@ -1,15 +1,20 @@
 import type { MetadataRoute } from 'next';
 import { site } from '@/lib/seo';
 import { categories } from '@/lib/categories';
-import { products } from '@/lib/products';
+import { getBrandPages } from '@/lib/brands';
+import { getCatalogProducts } from '@/lib/products';
 
-export default function sitemap(): MetadataRoute.Sitemap {
+export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const now = new Date();
+  const [catalog, brands] = await Promise.all([getCatalogProducts(), getBrandPages()]);
   const staticRoutes = [
     '',
     '/shop',
+    '/brands',
     '/sell-your-camera',
     '/about',
+    '/buyer-guarantee',
+    '/used-cameras-michigan',
     '/testing-process',
     '/returns',
     '/shipping',
@@ -26,10 +31,15 @@ export default function sitemap(): MetadataRoute.Sitemap {
     lastModified: now
   }));
 
-  const productRoutes = products.map((product) => ({
+  const brandRoutes = brands.map((brand) => ({
+    url: `${site.domain}/brands/${brand.slug}`,
+    lastModified: now
+  }));
+
+  const productRoutes = catalog.map((product) => ({
     url: `${site.domain}/shop/${product.slug}`,
     lastModified: now
   }));
 
-  return [...staticRoutes, ...categoryRoutes, ...productRoutes];
+  return [...staticRoutes, ...categoryRoutes, ...brandRoutes, ...productRoutes];
 }

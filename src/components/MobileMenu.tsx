@@ -63,7 +63,7 @@ export function MobileMenu({
         {signedIn ? (
           <>
             <img
-              src="/shutterbug-app-icon.png"
+              src="/shutterbug-account-badge.png"
               alt=""
               className="h-8 w-8 rounded-full object-cover sm:h-9 sm:w-9"
               aria-hidden="true"

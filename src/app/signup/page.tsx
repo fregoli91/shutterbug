@@ -82,7 +82,7 @@ export default async function SignupPage({ searchParams }: Props) {
         <div className="rounded-lg border border-ink/10 bg-white p-6 shadow-sm sm:p-8">
           <div className="text-center lg:text-left">
             <div className="flex items-center justify-center gap-3 lg:justify-start">
-              <img src="/shutterbug-app-icon.png" alt="" className="h-14 w-14 rounded-full object-cover shadow-sm" />
+              <img src="/shutterbug-account-badge.png" alt="" className="h-14 w-14 rounded-full object-cover shadow-sm" />
               <div>
                 <p className="text-sm font-bold uppercase tracking-[0.22em] text-moss">Customer account</p>
                 <p className="mt-1 font-serif text-2xl font-bold text-ink">Create your account</p>

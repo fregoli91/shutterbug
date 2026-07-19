@@ -1,4 +1,4 @@
-import { notFound } from 'next/navigation';
+import { notFound, permanentRedirect } from 'next/navigation';
 import Link from 'next/link';
 import { AddToCartButton } from '@/components/cart/AddToCartButton';
 import { ProductLikeButton } from '@/components/ProductLikeButton';
@@ -15,6 +15,8 @@ import { getCategory } from '@/lib/categories';
 import { getLikedProductIds } from '@/lib/customer-likes';
 import { getCustomerSession } from '@/lib/customer-auth';
 import { site } from '@/lib/seo';
+import { getBrandSlug } from '@/lib/brands';
+import { buildBreadcrumbJsonLd, buildProductJsonLd, jsonLdGraph } from '@/lib/seo-utils';
 
 type Props = { params: Promise<{ slug: string }> };
 
@@ -34,7 +36,8 @@ export async function generateMetadata({ params }: Props) {
       title: product.title,
       description: product.seoDescription,
       url: `${site.domain}/shop/${product.slug}`,
-      type: 'website'
+      type: 'website',
+      images: [product.heroImage]
     }
   };
 }
@@ -42,7 +45,11 @@ export async function generateMetadata({ params }: Props) {
 export default async function ProductPage({ params }: Props) {
   const { slug } = await params;
   const product = await getProductBySlug(slug);
-  if (!product) notFound();
+  if (!product) {
+    const category = getCategory(slug);
+    if (category) permanentRedirect(`/categories/${category.slug}`);
+    notFound();
+  }
   const category = getCategory(product.categorySlug);
   const similarProducts = await getSimilarProductsAsync(product);
   const customer = await getCustomerSession();
@@ -64,33 +71,21 @@ export default async function ProductPage({ params }: Props) {
     quantity: 1,
     maxQuantity: product.quantity ?? 1
   };
-  const availability = product.status === 'in-stock' ? 'https://schema.org/InStock' : 'https://schema.org/OutOfStock';
-  const schema = {
-    '@context': 'https://schema.org',
-    '@type': 'Product',
-    name: product.title,
-    brand: { '@type': 'Brand', name: product.brand },
-    model: product.model,
-    sku: product.sku,
-    description: product.seoDescription,
-    image: [`${site.domain}${product.heroImage}`],
-    category: category?.name,
-    offers: {
-      '@type': 'Offer',
-      price: product.price.toFixed(2),
-      priceCurrency: 'USD',
-      availability,
-      itemCondition:
-        product.condition === 'For Parts' ? 'https://schema.org/DamagedCondition' : 'https://schema.org/UsedCondition',
-      url: `${site.domain}/shop/${product.slug}`,
-      seller: { '@type': 'Organization', name: site.name }
-    }
-  };
+  const structuredData = jsonLdGraph([
+    buildProductJsonLd(product, category),
+    buildBreadcrumbJsonLd([
+      { name: 'Home', url: '/' },
+      { name: 'Shop', url: '/shop' },
+      category ? { name: category.name, url: `/categories/${category.slug}` } : { name: 'Camera Gear', url: '/shop' },
+      { name: product.brand, url: `/brands/${getBrandSlug(product.brand)}` },
+      { name: product.title, url: `/shop/${product.slug}` }
+    ])
+  ]);
 
   return (
     <>
       <section className="px-4 pb-28 pt-6 sm:px-6 sm:py-12 lg:px-8">
-        <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(schema) }} />
+        <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }} />
         <div className="mx-auto grid max-w-7xl gap-8 sm:gap-12 lg:grid-cols-[0.95fr_1.05fr]">
           <div>
             <div className="rounded-lg border border-ink/10 bg-white p-3 shadow-soft sm:p-6">
@@ -119,6 +114,9 @@ export default async function ProductPage({ params }: Props) {
 
           <div>
             <div className="flex flex-wrap gap-2 text-xs font-bold uppercase tracking-[0.18em]">
+              <Link href={`/brands/${getBrandSlug(product.brand)}`} className="rounded-full bg-white px-4 py-2 text-ink/70">
+                {product.brand}
+              </Link>
               <Link href={`/categories/${product.categorySlug}`} className="rounded-full bg-mint px-4 py-2 text-moss">
                 {category?.name ?? 'Camera Gear'}
               </Link>
@@ -181,6 +179,12 @@ export default async function ProductPage({ params }: Props) {
               </div>
 
               <div className="mt-6 grid gap-2 border-t border-ink/10 pt-5 text-sm leading-6 text-ink/68">
+                <p>
+                  <span className="font-semibold text-ink">Brand:</span>{' '}
+                  <Link href={`/brands/${getBrandSlug(product.brand)}`} className="font-semibold text-moss hover:text-ink">
+                    {product.brand}
+                  </Link>
+                </p>
                 <p>
                   <span className="font-semibold text-ink">Functional status:</span> {product.functionalStatus ?? 'Tested'}
                 </p>
@@ -248,7 +252,8 @@ export default async function ProductPage({ params }: Props) {
             items={[
               'Condition and included accessories are listed clearly.',
               'Parts/repair gear is marked before purchase.',
-              'Friendly support is available before and after checkout.'
+              'Friendly support is available before and after checkout.',
+              'Buyer guarantee details are available before you place an order.'
             ]}
           />
         </div>
