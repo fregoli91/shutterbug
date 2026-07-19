@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import Image from 'next/image';
 import { resendVerificationAction } from './actions';
 
 type Props = {
@@ -31,9 +32,12 @@ export default async function CheckEmailPage({ searchParams }: Props) {
   return (
     <section className="px-4 py-12 sm:px-6 lg:px-8">
       <div className="mx-auto max-w-xl rounded-lg border border-ink/10 bg-white p-6 text-center shadow-sm sm:p-8">
-        <img
+        <Image
           src="/shutterbug-accent-wave.png"
           alt=""
+          width={96}
+          height={96}
+          sizes="6rem"
           className="mx-auto h-20 w-20 rounded-full border border-ink/10 bg-sand object-cover object-center shadow-sm sm:h-24 sm:w-24"
         />
         <p className="mt-5 text-sm font-bold uppercase tracking-[0.22em] text-moss">Verify your email</p>

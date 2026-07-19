@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import Image from 'next/image';
 import { ProductLikeButton } from '@/components/ProductLikeButton';
 import { ProductCard } from '@/components/ProductCard';
 import { AddToCartButton } from '@/components/cart/AddToCartButton';
@@ -355,9 +356,12 @@ export default async function ShopPage({ searchParams }: Props) {
           </div>
 
           <div className="grid gap-4">
-            <img
+            <Image
               src="/shutterbug-shop-cameras-page.png"
               alt="Camera display inside Shutterbug Camera Shop"
+              width={1600}
+              height={900}
+              sizes="(min-width: 1024px) 32rem, 100vw"
               className="aspect-[16/9] w-full rounded-lg border border-ink/10 bg-sand object-cover object-center shadow-sm"
             />
 
@@ -725,7 +729,15 @@ function ProductListResult({
     <article className="grid gap-4 rounded-lg border border-ink/10 bg-white p-4 shadow-sm transition hover:border-moss/35 hover:shadow-soft md:grid-cols-[11rem_1fr_12rem]">
       <div className="relative rounded-lg bg-sand p-3">
         <Link href={productHref} className="block">
-        <img src={product.heroImage} alt={product.title} className="aspect-square w-full object-contain" />
+          <Image
+            src={product.heroImage}
+            alt={product.title}
+            width={320}
+            height={320}
+            sizes="11rem"
+            unoptimized={product.heroImage.endsWith('.svg')}
+            className="aspect-square w-full object-contain"
+          />
         </Link>
         <ProductLikeButton
           productId={product.id}

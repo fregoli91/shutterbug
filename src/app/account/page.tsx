@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import Image from 'next/image';
 import { logoutAction } from './actions';
 import { requireCustomer } from '@/lib/customer-auth';
 import { formatCents } from '@/lib/money';
@@ -99,9 +100,12 @@ export default async function AccountPage({ searchParams }: Props) {
               customer dashboard.
             </p>
           </div>
-          <img
+          <Image
             src="/shutterbug-basic-character.png"
             alt=""
+            width={288}
+            height={288}
+            sizes="(min-width: 1024px) 18rem, 100vw"
             className="aspect-square w-full rounded-lg border border-ink/10 bg-sand object-cover object-center shadow-sm"
           />
         </div>

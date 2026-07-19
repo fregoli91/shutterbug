@@ -1,6 +1,7 @@
 'use client';
 
 import Link from 'next/link';
+import Image from 'next/image';
 import { useCart } from './CartProvider';
 
 export function CartLink({ compact = false }: { compact?: boolean }) {
@@ -15,9 +16,12 @@ export function CartLink({ compact = false }: { compact?: boolean }) {
         aria-label={ariaLabel}
         className="relative flex h-11 w-11 shrink-0 items-center justify-center rounded-full border border-ink/15 bg-cream p-0.5 shadow-sm transition hover:border-moss/40 sm:h-12 sm:w-12"
       >
-        <img
+        <Image
           src="/shutterbug-cart-icon.png"
           alt=""
+          width={48}
+          height={48}
+          sizes="3rem"
           className="h-full w-full rounded-full object-cover"
         />
         {count ? (
@@ -36,9 +40,12 @@ export function CartLink({ compact = false }: { compact?: boolean }) {
       className="inline-flex min-h-11 items-center gap-2 rounded-full border border-ink/15 bg-cream px-3 pr-4 text-sm font-semibold text-ink shadow-sm transition hover:border-moss/40"
     >
       <span className="block h-8 w-8 overflow-hidden rounded-full bg-sand">
-        <img
+        <Image
           src="/shutterbug-cart-icon.png"
           alt=""
+          width={32}
+          height={32}
+          sizes="2rem"
           className="h-full w-full object-cover"
         />
       </span>

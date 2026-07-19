@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import Image from 'next/image';
 import type { Metadata } from 'next';
 import { site } from '@/lib/seo';
 import { buildBreadcrumbJsonLd, jsonLdGraph } from '@/lib/seo-utils';
@@ -69,9 +70,12 @@ export default function UsedCamerasMichiganPage() {
               </Link>
             </div>
           </div>
-          <img
+          <Image
             src="/shutterbug-storefront.png"
             alt="Shutterbug Camera Shop storefront with camera gear"
+            width={900}
+            height={675}
+            sizes="(min-width: 1024px) 34rem, 100vw"
             className="aspect-[4/3] w-full rounded-lg border border-ink/10 bg-sand object-cover object-center shadow-sm"
           />
         </div>

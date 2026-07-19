@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import Image from 'next/image';
 import type { Metadata } from 'next';
 import { getBrandPages } from '@/lib/brands';
 import { site } from '@/lib/seo';
@@ -48,9 +49,12 @@ export default async function BrandsPage() {
             </p>
           </div>
           <div className="rounded-lg border border-ink/10 bg-white p-5 shadow-sm">
-            <img
+            <Image
               src="/shutterbug-accent-camera.png"
               alt=""
+              width={640}
+              height={640}
+              sizes="(min-width: 1024px) 24rem, 100vw"
               className="mb-5 aspect-square w-full rounded-lg bg-sand object-cover object-center"
             />
             <p className="font-serif text-2xl font-bold text-ink">Camera-first browsing</p>

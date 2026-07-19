@@ -1,3 +1,5 @@
+import Image from 'next/image';
+
 export const metadata = {
   title: 'Camera Testing Process',
   description:
@@ -39,9 +41,12 @@ export default function TestingProcessPage() {
             </p>
           </div>
           <div className="overflow-hidden rounded-lg border border-ink/10 bg-white shadow-sm">
-            <img
+            <Image
               src="/shutterbug-testing-process-hero.png"
               alt="Shutterbug character carefully testing a vintage camera"
+              width={1600}
+              height={900}
+              sizes="(min-width: 1024px) 28rem, 100vw"
               className="aspect-[16/9] w-full bg-sand object-cover object-center"
             />
             <div className="p-6">
@@ -64,9 +69,12 @@ export default function TestingProcessPage() {
 
         <div className="mt-14 grid gap-8 lg:grid-cols-2">
           <div className="rounded-lg border border-ink/10 bg-white p-8 shadow-sm">
-            <img
+            <Image
               src="/shutterbug-condition-grading.png"
               alt="Shutterbug condition grading display for used cameras"
+              width={1200}
+              height={900}
+              sizes="(min-width: 1024px) 50vw, 100vw"
               className="mb-6 aspect-[4/3] w-full rounded-lg bg-cream object-contain object-center"
             />
             <p className="font-serif text-3xl font-bold text-ink">Condition grading</p>

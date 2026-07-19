@@ -1,4 +1,5 @@
 import { notFound } from 'next/navigation';
+import Image from 'next/image';
 import { markOrderShippedAction } from '@/app/admin/actions';
 import { AdminShell } from '@/components/admin/AdminShell';
 import { requireAdmin } from '@/lib/admin-auth';
@@ -35,7 +36,15 @@ export default async function AdminOrderDetailPage({ params }: Props) {
           <div className="mt-6 grid gap-3">
             {order.items.map((item) => (
               <div key={item.id} className="grid gap-3 rounded-lg bg-cream p-3 sm:grid-cols-[4rem_1fr_auto]">
-                <img src={item.imageUrl ?? '/placeholder-camera.svg'} alt="" className="aspect-square rounded-lg bg-white object-contain" />
+                <Image
+                  src={item.imageUrl ?? '/placeholder-camera.svg'}
+                  alt=""
+                  width={64}
+                  height={64}
+                  sizes="4rem"
+                  unoptimized={(item.imageUrl ?? '/placeholder-camera.svg').endsWith('.svg')}
+                  className="aspect-square rounded-lg bg-white object-contain"
+                />
                 <div>
                   <p className="font-semibold text-ink">{item.productTitle}</p>
                   <p className="text-sm text-ink/60">

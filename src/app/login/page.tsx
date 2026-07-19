@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import Image from 'next/image';
 import { redirect } from 'next/navigation';
 import { loginAction } from './actions';
 import { getAdminSession } from '@/lib/admin-auth';
@@ -44,9 +45,13 @@ export default async function LoginPage({ searchParams }: Props) {
     <section className="bg-cream px-4 py-10 sm:px-6 lg:px-8">
       <div className="mx-auto grid max-w-xl overflow-hidden rounded-lg border border-ink/10 bg-cream shadow-sm lg:max-w-7xl lg:rounded-[1.75rem] lg:shadow-soft lg:min-h-[44rem] lg:grid-cols-[1.04fr_0.96fr]">
         <div className="relative hidden min-h-full overflow-hidden bg-ink lg:block">
-          <img
+          <Image
             src="/shutterbug-login-hero.png"
             alt="Shutterbug camera mascot with vintage camera and film photos"
+            width={960}
+            height={1080}
+            priority
+            sizes="50vw"
             className="h-full w-full object-cover object-center"
           />
         </div>
@@ -54,14 +59,20 @@ export default async function LoginPage({ searchParams }: Props) {
         <div className="flex items-center justify-center bg-cream px-5 py-8 sm:px-10 sm:py-10 lg:px-14">
           <div className="w-full max-w-md text-center lg:text-left">
             <div className="flex items-center justify-center gap-3 lg:justify-start">
-              <img
+              <Image
                 src="/shutterbug-account-badge.png"
                 alt=""
+                width={80}
+                height={80}
+                sizes="5rem"
                 className="h-16 w-16 rounded-full object-cover shadow-sm sm:h-20 sm:w-20"
               />
-              <img
+              <Image
                 src="/shutterbug-header-logo-transparent.png"
                 alt="Shutterbug Camera Shop"
+                width={288}
+                height={80}
+                sizes="16rem"
                 className="h-16 min-w-0 max-w-64 flex-1 object-contain object-center sm:h-20 lg:object-left"
               />
             </div>

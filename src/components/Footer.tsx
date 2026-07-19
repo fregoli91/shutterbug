@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import Image from 'next/image';
 import { categories } from '@/lib/categories';
 import { site } from '@/lib/seo';
 
@@ -8,7 +9,14 @@ export function Footer() {
       <div className="mx-auto grid max-w-7xl gap-8 px-4 py-10 pb-[calc(2.5rem+env(safe-area-inset-bottom))] sm:px-6 sm:py-12 md:grid-cols-4 lg:px-8">
         <div className="md:col-span-2">
           <div className="flex items-center gap-3">
-            <img src="/shutterbug-basic-character.png" alt="" className="h-16 w-16 rounded-full bg-sand object-cover" />
+            <Image
+              src="/shutterbug-basic-character.png"
+              alt=""
+              width={64}
+              height={64}
+              sizes="4rem"
+              className="h-16 w-16 rounded-full bg-sand object-cover"
+            />
             <p className="font-serif text-2xl font-bold">Shutterbug Camera Shop</p>
           </div>
           <p className="mt-3 max-w-xl text-sm leading-6 text-cream/72">

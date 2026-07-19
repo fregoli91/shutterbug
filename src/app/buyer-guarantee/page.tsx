@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import Image from 'next/image';
 import type { Metadata } from 'next';
 import { site } from '@/lib/seo';
 import { buildBreadcrumbJsonLd, jsonLdGraph } from '@/lib/seo-utils';
@@ -81,9 +82,12 @@ export default function BuyerGuaranteePage() {
               </Link>
             </div>
           </div>
-          <img
+          <Image
             src="/shutterbug-trust-banner.png"
             alt="Shutterbug trust promise with secure shopping, tested cameras, honest service, and careful handling"
+            width={1600}
+            height={1000}
+            sizes="(min-width: 1024px) 34rem, 100vw"
             className="aspect-[4/3] w-full rounded-lg border border-ink/10 bg-cream object-contain object-center shadow-sm sm:aspect-[16/9]"
           />
         </div>

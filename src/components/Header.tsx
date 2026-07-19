@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import Image from 'next/image';
 import { AccountMenu } from '@/components/AccountMenu';
 import { categories, featuredCategorySlugs } from '@/lib/categories';
 import { CartLink } from '@/components/cart/CartLink';
@@ -97,9 +98,13 @@ export async function Header() {
 
       <div className="mx-auto flex max-w-7xl items-center gap-1.5 px-2 py-2 sm:gap-2 sm:px-4 sm:py-3 lg:gap-5 lg:px-8">
         <Link href="/" className="flex shrink-0 items-center" aria-label="Shutterbug Camera Shop home">
-          <img
+          <Image
             src="/shutterbug-header-logo-transparent.png"
             alt="Shutterbug Camera Shop"
+            width={288}
+            height={64}
+            priority
+            sizes="(min-width: 1024px) 18rem, (min-width: 640px) 14rem, 9rem"
             className="h-11 w-28 object-contain object-left min-[430px]:h-12 min-[430px]:w-36 sm:h-14 sm:w-56 lg:h-16 lg:w-72"
           />
         </Link>

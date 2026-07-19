@@ -1,10 +1,11 @@
 import Link from 'next/link';
+import Image from 'next/image';
 import { ProductCard } from '@/components/ProductCard';
 import { SectionHeading } from '@/components/SectionHeading';
 import { categories, featuredCategorySlugs, type Category } from '@/lib/categories';
 import { getLikedProductIds } from '@/lib/customer-likes';
 import { getCustomerSession } from '@/lib/customer-auth';
-import { formatPrice, getAvailabilityLabel, getCatalogProducts, type Product } from '@/lib/products';
+import { formatPrice, getCatalogProducts, type Product } from '@/lib/products';
 import { site } from '@/lib/seo';
 
 type CustomerSession = NonNullable<Awaited<ReturnType<typeof getCustomerSession>>>;
@@ -115,9 +116,13 @@ function LoggedOutHome({
             href="/shop?sort=featured"
             className="block overflow-hidden rounded-lg border border-ink/10 bg-white shadow-soft transition hover:border-moss/30"
           >
-            <img
+            <Image
               src="/shutterbug-summer-sale-banner.png"
               alt="Shutterbug Camera Shop summer sale on tested vintage digital and film cameras"
+              width={2400}
+              height={720}
+              priority
+              sizes="100vw"
               className="w-full bg-sand object-contain"
             />
           </Link>
@@ -169,9 +174,12 @@ function LoggedOutHome({
             href="/shop?sort=newest"
             className="group relative block min-h-72 overflow-hidden rounded-lg border border-ink/10 bg-sand shadow-sm"
           >
-            <img
+            <Image
               src="/shutterbug-shelf-cameras-display.png"
               alt="Shutterbug shelf display of cameras, lenses, bags, and accessories"
+              width={1600}
+              height={1000}
+              sizes="(min-width: 1024px) 58vw, 100vw"
               className="h-full w-full object-cover object-center transition duration-500 group-hover:scale-[1.02]"
             />
             <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-ink/85 via-ink/35 to-transparent p-5 text-white">
@@ -196,9 +204,13 @@ function LoggedOutHome({
                 href={`/shop/${product.slug}`}
                 className="grid grid-cols-[4.5rem_1fr] gap-3 rounded-lg border border-ink/10 bg-white p-3 shadow-sm transition hover:border-moss/35"
               >
-                <img
+                <Image
                   src={product.heroImage}
                   alt={product.title}
+                  width={320}
+                  height={320}
+                  sizes="4.5rem"
+                  unoptimized={product.heroImage.endsWith('.svg')}
                   className="aspect-square w-full rounded-md bg-cream object-cover object-center"
                 />
                 <div className="min-w-0">
@@ -232,9 +244,12 @@ function LoggedOutHome({
                 href={card.href}
                 className="group overflow-hidden rounded-lg border border-ink/10 bg-white shadow-sm transition hover:-translate-y-1 hover:border-moss/30 hover:shadow-soft"
               >
-                <img
+                <Image
                   src={card.image}
                   alt=""
+                  width={900}
+                  height={675}
+                  sizes="(min-width: 1024px) 20vw, (min-width: 640px) 50vw, 100vw"
                   className="aspect-[4/3] w-full bg-sand object-cover object-center transition duration-500 group-hover:scale-[1.03]"
                 />
                 <div className="p-4">
@@ -313,9 +328,12 @@ function LoggedInHome({
 
           <div className="rounded-lg border border-ink/10 bg-white p-5 shadow-sm">
             <div className="flex items-center gap-4">
-              <img
+              <Image
                 src="/shutterbug-basic-character.png"
                 alt=""
+                width={80}
+                height={80}
+                sizes="5rem"
                 className="h-20 w-20 rounded-full border border-ink/10 bg-sand object-cover object-center"
               />
               <div>
@@ -360,9 +378,12 @@ function LoggedInHome({
 
       <section className="bg-cream px-4 py-16 sm:px-6 lg:px-8">
         <div className="mx-auto grid max-w-7xl gap-6 rounded-lg border border-ink/10 bg-white p-6 shadow-sm lg:grid-cols-[12rem_1fr_auto] lg:items-center lg:p-8">
-          <img
+          <Image
             src="/shutterbug-trade-in.png"
             alt="Shutterbug trade-in counter"
+            width={352}
+            height={352}
+            sizes="11rem"
             className="aspect-square w-full max-w-44 rounded-lg bg-sand object-cover object-center"
           />
           <div>
@@ -387,62 +408,16 @@ function LoggedInHome({
   );
 }
 
-function CameraShelf({ products }: { products: Product[] }) {
-  return (
-    <div className="rounded-lg border border-ink/10 bg-white p-4 shadow-soft sm:p-5">
-      <img
-        src="/shutterbug-home-hero.png"
-        alt="Shutterbug Camera Shop mascot with vintage digital and film cameras"
-        className="aspect-[4/3] w-full rounded-lg bg-sand object-cover object-center"
-      />
-      <div>
-        <p className="mt-5 text-sm font-bold uppercase tracking-[0.2em] text-moss">Camera shelf</p>
-        <h2 className="mt-2 font-serif text-3xl font-bold text-ink">Fresh finds, ready to browse.</h2>
-      </div>
-
-      <div className="mt-5 grid gap-3">
-        {products.map((product) => (
-          <Link
-            key={product.id}
-            href={`/shop/${product.slug}`}
-            className="grid grid-cols-[5.25rem_1fr] gap-3 rounded-lg border border-ink/10 bg-cream p-3 transition hover:border-moss/35 hover:bg-white"
-          >
-            <img
-              src={product.heroImage}
-              alt={product.title}
-              className="aspect-square w-full rounded-md bg-white object-cover object-center"
-            />
-            <div className="min-w-0 py-0.5">
-              <div className="flex flex-wrap items-center gap-2">
-                <p className="text-xs font-bold uppercase tracking-[0.14em] text-moss">{product.brand}</p>
-                <span className="rounded-full bg-sage px-2 py-0.5 text-[11px] font-bold uppercase tracking-[0.12em] text-forest">
-                  {getAvailabilityLabel(product.status)}
-                </span>
-              </div>
-              <p className="mt-2 line-clamp-2 text-sm font-semibold leading-5 text-ink">{product.title}</p>
-              <p className="mt-2 text-sm font-bold text-forest">{formatPrice(product.price)}</p>
-            </div>
-          </Link>
-        ))}
-      </div>
-
-      <Link
-        href="/shop"
-        className="mt-4 inline-flex min-h-11 w-full items-center justify-center rounded-full bg-forest px-5 text-sm font-semibold text-white transition hover:bg-moss"
-      >
-        Browse all cameras
-      </Link>
-    </div>
-  );
-}
-
 function DirectStoreCallout() {
   return (
     <section className="bg-cream px-4 py-8 sm:px-6 lg:px-8">
       <div className="mx-auto grid max-w-7xl gap-5 rounded-lg border border-ink/10 bg-white p-5 shadow-sm sm:grid-cols-[5rem_1fr] sm:items-center lg:grid-cols-[6rem_1fr_auto] lg:p-6">
-        <img
+        <Image
           src="/shutterbug-accent-wave.png"
           alt=""
+          width={96}
+          height={96}
+          sizes="6rem"
           className="h-20 w-20 rounded-full bg-sand object-cover object-center lg:h-24 lg:w-24"
         />
         <div>
@@ -503,9 +478,12 @@ function CategoryGrid({ featuredCategories }: { featuredCategories: Category[] }
           <SectionHeading eyebrow="Start here" title="Shop by category">
             Find compact digitals, film cameras, accessories, and clearly marked parts/repair gear.
           </SectionHeading>
-          <img
+          <Image
             src="/shutterbug-cameras-general.png"
             alt="Vintage digital and film cameras arranged inside Shutterbug Camera Shop"
+            width={900}
+            height={675}
+            sizes="(min-width: 1024px) 24rem, 100vw"
             className="aspect-[4/3] w-full rounded-lg border border-ink/10 bg-sand object-cover object-center shadow-sm"
           />
         </div>
@@ -563,9 +541,12 @@ function SignupCallout() {
             </Link>
           </div>
         </div>
-        <img
+        <Image
           src="/shutterbug-accent-camera.png"
           alt="Shutterbug mascot holding a camera"
+          width={640}
+          height={640}
+          sizes="(min-width: 1024px) 20rem, 100vw"
           className="aspect-square w-full rounded-lg bg-sand object-cover object-center"
         />
       </div>
@@ -606,9 +587,12 @@ function FeaturedProducts({
           </Link>
         </div>
         {featureImage ? (
-          <img
+          <Image
             src={featureImage}
             alt={featureImageAlt ?? ''}
+            width={1600}
+            height={900}
+            sizes="100vw"
             className="mt-8 aspect-[4/3] w-full rounded-lg border border-ink/10 bg-sand object-cover object-center shadow-sm sm:aspect-[16/7]"
           />
         ) : null}
@@ -631,9 +615,12 @@ function TrustCards() {
   return (
     <section className="bg-cream px-4 py-14 sm:px-6 lg:px-8">
       <div className="mx-auto grid max-w-7xl gap-6 lg:grid-cols-[1.4fr_0.6fr] lg:items-center">
-        <img
+        <Image
           src="/shutterbug-trust-banner.png"
           alt="Shutterbug trust promise with secure shopping, tested cameras, honest service, and careful handling"
+          width={1600}
+          height={1000}
+          sizes="(min-width: 1024px) 58vw, 100vw"
           className="aspect-[4/3] w-full rounded-lg border border-ink/10 bg-cream object-contain object-center shadow-sm sm:aspect-[16/9]"
         />
         <div className="rounded-lg border border-ink/10 bg-white p-6 shadow-sm">

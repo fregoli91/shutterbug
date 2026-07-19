@@ -1,5 +1,6 @@
 import { notFound } from 'next/navigation';
 import Link from 'next/link';
+import Image from 'next/image';
 import { AccountFeaturePage } from '@/components/account/AccountFeaturePage';
 import { formatCents } from '@/lib/money';
 import { requireCustomer } from '@/lib/customer-auth';
@@ -49,7 +50,15 @@ export default async function AccountOrderDetailPage({ params }: Props) {
             {order.items.map((item) => (
               <div key={item.id} className="grid gap-3 rounded-lg bg-cream p-3 sm:grid-cols-[4rem_1fr_auto] sm:items-center">
                 {item.imageUrl ? (
-                  <img src={item.imageUrl} alt="" className="h-16 w-16 rounded-md bg-white object-cover object-center" />
+                  <Image
+                    src={item.imageUrl}
+                    alt=""
+                    width={64}
+                    height={64}
+                    sizes="4rem"
+                    unoptimized={item.imageUrl.endsWith('.svg')}
+                    className="h-16 w-16 rounded-md bg-white object-cover object-center"
+                  />
                 ) : (
                   <div className="h-16 w-16 rounded-md bg-sand" />
                 )}

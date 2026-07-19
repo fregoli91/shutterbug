@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import Image from 'next/image';
 
 export const metadata = {
   title: 'Returns & Warranty',
@@ -24,9 +25,12 @@ export default function ReturnsPage() {
               We want you to love your gear. If something arrives not as described, we will help make it right.
             </p>
           </div>
-          <img
+          <Image
             src="/shutterbug-returns-page.png"
             alt="Easy returns guide for Shutterbug Camera Shop"
+            width={1600}
+            height={1000}
+            sizes="(min-width: 1024px) 34rem, 100vw"
             className="aspect-[16/9] w-full rounded-lg border border-ink/10 bg-cream object-contain object-center shadow-sm"
           />
         </div>

@@ -1,6 +1,7 @@
 'use client';
 
 import Link from 'next/link';
+import Image from 'next/image';
 import { useEffect, useRef, useState } from 'react';
 
 type MobileMenuItem = {
@@ -62,18 +63,24 @@ export function MobileMenu({
         <span className="sr-only">{open ? 'Close menu' : 'Open menu'}</span>
         {signedIn ? (
           <>
-            <img
+            <Image
               src="/shutterbug-account-badge.png"
               alt=""
+              width={36}
+              height={36}
+              sizes="2.25rem"
               className="h-8 w-8 rounded-full object-cover sm:h-9 sm:w-9"
               aria-hidden="true"
             />
             <span className="min-w-0 truncate text-xs font-bold sm:text-sm">{customerLabel ?? 'Account'}</span>
           </>
         ) : (
-          <img
+          <Image
             src="/shutterbug-menu-icon.png"
             alt=""
+            width={48}
+            height={48}
+            sizes="3rem"
             className="h-full w-full rounded-full object-cover"
             aria-hidden="true"
           />
@@ -83,7 +90,14 @@ export function MobileMenu({
       {open ? (
         <div className="absolute right-0 top-14 z-50 w-[min(22rem,calc(100vw-1.5rem))] rounded-lg border border-ink/10 bg-white p-4 shadow-soft">
           <div className="mb-3 flex items-center gap-3 border-b border-ink/10 pb-3">
-            <img src="/shutterbug-basic-character.png" alt="" className="h-12 w-12 rounded-full bg-sand object-cover" />
+            <Image
+              src="/shutterbug-basic-character.png"
+              alt=""
+              width={48}
+              height={48}
+              sizes="3rem"
+              className="h-12 w-12 rounded-full bg-sand object-cover"
+            />
             <div>
               <p className="text-sm font-bold text-ink">{signedIn ? customerLabel ?? 'My Account' : 'Shutterbug'}</p>
               <p className="text-xs text-ink/60">

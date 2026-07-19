@@ -1,5 +1,6 @@
 import { notFound, permanentRedirect } from 'next/navigation';
 import Link from 'next/link';
+import Image from 'next/image';
 import { AddToCartButton } from '@/components/cart/AddToCartButton';
 import { ProductLikeButton } from '@/components/ProductLikeButton';
 import { ProductCard } from '@/components/ProductCard';
@@ -89,9 +90,14 @@ export default async function ProductPage({ params }: Props) {
         <div className="mx-auto grid max-w-7xl gap-8 sm:gap-12 lg:grid-cols-[0.95fr_1.05fr]">
           <div>
             <div className="rounded-lg border border-ink/10 bg-white p-3 shadow-soft sm:p-6">
-              <img
+              <Image
                 src={product.heroImage}
                 alt={product.title}
+                width={900}
+                height={900}
+                priority
+                sizes="(min-width: 1024px) 45vw, 100vw"
+                unoptimized={product.heroImage.endsWith('.svg')}
                 className="mx-auto aspect-square max-h-[430px] w-full object-contain"
               />
             </div>
@@ -101,7 +107,15 @@ export default async function ProductPage({ params }: Props) {
                   key={`${image}-${index}`}
                   className="min-w-20 rounded-lg border border-ink/10 bg-white p-2 shadow-sm"
                 >
-                  <img src={image} alt="" className="aspect-square w-full object-contain" />
+                  <Image
+                    src={image}
+                    alt=""
+                    width={220}
+                    height={220}
+                    sizes="5rem"
+                    unoptimized={image.endsWith('.svg')}
+                    className="aspect-square w-full object-contain"
+                  />
                 </div>
               ))}
             </div>

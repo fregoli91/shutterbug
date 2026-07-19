@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import Image from 'next/image';
 
 export const metadata = {
   title: 'Shipping Policy',
@@ -51,9 +52,12 @@ export default function ShippingPage() {
               </Link>
             </div>
           </div>
-          <img
+          <Image
             src="/shutterbug-checkout.png"
             alt="Shutterbug mascot driving a camera order for checkout and shipping"
+            width={900}
+            height={675}
+            sizes="(min-width: 1024px) 30rem, 100vw"
             className="aspect-[4/3] w-full rounded-lg border border-ink/10 bg-sand object-cover object-center shadow-sm"
           />
         </div>

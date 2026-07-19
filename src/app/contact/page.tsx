@@ -1,3 +1,4 @@
+import Image from 'next/image';
 import { site } from '@/lib/seo';
 
 export const metadata = {
@@ -17,9 +18,12 @@ export default function ContactPage() {
               Reach out about orders, tested functions, included accessories, restock requests, or camera trade-ins.
             </p>
           </div>
-          <img
+          <Image
             src="/shutterbug-customer-service-desk.png"
             alt="Shutterbug customer care desk helping a camera shopper"
+            width={640}
+            height={640}
+            sizes="(min-width: 1024px) 28rem, 100vw"
             className="aspect-square w-full rounded-lg border border-ink/10 bg-sand object-cover object-center shadow-sm"
           />
         </div>

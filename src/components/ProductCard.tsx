@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import Image from 'next/image';
 import { AddToCartButton } from '@/components/cart/AddToCartButton';
 import { ProductLikeButton } from '@/components/ProductLikeButton';
 import { Product, formatPrice, getAvailabilityLabel, isPurchasable } from '@/lib/products';
@@ -30,7 +31,15 @@ export function ProductCard({
     <article className="group flex h-full flex-col overflow-hidden rounded-lg border border-ink/10 bg-white shadow-sm transition hover:-translate-y-1 hover:border-moss/35 hover:shadow-soft">
       <div className="relative aspect-[4/3] bg-sand p-3 sm:p-6">
         <Link href={productHref} className="block h-full w-full">
-          <img src={product.heroImage} alt={product.title} className="h-full w-full object-contain" />
+          <Image
+            src={product.heroImage}
+            alt={product.title}
+            width={600}
+            height={450}
+            sizes="(min-width: 1280px) 25vw, (min-width: 768px) 33vw, 50vw"
+            unoptimized={product.heroImage.endsWith('.svg')}
+            className="h-full w-full object-contain"
+          />
         </Link>
         <span className="absolute left-2 top-2 max-w-[calc(100%-4rem)] truncate rounded-full bg-white px-2.5 py-1 text-[0.65rem] font-bold uppercase tracking-[0.08em] text-forest shadow-sm sm:left-4 sm:top-4 sm:px-3 sm:text-xs sm:tracking-[0.14em]">
           {availabilityLabel}

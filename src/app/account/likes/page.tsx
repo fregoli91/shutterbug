@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import Image from 'next/image';
 import { AccountFeaturePage } from '@/components/account/AccountFeaturePage';
 import { ProductLikeButton } from '@/components/ProductLikeButton';
 import { getCustomerLikedProducts, getLikedProductHeroImage } from '@/lib/customer-likes';
@@ -31,9 +32,13 @@ export default async function AccountLikesPage() {
                   className="grid gap-4 rounded-lg border border-ink/10 bg-white p-4 shadow-sm sm:grid-cols-[8rem_1fr_auto] sm:items-center"
                 >
                   <Link href={productHref} className="block rounded-lg bg-sand p-3">
-                    <img
+                    <Image
                       src={getLikedProductHeroImage(like)}
                       alt={product.title}
+                      width={320}
+                      height={320}
+                      sizes="8rem"
+                      unoptimized={getLikedProductHeroImage(like).endsWith('.svg')}
                       className="aspect-square w-full object-contain"
                     />
                   </Link>
@@ -75,9 +80,12 @@ export default async function AccountLikesPage() {
           </div>
       ) : (
           <div className="rounded-lg border border-ink/10 bg-white p-8 text-center shadow-sm">
-            <img
+            <Image
               src="/shutterbug-basic-character.png"
               alt=""
+              width={96}
+              height={96}
+              sizes="6rem"
               className="mx-auto h-24 w-24 rounded-full border border-ink/10 bg-sand object-cover object-center"
             />
             <p className="mt-5 font-serif text-3xl font-bold text-ink">No liked products yet</p>

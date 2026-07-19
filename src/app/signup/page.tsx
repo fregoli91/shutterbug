@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import Image from 'next/image';
 import { redirect } from 'next/navigation';
 import { signupAction } from './actions';
 import { getAdminSession } from '@/lib/admin-auth';
@@ -48,9 +49,12 @@ export default async function SignupPage({ searchParams }: Props) {
       <div className="mx-auto grid max-w-6xl gap-6 lg:grid-cols-[0.9fr_1.1fr] lg:items-start">
         <aside className="rounded-lg border border-ink/10 bg-white p-6 text-center shadow-sm sm:p-8 lg:sticky lg:top-32 lg:text-left">
           <div className="flex justify-center lg:justify-start">
-            <img
+            <Image
               src="/shutterbug-signup.png"
               alt="Shutterbug welcoming a new customer account"
+              width={112}
+              height={112}
+              sizes="7rem"
               className="h-24 w-24 rounded-full border border-ink/10 bg-sand object-cover object-center shadow-sm sm:h-28 sm:w-28"
             />
           </div>
@@ -82,7 +86,14 @@ export default async function SignupPage({ searchParams }: Props) {
         <div className="rounded-lg border border-ink/10 bg-white p-6 shadow-sm sm:p-8">
           <div className="text-center lg:text-left">
             <div className="flex items-center justify-center gap-3 lg:justify-start">
-              <img src="/shutterbug-account-badge.png" alt="" className="h-14 w-14 rounded-full object-cover shadow-sm" />
+              <Image
+                src="/shutterbug-account-badge.png"
+                alt=""
+                width={56}
+                height={56}
+                sizes="3.5rem"
+                className="h-14 w-14 rounded-full object-cover shadow-sm"
+              />
               <div>
                 <p className="text-sm font-bold uppercase tracking-[0.22em] text-moss">Customer account</p>
                 <p className="mt-1 font-serif text-2xl font-bold text-ink">Create your account</p>

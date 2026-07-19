@@ -1,6 +1,7 @@
 'use client';
 
 import Link from 'next/link';
+import Image from 'next/image';
 import { useState } from 'react';
 import { formatCents } from '@/lib/money';
 import { useCart } from './CartProvider';
@@ -47,7 +48,15 @@ export function CartPageClient() {
       <div className="grid gap-3">
         {items.map((item) => (
           <div key={item.id} className="grid gap-3 rounded-lg border border-ink/10 bg-cream p-4 shadow-sm sm:grid-cols-[6rem_1fr_auto]">
-            <img src={item.image} alt="" className="aspect-square w-24 rounded-lg bg-sand object-contain" />
+            <Image
+              src={item.image}
+              alt=""
+              width={96}
+              height={96}
+              sizes="6rem"
+              unoptimized={item.image.endsWith('.svg')}
+              className="aspect-square w-24 rounded-lg bg-sand object-contain"
+            />
             <div>
               <Link href={`/shop/${item.slug}`} className="font-semibold text-ink hover:text-moss">
                 {item.title}

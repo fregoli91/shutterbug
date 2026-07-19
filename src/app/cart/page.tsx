@@ -1,3 +1,4 @@
+import Image from 'next/image';
 import { CartPageClient } from '@/components/cart/CartPageClient';
 
 export const metadata = {
@@ -16,9 +17,12 @@ export default function CartPage() {
               Secure checkout, real tested inventory, and support from Shutterbug before and after your order.
             </p>
           </div>
-          <img
+          <Image
             src="/shutterbug-checkout.png"
             alt="Shutterbug character heading to checkout with a camera"
+            width={900}
+            height={675}
+            sizes="(min-width: 1024px) 24rem, 100vw"
             className="aspect-[4/3] w-full rounded-lg border border-ink/10 bg-sand object-cover object-center shadow-sm"
           />
         </div>

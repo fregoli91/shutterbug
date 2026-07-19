@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import Image from 'next/image';
 import { AdminShell } from '@/components/admin/AdminShell';
 import { ProductStatus } from '@/generated/prisma/client';
 import { requireAdmin } from '@/lib/admin-auth';
@@ -38,9 +39,13 @@ export default async function AdminProductsPage() {
             href={`/admin/products/${product.id}/edit`}
             className="grid gap-3 rounded-lg border border-ink/10 bg-white p-4 shadow-sm transition hover:border-moss/40 sm:grid-cols-[5rem_1fr_auto]"
           >
-            <img
+            <Image
               src={product.images[0]?.url ?? '/placeholder-camera.svg'}
               alt=""
+              width={80}
+              height={80}
+              sizes="5rem"
+              unoptimized={(product.images[0]?.url ?? '/placeholder-camera.svg').endsWith('.svg')}
               className="aspect-square w-20 rounded-lg bg-sand object-contain"
             />
             <div>

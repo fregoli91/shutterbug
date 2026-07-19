@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import Image from 'next/image';
 
 export const metadata = {
   title: 'Checkout Canceled'
@@ -8,9 +9,12 @@ export default function CheckoutCancelPage() {
   return (
     <section className="px-4 py-12 sm:px-6 lg:px-8">
       <div className="mx-auto grid max-w-4xl overflow-hidden rounded-lg border border-ink/10 bg-white shadow-sm lg:grid-cols-[18rem_1fr]">
-        <img
+        <Image
           src="/shutterbug-checkout.png"
           alt="Shutterbug character waiting with a camera checkout order"
+          width={480}
+          height={640}
+          sizes="(min-width: 1024px) 18rem, 100vw"
           className="h-full min-h-64 w-full bg-sand object-cover object-center"
         />
         <div className="p-8">

@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import Image from 'next/image';
 import { ClearCartOnSuccess } from '@/components/cart/ClearCartOnSuccess';
 import { getCustomerSession } from '@/lib/customer-auth';
 import { formatCents } from '@/lib/money';
@@ -30,9 +31,12 @@ export default async function CheckoutSuccessPage({ searchParams }: Props) {
     <section className="px-4 py-12 sm:px-6 lg:px-8">
       <ClearCartOnSuccess />
       <div className="mx-auto grid max-w-5xl overflow-hidden rounded-lg border border-ink/10 bg-white shadow-sm lg:grid-cols-[20rem_1fr]">
-        <img
+        <Image
           src="/shutterbug-checkout-success.png"
           alt="Shutterbug order complete celebration"
+          width={640}
+          height={768}
+          sizes="(min-width: 1024px) 20rem, 100vw"
           className="h-full min-h-72 w-full bg-sand object-cover object-center"
         />
         <div className="p-8">

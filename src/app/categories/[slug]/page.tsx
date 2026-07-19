@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import Image from 'next/image';
 import { notFound } from 'next/navigation';
 import { ProductCard } from '@/components/ProductCard';
 import { categories, getCategory, getRelatedCategories } from '@/lib/categories';
@@ -69,9 +70,12 @@ export default async function CategoryPage({ params }: Props) {
           </div>
           <div className="rounded-lg border border-ink/10 bg-white p-5 shadow-sm">
             {categoryHeroImage ? (
-              <img
+              <Image
                 src={categoryHeroImage}
                 alt="Shutterbug mascot repairing a vintage camera"
+                width={640}
+                height={640}
+                sizes="(min-width: 1024px) 22rem, 100vw"
                 className="mb-5 aspect-square w-full rounded-lg bg-sand object-cover object-center"
               />
             ) : null}

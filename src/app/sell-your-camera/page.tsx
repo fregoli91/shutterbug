@@ -1,3 +1,5 @@
+import Image from 'next/image';
+
 export const metadata = {
   title: 'Sell Your Camera',
   description:
@@ -46,9 +48,12 @@ export default function SellYourCameraPage() {
           </div>
 
           <div className="grid content-start gap-5">
-            <img
+            <Image
               src="/shutterbug-trade-in.png"
               alt="Shutterbug trade-in counter accepting a vintage camera"
+              width={640}
+              height={640}
+              sizes="(min-width: 1024px) 28rem, 100vw"
               className="aspect-square w-full rounded-lg border border-ink/10 bg-sand object-cover object-center shadow-sm"
             />
 
