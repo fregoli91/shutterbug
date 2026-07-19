@@ -16,16 +16,6 @@ export function ProductCard({
   const availabilityLabel = getAvailabilityLabel(product.status);
   const purchasable = isPurchasable(product);
   const productHref = `/shop/${product.slug}`;
-  const cartItem = {
-    id: product.id,
-    slug: product.slug,
-    title: product.title,
-    image: product.heroImage,
-    condition: product.condition,
-    priceCents: product.priceCents ?? Math.round(product.price * 100),
-    quantity: 1,
-    maxQuantity: product.quantity ?? 1
-  };
 
   return (
     <article className="group flex h-full flex-col overflow-hidden rounded-lg border border-ink/10 bg-white shadow-sm transition hover:-translate-y-1 hover:border-moss/35 hover:shadow-soft">
@@ -107,7 +97,7 @@ export function ProductCard({
           <div className="grid gap-2 sm:grid-cols-2">
             {purchasable ? (
               <AddToCartButton
-                item={cartItem}
+                productId={product.id}
                 className="flex min-h-11 items-center justify-center rounded-full bg-forest px-3 py-2.5 text-center text-sm font-semibold text-white transition hover:bg-moss sm:px-4"
               />
             ) : (

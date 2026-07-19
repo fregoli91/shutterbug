@@ -62,16 +62,6 @@ export default async function ProductPage({ params }: Props) {
   const purchasable = isPurchasable(product);
   const primaryActionLabel = purchasable ? 'Add to cart' : product.status === 'active' ? 'Contact to buy' : 'Ask about restock';
   const primaryActionHref = purchasable ? '/cart' : '/contact';
-  const cartItem = {
-    id: product.id,
-    slug: product.slug,
-    title: product.title,
-    image: product.heroImage,
-    condition: product.condition,
-    priceCents: product.priceCents ?? Math.round(product.price * 100),
-    quantity: 1,
-    maxQuantity: product.quantity ?? 1
-  };
   const structuredData = jsonLdGraph([
     buildProductJsonLd(product, category),
     buildBreadcrumbJsonLd([
@@ -164,7 +154,7 @@ export default async function ProductPage({ params }: Props) {
                   />
                   {purchasable ? (
                     <AddToCartButton
-                      item={cartItem}
+                      productId={product.id}
                       className="inline-flex min-h-12 items-center justify-center rounded-full bg-forest px-8 py-3 text-center font-semibold text-white transition hover:bg-moss"
                     />
                   ) : (
@@ -319,7 +309,7 @@ export default async function ProductPage({ params }: Props) {
           />
           {purchasable ? (
             <AddToCartButton
-              item={cartItem}
+              productId={product.id}
               className="flex min-h-12 items-center justify-center rounded-full bg-forest px-5 py-3 text-center text-sm font-semibold text-white"
             />
           ) : (

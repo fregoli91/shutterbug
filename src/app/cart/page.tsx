@@ -14,7 +14,7 @@ export default function CartPage() {
             <p className="text-sm font-bold uppercase tracking-[0.22em] text-moss">Cart</p>
             <h1 className="mt-3 font-serif text-4xl font-bold text-ink">Review your camera gear</h1>
             <p className="mt-3 max-w-2xl text-sm leading-6 text-ink/65">
-              Secure checkout, real tested inventory, and support from Shutterbug before and after your order.
+              Real tested inventory, current pricing, and quantity checks before the payment step is enabled.
             </p>
           </div>
           <Image

@@ -713,16 +713,6 @@ function ProductListResult({
     ...product.tested,
     ...product.included
   ].filter(Boolean).slice(0, 5);
-  const cartItem = {
-    id: product.id,
-    slug: product.slug,
-    title: product.title,
-    image: product.heroImage,
-    condition: product.condition,
-    priceCents: product.priceCents ?? Math.round(product.price * 100),
-    quantity: 1,
-    maxQuantity: product.quantity ?? 1
-  };
 
   return (
     <article className="grid gap-4 rounded-lg border border-ink/10 bg-white p-4 shadow-sm transition hover:border-moss/35 hover:shadow-soft md:grid-cols-[11rem_1fr_12rem]">
@@ -782,7 +772,7 @@ function ProductListResult({
         <p className="text-sm text-ink/60">Ships from Shutterbug</p>
         {purchasable ? (
           <AddToCartButton
-            item={cartItem}
+            productId={product.id}
             className="inline-flex min-h-11 w-full items-center justify-center rounded-full bg-forest px-5 py-3 text-sm font-semibold text-white transition hover:bg-moss"
           />
         ) : (
