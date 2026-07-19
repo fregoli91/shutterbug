@@ -300,6 +300,35 @@ export const categories: Category[] = [
     keywords: ['film scanner', 'photo printer']
   }),
   category({
+    slug: 'printers',
+    name: 'Printers',
+    description: 'Photo printers, compact printers, printer accessories, and tested imaging devices.',
+    seoTitle: 'Used Photo Printers',
+    keywords: ['photo printer', 'used printer']
+  }),
+  category({
+    slug: 'electronics',
+    name: 'Electronics',
+    description: 'Tested used electronics that fit the Shutterbug camera, media, and creative gear catalog.',
+    seoTitle: 'Used Electronics',
+    keywords: ['used electronics', 'tested electronics']
+  }),
+  category({
+    slug: 'video-games',
+    name: 'Video Games',
+    description: 'Used video game items, handhelds, accessories, and media-related collectibles.',
+    seoTitle: 'Used Video Games',
+    keywords: ['used video games', 'retro video games']
+  }),
+  category({
+    slug: 'trading-cards-collectibles',
+    name: 'Trading Cards & Collectibles',
+    navLabel: 'Collectibles',
+    description: 'Trading cards, collectibles, and carefully described non-camera finds.',
+    seoTitle: 'Trading Cards & Collectibles',
+    keywords: ['trading cards', 'collectibles']
+  }),
+  category({
     slug: 'manuals-paperwork',
     name: 'Manuals & Paperwork',
     navLabel: 'Manuals',

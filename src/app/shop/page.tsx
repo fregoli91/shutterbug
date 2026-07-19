@@ -39,9 +39,8 @@ type Props = {
 };
 
 const availabilityOptions = [
-  { value: 'in-stock', label: 'In stock' },
-  { value: 'coming-soon', label: 'Coming soon' },
-  { value: 'sold-out', label: 'Sold out' }
+  { value: 'active', label: 'Active' },
+  { value: 'sold_out', label: 'Sold out' }
 ];
 
 const categoryLabels = new Map(categories.map((category) => [category.slug, category.name]));
@@ -297,7 +296,7 @@ export default async function ShopPage({ searchParams }: Props) {
   const visibleProducts = [...filteredProducts].sort((a, b) => {
     if (sort === 'newest') return Number(Boolean(b.newArrival)) - Number(Boolean(a.newArrival));
     if (sort === 'stock') {
-      const rank = { 'in-stock': 0, 'coming-soon': 1, 'sold-out': 2 };
+      const rank = { active: 0, sold_out: 1, draft: 2, archived: 3 };
       return rank[a.status] - rank[b.status];
     }
     if (sort === 'price-asc') return a.price - b.price;
@@ -397,7 +396,7 @@ export default async function ShopPage({ searchParams }: Props) {
                   Search results for <span className="font-semibold text-ink">&ldquo;{query}&rdquo;</span>
                 </>
               ) : (
-                'Browse used camera inventory, coming-soon pages, and clearly marked parts/repair gear.'
+                'Browse used camera inventory, sold-out model pages, and clearly marked parts/repair gear.'
               )}
             </p>
           </div>

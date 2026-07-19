@@ -10,7 +10,7 @@ import {
   getProductBySlug,
   getSimilarProductsAsync,
   isPurchasable,
-  products
+  publicProducts
 } from '@/lib/products';
 import { getCategory } from '@/lib/categories';
 import { getLikedProductIds } from '@/lib/customer-likes';
@@ -22,7 +22,7 @@ import { buildBreadcrumbJsonLd, buildProductJsonLd, jsonLdGraph } from '@/lib/se
 type Props = { params: Promise<{ slug: string }> };
 
 export async function generateStaticParams() {
-  return products.map((product) => ({ slug: product.slug }));
+  return publicProducts.map((product) => ({ slug: product.slug }));
 }
 
 export async function generateMetadata({ params }: Props) {
@@ -60,7 +60,7 @@ export default async function ProductPage({ params }: Props) {
   );
   const galleryImages = Array.from(new Set([product.heroImage, ...product.gallery]));
   const purchasable = isPurchasable(product);
-  const primaryActionLabel = purchasable ? 'Add to cart' : product.status === 'in-stock' ? 'Contact to buy' : 'Ask about restock';
+  const primaryActionLabel = purchasable ? 'Add to cart' : product.status === 'active' ? 'Contact to buy' : 'Ask about restock';
   const primaryActionHref = purchasable ? '/cart' : '/contact';
   const cartItem = {
     id: product.id,

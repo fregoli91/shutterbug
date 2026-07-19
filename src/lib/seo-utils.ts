@@ -39,26 +39,23 @@ export function brandSlug(brand: string) {
 
 export function productConditionUrl(product: Product) {
   if (product.condition === 'New') return 'https://schema.org/NewCondition';
-  if (product.condition === 'Refurbished') return 'https://schema.org/RefurbishedCondition';
   if (product.condition === 'For Parts' || product.partsRepair) return 'https://schema.org/DamagedCondition';
   return 'https://schema.org/UsedCondition';
 }
 
 export function productAvailabilityUrl(product: Product) {
-  if (product.status === 'in-stock' && (product.quantity ?? 1) > 0) return 'https://schema.org/InStock';
-  if (product.status === 'coming-soon') return 'https://schema.org/PreOrder';
+  if (product.status === 'active' && (product.quantity ?? 1) > 0) return 'https://schema.org/InStock';
+  if (product.status === 'draft') return 'https://schema.org/PreOrder';
   return 'https://schema.org/OutOfStock';
 }
 
 export function merchantAvailability(product: Product) {
-  if (product.status === 'in-stock' && (product.quantity ?? 1) > 0) return 'in_stock';
-  if (product.status === 'coming-soon') return 'preorder';
+  if (product.status === 'active' && (product.quantity ?? 1) > 0) return 'in_stock';
   return 'out_of_stock';
 }
 
 export function merchantCondition(product: Product) {
   if (product.condition === 'New') return 'new';
-  if (product.condition === 'Refurbished') return 'refurbished';
   return 'used';
 }
 

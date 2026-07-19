@@ -43,6 +43,8 @@ function parseProductForm(formData: FormData) {
   const quantity = Number(field(formData, 'quantity') || '0');
   const heroImage = field(formData, 'heroImage');
   const galleryImages = lines(formData, 'galleryImages');
+  const testedStatus = field(formData, 'testedStatus') || 'Tested';
+  const conditionNotes = field(formData, 'conditionNotes');
   const selectedBrand = field(formData, 'brand');
   const customBrand = field(formData, 'customBrand');
   const brand = selectedBrand === 'Other / Unlisted Brand' && customBrand ? customBrand : selectedBrand;
@@ -67,8 +69,10 @@ function parseProductForm(formData: FormData) {
       cameraType: field(formData, 'cameraType') as CameraType,
       format: field(formData, 'format') as CameraFormat,
       condition: field(formData, 'condition') as ProductCondition,
-      functionalStatus: field(formData, 'functionalStatus') || 'Tested',
-      conditionSummary: field(formData, 'conditionSummary'),
+      functionalStatus: testedStatus,
+      testedStatus,
+      conditionSummary: conditionNotes,
+      conditionNotes,
       priceCents: Math.round(price * 100),
       quantity: Number.isFinite(quantity) ? quantity : 0,
       status: field(formData, 'status') as ProductStatus,
@@ -90,10 +94,12 @@ function parseProductForm(formData: FormData) {
       actualPhotos: bool(formData, 'actualPhotos'),
       samplePhotos: bool(formData, 'samplePhotos'),
       partsRepair,
+      forPartsOrRepair: partsRepair,
       featured: bool(formData, 'featured'),
       newArrival: bool(formData, 'newArrival'),
       badges: lines(formData, 'badges'),
       included: lines(formData, 'included'),
+      doesNotInclude: lines(formData, 'doesNotInclude'),
       tested: lines(formData, 'tested'),
       goodFor: lines(formData, 'goodFor'),
       cosmeticNotes: lines(formData, 'cosmeticNotes'),
@@ -101,7 +107,9 @@ function parseProductForm(formData: FormData) {
       flaws: lines(formData, 'flaws'),
       notes: lines(formData, 'notes'),
       shippingNote: field(formData, 'shippingNote'),
-      returnsNote: field(formData, 'returnsNote')
+      returnsNote: field(formData, 'returnsNote'),
+      mainImageUrl: heroImage,
+      imageUrls: galleryImages
     },
     images: Array.from(new Set([heroImage, ...galleryImages].filter(Boolean))).map((url, index) => ({
       url,
@@ -133,6 +141,8 @@ export async function createProductAction(formData: FormData) {
 
   revalidatePath('/');
   revalidatePath('/shop');
+  revalidatePath('/sitemap.xml');
+  revalidatePath('/google-merchant-feed.xml');
   redirect(`/admin/products/${product.id}/edit?created=1`);
 }
 
@@ -156,7 +166,26 @@ export async function updateProductAction(formData: FormData) {
   revalidatePath('/');
   revalidatePath('/shop');
   revalidatePath(`/shop/${parsed.data.slug}`);
+  revalidatePath('/sitemap.xml');
+  revalidatePath('/google-merchant-feed.xml');
   redirect(`/admin/products/${id}/edit?saved=1`);
+}
+
+export async function archiveProductAction(formData: FormData) {
+  await requireAdmin();
+  const prisma = requirePrisma();
+  const id = field(formData, 'id');
+  const product = await prisma.product.update({
+    where: { id },
+    data: { status: ProductStatus.ARCHIVED }
+  });
+
+  revalidatePath('/');
+  revalidatePath('/shop');
+  revalidatePath(`/shop/${product.slug}`);
+  revalidatePath('/sitemap.xml');
+  revalidatePath('/google-merchant-feed.xml');
+  redirect('/admin/products?archived=1');
 }
 
 export async function deleteProductAction(formData: FormData) {
@@ -167,6 +196,8 @@ export async function deleteProductAction(formData: FormData) {
 
   revalidatePath('/');
   revalidatePath('/shop');
+  revalidatePath('/sitemap.xml');
+  revalidatePath('/google-merchant-feed.xml');
   redirect('/admin/products?deleted=1');
 }
 

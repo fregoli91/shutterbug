@@ -1,5 +1,5 @@
 import { categories, getCategory } from '@/lib/categories';
-import { getCatalogProducts, type Product } from '@/lib/products';
+import { getActiveCatalogProducts, type Product } from '@/lib/products';
 import {
   absoluteUrl,
   googleProductCategory,
@@ -63,8 +63,8 @@ function productItemXml(product: Product) {
 }
 
 export async function GET() {
-  const products = await getCatalogProducts();
-  const feedProducts = products.filter((product) => product.status !== 'coming-soon' && hasMerchantReadyImage(product));
+  const products = await getActiveCatalogProducts();
+  const feedProducts = products.filter(hasMerchantReadyImage);
   const xml = `<?xml version="1.0" encoding="UTF-8"?>
 <rss version="2.0" xmlns:g="http://base.google.com/ns/1.0">
   <channel>

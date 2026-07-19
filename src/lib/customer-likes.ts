@@ -28,7 +28,7 @@ export async function getCustomerLikedProducts(customerId: string) {
   return prisma.customerProductLike.findMany({
     where: {
       customerId,
-      product: { status: { not: ProductStatus.DRAFT } }
+      product: { status: { in: [ProductStatus.ACTIVE, ProductStatus.SOLD_OUT] } }
     },
     include: {
       product: {

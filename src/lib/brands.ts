@@ -1,5 +1,5 @@
 import { POPULAR_CAMERA_BRANDS } from '@/lib/catalog';
-import { getCatalogProducts, products, type Product } from '@/lib/products';
+import { getCatalogProducts, publicProducts, type Product } from '@/lib/products';
 import { brandSlug, titleFromSlug } from '@/lib/seo-utils';
 
 export type BrandPage = {
@@ -90,5 +90,5 @@ export async function getBrandPageBySlug(slug: string) {
 }
 
 export function getStaticBrandParams() {
-  return buildBrandPages(products).map((brand) => ({ slug: brand.slug }));
+  return buildBrandPages(publicProducts).map((brand) => ({ slug: brand.slug }));
 }

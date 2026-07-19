@@ -27,27 +27,28 @@ type Props = {
 const enumLabels = {
   [ProductCondition.NEW]: 'New',
   [ProductCondition.OPEN_BOX]: 'Open Box',
+  [ProductCondition.USED_EXCELLENT]: 'Used - Excellent',
+  [ProductCondition.USED_GOOD]: 'Used - Good',
+  [ProductCondition.USED_FAIR]: 'Used - Fair',
+  [ProductCondition.FOR_PARTS]: 'For Parts',
+  [ProductStatus.DRAFT]: 'Draft',
+  [ProductStatus.ACTIVE]: 'Active',
+  [ProductStatus.SOLD_OUT]: 'Sold out',
+  [ProductStatus.ARCHIVED]: 'Archived',
   [CameraType.VINTAGE_DIGITAL]: 'Vintage Digital',
   [CameraType.FILM_CAMERA]: 'Film Camera',
   [CameraType.ACCESSORY]: 'Accessory',
   [CameraType.PARTS_REPAIR]: 'Parts & Repair',
   [CameraFormat.DIGITAL]: 'Digital',
-  [CameraFormat.FILM]: 'Film',
-  [ProductCondition.MINT]: 'Mint',
-  [ProductCondition.EXCELLENT]: 'Excellent',
-  [ProductCondition.VERY_GOOD]: 'Very Good',
-  [ProductCondition.GOOD]: 'Good',
-  [ProductCondition.FAIR]: 'Fair',
-  [ProductCondition.HEAVILY_USED]: 'Heavily Used',
-  [ProductCondition.FOR_PARTS]: 'For Parts',
-  [ProductCondition.UNTESTED]: 'Untested',
-  [ProductCondition.REFURBISHED]: 'Refurbished',
-  [ProductStatus.IN_STOCK]: 'In stock',
-  [ProductStatus.SOLD_OUT]: 'Sold out',
-  [ProductStatus.COMING_SOON]: 'Coming soon',
-  [ProductStatus.DRAFT]: 'Draft'
+  [CameraFormat.FILM]: 'Film'
 };
 type SelectOption = string | { value: string; label: string };
+
+const cameraFormatOptions: SelectOption[] = [
+  { value: CameraFormat.DIGITAL, label: 'Digital' },
+  { value: CameraFormat.FILM, label: 'Film' },
+  { value: CameraFormat.ACCESSORY, label: 'Accessory' }
+];
 
 function join(values: string[] | undefined) {
   return values?.join('\n') ?? '';
@@ -153,8 +154,8 @@ function Checkbox({ label, name, defaultChecked }: { label: string; name: string
 
 export function ProductForm({ action, product, submitLabel }: Props) {
   const images = [...(product?.images ?? [])].sort((a, b) => a.sortOrder - b.sortOrder);
-  const heroImage = images[0]?.url ?? '';
-  const galleryImages = images.slice(1).map((image) => image.url);
+  const heroImage = product?.mainImageUrl || images[0]?.url || '';
+  const galleryImages = product?.imageUrls?.length ? product.imageUrls : images.slice(1).map((image) => image.url);
   const selectedBrand = product?.brand
     ? CAMERA_BRANDS.includes(product.brand)
       ? product.brand
@@ -206,23 +207,23 @@ export function ProductForm({ action, product, submitLabel }: Props) {
         <Select
           label="Format"
           name="format"
-          options={Object.values(CameraFormat)}
+          options={cameraFormatOptions}
           defaultValue={product?.format ?? CameraFormat.DIGITAL}
         />
         <Select
           label="Condition grade"
           name="condition"
           options={Object.values(ProductCondition)}
-          defaultValue={product?.condition ?? ProductCondition.GOOD}
+          defaultValue={product?.condition ?? ProductCondition.USED_GOOD}
         />
         <Select
-          label="Functional status"
-          name="functionalStatus"
+          label="Tested status"
+          name="testedStatus"
           options={FUNCTIONAL_STATUSES}
-          defaultValue={product?.functionalStatus ?? 'Tested'}
+          defaultValue={product?.testedStatus ?? product?.functionalStatus ?? 'Tested'}
         />
         <Select
-          label="Availability"
+          label="Status"
           name="status"
           options={Object.values(ProductStatus)}
           defaultValue={product?.status ?? ProductStatus.DRAFT}
@@ -249,7 +250,12 @@ export function ProductForm({ action, product, submitLabel }: Props) {
           allowBlank
         />
         <TextArea label="Additional category slugs" name="categorySlugs" defaultValue={join(product?.categorySlugs)} rows={3} />
-        <TextArea label="Condition summary" name="conditionSummary" defaultValue={product?.conditionSummary ?? ''} rows={3} />
+        <TextArea
+          label="Condition notes"
+          name="conditionNotes"
+          defaultValue={product?.conditionNotes || product?.conditionSummary || ''}
+          rows={3}
+        />
       </div>
 
       <div className="grid gap-4 rounded-lg border border-ink/10 bg-white p-5 shadow-sm">
@@ -263,8 +269,8 @@ export function ProductForm({ action, product, submitLabel }: Props) {
 
       <div className="grid gap-4 rounded-lg border border-ink/10 bg-white p-5 shadow-sm md:grid-cols-[1fr_16rem]">
         <div className="grid gap-4">
-          <Field label="Hero image URL" name="heroImage" defaultValue={heroImage} />
-          <TextArea id="galleryImages" label="Gallery image URLs" name="galleryImages" defaultValue={join(galleryImages)} />
+          <Field label="Main image URL" name="heroImage" defaultValue={heroImage} />
+          <TextArea id="galleryImages" label="Additional image URLs" name="galleryImages" defaultValue={join(galleryImages)} />
         </div>
         <div className="grid gap-3 content-start">
           <AdminImageUploader targetId="heroImage" mode="replace" />
@@ -274,6 +280,7 @@ export function ProductForm({ action, product, submitLabel }: Props) {
 
       <div className="grid gap-4 rounded-lg border border-ink/10 bg-white p-5 shadow-sm md:grid-cols-2">
         <TextArea label="Included accessories" name="included" defaultValue={join(product?.included)} />
+        <TextArea label="Does not include" name="doesNotInclude" defaultValue={join(product?.doesNotInclude)} />
         <TextArea label="Testing checklist" name="tested" defaultValue={join(product?.tested)} />
         <TextArea label="Cosmetic condition notes" name="cosmeticNotes" defaultValue={join(product?.cosmeticNotes)} />
         <TextArea label="Functional condition notes" name="functionalNotes" defaultValue={join(product?.functionalNotes)} />
@@ -296,7 +303,7 @@ export function ProductForm({ action, product, submitLabel }: Props) {
         <Checkbox label="Includes original box" name="includesOriginalBox" defaultChecked={product?.includesOriginalBox} />
         <Checkbox label="Actual photos" name="actualPhotos" defaultChecked={product?.actualPhotos} />
         <Checkbox label="Sample photos" name="samplePhotos" defaultChecked={product?.samplePhotos} />
-        <Checkbox label="Parts / repair" name="partsRepair" defaultChecked={product?.partsRepair} />
+        <Checkbox label="Parts / repair" name="partsRepair" defaultChecked={product?.forPartsOrRepair || product?.partsRepair} />
         <Checkbox label="Featured" name="featured" defaultChecked={product?.featured} />
         <Checkbox label="New arrival" name="newArrival" defaultChecked={product?.newArrival} />
       </div>

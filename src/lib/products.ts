@@ -17,19 +17,14 @@ import {
 } from '@/lib/catalog';
 import { getPrisma } from '@/lib/prisma';
 
-export type ProductStatus = 'in-stock' | 'sold-out' | 'coming-soon';
+export type ProductStatus = 'draft' | 'active' | 'sold_out' | 'archived';
 export type ProductCondition =
   | 'New'
   | 'Open Box'
-  | 'Mint'
-  | 'Excellent'
-  | 'Very Good'
-  | 'Good'
-  | 'Fair'
-  | 'Heavily Used'
-  | 'For Parts'
-  | 'Untested'
-  | 'Refurbished';
+  | 'Used - Excellent'
+  | 'Used - Good'
+  | 'Used - Fair'
+  | 'For Parts';
 export type CameraType = 'Vintage Digital' | 'Film Camera' | 'Accessory' | 'Parts & Repair';
 export type CameraFormat = 'Digital' | 'Film' | 'Accessory';
 
@@ -49,7 +44,9 @@ export type Product = {
   format: CameraFormat;
   condition: ProductCondition;
   functionalStatus?: string;
+  testedStatus?: string;
   conditionSummary: string;
+  conditionNotes?: string;
   price: number;
   priceCents?: number;
   quantity?: number;
@@ -78,6 +75,7 @@ export type Product = {
   newArrival?: boolean;
   tested: string[];
   included: string[];
+  doesNotInclude?: string[];
   goodFor: string[];
   cosmeticNotes: string[];
   functionalNotes: string[];
@@ -86,6 +84,8 @@ export type Product = {
   shippingNote: string;
   returnsNote: string;
   checkoutUrl?: string;
+  mainImageUrl?: string;
+  imageUrls?: string[];
 };
 
 type ProductWithImages = Prisma.ProductGetPayload<{ include: { images: true } }>;
@@ -102,10 +102,10 @@ export const products: Product[] = [
     categorySlugs: ['vintage-digital-cameras', 'canon-powershot-cameras'],
     cameraType: 'Vintage Digital',
     format: 'Digital',
-    condition: 'Excellent',
+    condition: 'Used - Excellent',
     conditionSummary: 'Clean body, bright screen, light normal wear.',
     price: 344.99,
-    status: 'in-stock',
+    status: 'active',
     heroImage: '/placeholder-camera.svg',
     gallery: ['/placeholder-camera.svg'],
     shortDescription:
@@ -138,10 +138,10 @@ export const products: Product[] = [
     categorySlugs: ['vintage-digital-cameras', 'olympus-digital-cameras'],
     cameraType: 'Vintage Digital',
     format: 'Digital',
-    condition: 'Good',
+    condition: 'Used - Good',
     conditionSummary: 'Fully tested with light body wear.',
     price: 179.99,
-    status: 'in-stock',
+    status: 'active',
     heroImage: '/placeholder-camera.svg',
     gallery: ['/placeholder-camera.svg'],
     shortDescription:
@@ -174,10 +174,10 @@ export const products: Product[] = [
     categorySlugs: ['vintage-digital-cameras', 'nikon-coolpix-cameras'],
     cameraType: 'Vintage Digital',
     format: 'Digital',
-    condition: 'Good',
+    condition: 'Used - Good',
     conditionSummary: 'Slim pocket camera, final testing pending before sale.',
     price: 149.99,
-    status: 'coming-soon',
+    status: 'archived',
     heroImage: '/placeholder-camera.svg',
     gallery: ['/placeholder-camera.svg'],
     shortDescription:
@@ -210,10 +210,10 @@ export const products: Product[] = [
     categorySlugs: ['vintage-digital-cameras', 'sony-cyber-shot-cameras'],
     cameraType: 'Vintage Digital',
     format: 'Digital',
-    condition: 'Excellent',
+    condition: 'Used - Excellent',
     conditionSummary: 'Sold example page for a high-demand compact model.',
     price: 199.99,
-    status: 'sold-out',
+    status: 'sold_out',
     heroImage: '/placeholder-camera.svg',
     gallery: ['/placeholder-camera.svg'],
     shortDescription:
@@ -242,36 +242,26 @@ export const cameraTypes = Array.from(new Set(products.map((product) => product.
 export const conditions: ProductCondition[] = [
   'New',
   'Open Box',
-  'Mint',
-  'Excellent',
-  'Very Good',
-  'Good',
-  'Fair',
-  'Heavily Used',
-  'For Parts',
-  'Untested',
-  'Refurbished'
+  'Used - Excellent',
+  'Used - Good',
+  'Used - Fair',
+  'For Parts'
 ];
 
 const statusFromDb: Record<DbProductStatus, ProductStatus> = {
-  [DbProductStatus.IN_STOCK]: 'in-stock',
-  [DbProductStatus.SOLD_OUT]: 'sold-out',
-  [DbProductStatus.COMING_SOON]: 'coming-soon',
-  [DbProductStatus.DRAFT]: 'coming-soon'
+  [DbProductStatus.DRAFT]: 'draft',
+  [DbProductStatus.ACTIVE]: 'active',
+  [DbProductStatus.SOLD_OUT]: 'sold_out',
+  [DbProductStatus.ARCHIVED]: 'archived'
 };
 
 const conditionFromDb: Record<DbProductCondition, ProductCondition> = {
   [DbProductCondition.NEW]: 'New',
   [DbProductCondition.OPEN_BOX]: 'Open Box',
-  [DbProductCondition.MINT]: 'Mint',
-  [DbProductCondition.EXCELLENT]: 'Excellent',
-  [DbProductCondition.VERY_GOOD]: 'Very Good',
-  [DbProductCondition.GOOD]: 'Good',
-  [DbProductCondition.FAIR]: 'Fair',
-  [DbProductCondition.HEAVILY_USED]: 'Heavily Used',
-  [DbProductCondition.FOR_PARTS]: 'For Parts',
-  [DbProductCondition.UNTESTED]: 'Untested',
-  [DbProductCondition.REFURBISHED]: 'Refurbished'
+  [DbProductCondition.USED_EXCELLENT]: 'Used - Excellent',
+  [DbProductCondition.USED_GOOD]: 'Used - Good',
+  [DbProductCondition.USED_FAIR]: 'Used - Fair',
+  [DbProductCondition.FOR_PARTS]: 'For Parts'
 };
 
 const cameraTypeFromDb: Record<DbCameraType, CameraType> = {
@@ -288,23 +278,19 @@ const formatFromDb: Record<DbCameraFormat, CameraFormat> = {
 };
 
 export const statusToDb: Record<ProductStatus, DbProductStatus> = {
-  'in-stock': DbProductStatus.IN_STOCK,
-  'sold-out': DbProductStatus.SOLD_OUT,
-  'coming-soon': DbProductStatus.COMING_SOON
+  draft: DbProductStatus.DRAFT,
+  active: DbProductStatus.ACTIVE,
+  sold_out: DbProductStatus.SOLD_OUT,
+  archived: DbProductStatus.ARCHIVED
 };
 
 export const conditionToDb: Record<ProductCondition, DbProductCondition> = {
   New: DbProductCondition.NEW,
   'Open Box': DbProductCondition.OPEN_BOX,
-  Mint: DbProductCondition.MINT,
-  Excellent: DbProductCondition.EXCELLENT,
-  'Very Good': DbProductCondition.VERY_GOOD,
-  Good: DbProductCondition.GOOD,
-  Fair: DbProductCondition.FAIR,
-  'Heavily Used': DbProductCondition.HEAVILY_USED,
-  'For Parts': DbProductCondition.FOR_PARTS,
-  Untested: DbProductCondition.UNTESTED,
-  Refurbished: DbProductCondition.REFURBISHED
+  'Used - Excellent': DbProductCondition.USED_EXCELLENT,
+  'Used - Good': DbProductCondition.USED_GOOD,
+  'Used - Fair': DbProductCondition.USED_FAIR,
+  'For Parts': DbProductCondition.FOR_PARTS
 };
 
 export const cameraTypeToDb: Record<CameraType, DbCameraType> = {
@@ -322,8 +308,10 @@ export const formatToDb: Record<CameraFormat, DbCameraFormat> = {
 
 function dbProductToProduct(product: ProductWithImages): Product {
   const sortedImages = [...product.images].sort((a, b) => a.sortOrder - b.sortOrder);
-  const hero = sortedImages.find((image) => image.role === ProductImageRole.HERO)?.url ?? sortedImages[0]?.url;
-  const gallery = sortedImages.map((image) => image.url);
+  const relationHero = sortedImages.find((image) => image.role === ProductImageRole.HERO)?.url ?? sortedImages[0]?.url;
+  const hero = product.mainImageUrl || relationHero;
+  const gallery = Array.from(new Set([hero, ...product.imageUrls, ...sortedImages.map((image) => image.url)].filter(Boolean)));
+  const publicStatus = product.quantity <= 0 && product.status === DbProductStatus.ACTIVE ? 'sold_out' : statusFromDb[product.status];
 
   return {
     id: product.id,
@@ -340,12 +328,14 @@ function dbProductToProduct(product: ProductWithImages): Product {
     cameraType: cameraTypeFromDb[product.cameraType],
     format: formatFromDb[product.format],
     condition: conditionFromDb[product.condition],
-    functionalStatus: product.functionalStatus || 'Tested',
-    conditionSummary: product.conditionSummary,
+    functionalStatus: product.testedStatus || product.functionalStatus || 'Tested',
+    testedStatus: product.testedStatus || product.functionalStatus || 'Tested',
+    conditionSummary: product.conditionNotes || product.conditionSummary,
+    conditionNotes: product.conditionNotes || product.conditionSummary,
     price: product.priceCents / 100,
     priceCents: product.priceCents,
     quantity: product.quantity,
-    status: product.quantity <= 0 ? 'sold-out' : statusFromDb[product.status],
+    status: publicStatus,
     heroImage: hero ?? '/placeholder-camera.svg',
     gallery: gallery.length ? gallery : ['/placeholder-camera.svg'],
     shortDescription: product.shortDescription || product.description,
@@ -365,11 +355,12 @@ function dbProductToProduct(product: ProductWithImages): Product {
     includesOriginalBox: product.includesOriginalBox,
     actualPhotos: product.actualPhotos,
     samplePhotos: product.samplePhotos,
-    partsRepair: product.partsRepair,
+    partsRepair: product.forPartsOrRepair || product.partsRepair,
     featured: product.featured,
     newArrival: product.newArrival,
     tested: product.tested,
     included: product.included,
+    doesNotInclude: product.doesNotInclude,
     goodFor: product.goodFor,
     cosmeticNotes: product.cosmeticNotes,
     functionalNotes: product.functionalNotes,
@@ -377,9 +368,21 @@ function dbProductToProduct(product: ProductWithImages): Product {
     notes: product.notes,
     shippingNote: product.shippingNote,
     returnsNote: product.returnsNote,
-    checkoutUrl: product.checkoutUrl ?? undefined
+    checkoutUrl: product.checkoutUrl ?? undefined,
+    mainImageUrl: product.mainImageUrl || undefined,
+    imageUrls: product.imageUrls
   };
 }
+
+export function isPublicCatalogStatus(status: ProductStatus) {
+  return status === 'active' || status === 'sold_out';
+}
+
+export function isActiveProduct(product: Product) {
+  return product.status === 'active' && (product.quantity ?? 1) > 0;
+}
+
+export const publicProducts = products.filter((product) => isPublicCatalogStatus(product.status));
 
 async function readDbProducts() {
   const prisma = getPrisma();
@@ -387,7 +390,7 @@ async function readDbProducts() {
 
   try {
     const dbProducts = await prisma.product.findMany({
-      where: { status: { not: DbProductStatus.DRAFT } },
+      where: { status: { in: [DbProductStatus.ACTIVE, DbProductStatus.SOLD_OUT] } },
       include: { images: true },
       orderBy: [{ featured: 'desc' }, { createdAt: 'desc' }]
     });
@@ -400,7 +403,12 @@ async function readDbProducts() {
 
 export async function getCatalogProducts() {
   const dbProducts = await readDbProducts();
-  return dbProducts && dbProducts.length ? dbProducts : products;
+  return dbProducts && dbProducts.length ? dbProducts : publicProducts;
+}
+
+export async function getActiveCatalogProducts() {
+  const catalog = await getCatalogProducts();
+  return catalog.filter(isActiveProduct);
 }
 
 export async function getProductBySlug(slug: string) {
@@ -411,7 +419,12 @@ export async function getProductBySlug(slug: string) {
         where: { slug },
         include: { images: true }
       });
-      if (dbProduct && dbProduct.status !== DbProductStatus.DRAFT) return dbProductToProduct(dbProduct);
+      if (
+        dbProduct &&
+        (dbProduct.status === DbProductStatus.ACTIVE || dbProduct.status === DbProductStatus.SOLD_OUT)
+      ) {
+        return dbProductToProduct(dbProduct);
+      }
     } catch (error) {
       console.warn(`Falling back to static product lookup for ${slug}.`, error);
     }
@@ -459,21 +472,21 @@ export function getFilterOptions(catalog: Product[]) {
 }
 
 export function isPurchasable(product: Product) {
-  return product.status === 'in-stock' && (product.quantity ?? 1) > 0;
+  return isActiveProduct(product);
 }
 
 export function getProduct(slug: string) {
-  return products.find((product) => product.slug === slug);
+  return publicProducts.find((product) => product.slug === slug);
 }
 
 export function getProductsByCategory(categorySlug: string) {
-  return products.filter(
+  return publicProducts.filter(
     (product) => product.categorySlug === categorySlug || product.categorySlugs.includes(categorySlug)
   );
 }
 
 export function getSimilarProducts(product: Product, limit = 3) {
-  return products
+  return publicProducts
     .filter(
       (candidate) =>
         candidate.id !== product.id &&
@@ -484,9 +497,10 @@ export function getSimilarProducts(product: Product, limit = 3) {
 }
 
 export function getAvailabilityLabel(status: ProductStatus) {
-  if (status === 'in-stock') return 'In stock';
-  if (status === 'sold-out') return 'Sold out';
-  return 'Coming soon';
+  if (status === 'active') return 'Active';
+  if (status === 'sold_out') return 'Sold out';
+  if (status === 'archived') return 'Archived';
+  return 'Draft';
 }
 
 export function formatPrice(price: number) {

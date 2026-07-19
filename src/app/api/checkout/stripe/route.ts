@@ -52,7 +52,7 @@ export async function POST(request: Request) {
   for (const requested of requestedItems) {
     const product = products.find((candidate) => candidate.id === requested.id || candidate.slug === requested.slug);
     if (!product) return NextResponse.json({ error: 'A cart item is no longer available.' }, { status: 409 });
-    if (product.status !== ProductStatus.IN_STOCK || product.quantity < requested.quantity) {
+    if (product.status !== ProductStatus.ACTIVE || product.quantity < requested.quantity) {
       return NextResponse.json({ error: `${product.title} is not available in that quantity.` }, { status: 409 });
     }
 

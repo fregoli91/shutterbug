@@ -8,24 +8,19 @@ datasource db {
 }
 
 enum ProductStatus {
-  IN_STOCK
-  SOLD_OUT
-  COMING_SOON
   DRAFT
+  ACTIVE
+  SOLD_OUT
+  ARCHIVED
 }
 
 enum ProductCondition {
   NEW
   OPEN_BOX
-  MINT
-  EXCELLENT
-  VERY_GOOD
-  GOOD
-  FAIR
-  HEAVILY_USED
+  USED_EXCELLENT
+  USED_GOOD
+  USED_FAIR
   FOR_PARTS
-  UNTESTED
-  REFURBISHED
 }
 
 enum CameraType {
@@ -82,9 +77,11 @@ model Product {
   productType       String           @default("")
   cameraType        CameraType       @default(VINTAGE_DIGITAL)
   format            CameraFormat     @default(DIGITAL)
-  condition         ProductCondition @default(GOOD)
+  condition         ProductCondition @default(USED_GOOD)
   functionalStatus  String           @default("Tested")
+  testedStatus      String           @default("Tested")
   conditionSummary  String           @default("")
+  conditionNotes    String           @default("")
   priceCents        Int
   quantity          Int              @default(1)
   status            ProductStatus    @default(DRAFT)
@@ -106,10 +103,12 @@ model Product {
   actualPhotos      Boolean          @default(false)
   samplePhotos      Boolean          @default(false)
   partsRepair       Boolean          @default(false)
+  forPartsOrRepair  Boolean          @default(false)
   featured          Boolean          @default(false)
   newArrival        Boolean          @default(false)
   badges            String[]         @default([])
   included          String[]         @default([])
+  doesNotInclude    String[]         @default([])
   tested            String[]         @default([])
   goodFor           String[]         @default([])
   cosmeticNotes     String[]         @default([])
@@ -119,6 +118,8 @@ model Product {
   shippingNote      String           @default("")
   returnsNote       String           @default("")
   checkoutUrl       String?
+  mainImageUrl      String           @default("")
+  imageUrls         String[]         @default([])
   images            ProductImage[]
   customerLikes     CustomerProductLike[]
   orderItems        OrderItem[]
