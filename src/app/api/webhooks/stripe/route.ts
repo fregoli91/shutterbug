@@ -3,6 +3,7 @@ import { revalidatePath } from 'next/cache';
 import Stripe from 'stripe';
 import { OrderStatus, PaymentStatus, ProductStatus, type Prisma } from '@/generated/prisma/client';
 import { normalizeEmail } from '@/lib/customer-auth';
+import { sendPaidOrderEmails } from '@/lib/order-emails';
 import { requirePrisma } from '@/lib/prisma';
 
 export const runtime = 'nodejs';
@@ -39,6 +40,7 @@ export async function POST(request: Request) {
     const prisma = requirePrisma();
     const intentId = paymentIntentId(session.payment_intent);
     const productPaths = new Set<string>();
+    let paidOrderId: string | null = null;
 
     await prisma.$transaction(async (tx) => {
       const order = await tx.order.findFirst({
@@ -54,6 +56,7 @@ export async function POST(request: Request) {
       if (!order) return;
 
       if (order.paymentStatus === PaymentStatus.PAID) {
+        paidOrderId = order.id;
         if (intentId && order.stripePaymentIntentId !== intentId) {
           await tx.order.update({
             where: { id: order.id },
@@ -133,7 +136,13 @@ export async function POST(request: Request) {
           }
         });
       }
+
+      paidOrderId = order.id;
     });
+
+    if (paidOrderId) {
+      await sendPaidOrderEmails(paidOrderId);
+    }
 
     revalidatePath('/');
     revalidatePath('/shop');

@@ -216,6 +216,10 @@ model Order {
   providerReference String?            @unique
   stripeCheckoutSessionId String?      @unique
   stripePaymentIntentId String?        @unique
+  customerEmailSendingAt DateTime?
+  customerEmailSentAt DateTime?
+  adminEmailSendingAt DateTime?
+  adminEmailSentAt DateTime?
   status            OrderStatus        @default(PENDING_PAYMENT)
   paymentStatus     PaymentStatus      @default(PENDING)
   fulfillmentStatus FulfillmentStatus  @default(UNFULFILLED)

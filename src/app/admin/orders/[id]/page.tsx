@@ -77,6 +77,10 @@ export default async function AdminOrderDetailPage({ params }: Props) {
             {order.stripePaymentIntentId ? (
               <p className="mt-1 text-xs text-ink/60">Payment intent: {order.stripePaymentIntentId}</p>
             ) : null}
+            <div className="mt-3 grid gap-1 text-xs text-ink/60">
+              <p>Customer email: {order.customerEmailSentAt ? order.customerEmailSentAt.toLocaleString('en-US') : 'Not sent'}</p>
+              <p>Admin email: {order.adminEmailSentAt ? order.adminEmailSentAt.toLocaleString('en-US') : 'Not sent'}</p>
+            </div>
             <pre className="mt-4 whitespace-pre-wrap rounded-lg bg-cream p-3 text-xs text-ink/70">
               {order.shippingAddress ? JSON.stringify(order.shippingAddress, null, 2) : 'Shipping address pending'}
             </pre>
