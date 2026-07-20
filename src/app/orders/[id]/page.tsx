@@ -1,6 +1,7 @@
 import Image from 'next/image';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
+import { PaymentStatus } from '@/generated/prisma/client';
 import { ClearCartOnSuccess } from '@/components/cart/ClearCartOnSuccess';
 import { formatCents } from '@/lib/money';
 import { orderStatusClassName, orderStatusLabel } from '@/lib/order-status';
@@ -33,6 +34,7 @@ export default async function OrderSummaryPage({ params, searchParams }: Props) 
   if (!order) notFound();
 
   const created = asString(query.created) === '1';
+  const paymentCollected = order.paymentStatus === PaymentStatus.PAID;
 
   return (
     <section className="px-4 py-10 sm:px-6 lg:px-8">
@@ -46,8 +48,9 @@ export default async function OrderSummaryPage({ params, searchParams }: Props) 
               <span className={orderStatusClassName(order.status)}>{orderStatusLabel(order.status)}</span>
             </div>
             <p className="mt-4 max-w-2xl text-sm leading-6 text-ink/65">
-              This order has been created for review. Payment has not been collected yet, and inventory will not be
-              deducted until a later payment-confirmation step is completed.
+              {paymentCollected
+                ? 'Stripe has confirmed payment for this order. Inventory is reduced only after the signed webhook succeeds.'
+                : 'This order is waiting for Stripe payment confirmation. Inventory is not deducted until payment is confirmed by webhook.'}
             </p>
 
             <div className="mt-6 grid gap-3">

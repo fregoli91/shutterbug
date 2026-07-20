@@ -71,6 +71,12 @@ export default async function AdminOrderDetailPage({ params }: Props) {
             <p className="mt-3 text-sm text-ink/70">{order.customerName || 'Name pending'}</p>
             <p className="text-sm text-ink/70">{order.customerEmail}</p>
             {order.customerPhone ? <p className="text-sm text-ink/70">{order.customerPhone}</p> : null}
+            {order.stripeCheckoutSessionId ? (
+              <p className="mt-3 text-xs text-ink/60">Stripe session: {order.stripeCheckoutSessionId}</p>
+            ) : null}
+            {order.stripePaymentIntentId ? (
+              <p className="mt-1 text-xs text-ink/60">Payment intent: {order.stripePaymentIntentId}</p>
+            ) : null}
             <pre className="mt-4 whitespace-pre-wrap rounded-lg bg-cream p-3 text-xs text-ink/70">
               {order.shippingAddress ? JSON.stringify(order.shippingAddress, null, 2) : 'Shipping address pending'}
             </pre>

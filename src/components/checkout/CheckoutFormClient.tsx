@@ -18,7 +18,8 @@ const errorMessages: Record<string, string> = {
   empty: 'Your cart is empty. Add a camera before checkout.',
   missing: 'Enter your contact and shipping details.',
   inventory: 'One or more cart items is no longer available in that quantity.',
-  config: 'Checkout needs a configured database before orders can be created.'
+  config: 'Checkout needs a configured database before orders can be created.',
+  stripe: 'Stripe Checkout is not configured yet. Please contact Shutterbug support.'
 };
 
 function isCartValidationResponse(payload: CartValidationResponse | { error?: string }): payload is CartValidationResponse {
@@ -105,7 +106,7 @@ export function CheckoutFormClient({ defaultName = '', defaultEmail = '', error 
         <p className="text-sm font-bold uppercase tracking-[0.2em] text-moss">Shipping contact</p>
         <h2 className="mt-3 font-serif text-3xl font-bold text-ink">Where should this order go?</h2>
         <p className="mt-3 text-sm leading-6 text-ink/65">
-          This creates a pending order record only. Payment processing will be added in a later step.
+          We will validate the cart, create a pending order, then send you to Stripe for secure payment.
         </p>
 
         {error && errorMessages[error] ? (
@@ -132,7 +133,7 @@ export function CheckoutFormClient({ defaultName = '', defaultEmail = '', error 
         <div>
           <p className="text-sm font-bold uppercase tracking-[0.2em] text-moss">Order review</p>
           <p className="mt-3 text-sm leading-6 text-ink/65">
-            Every line is checked against current Shutterbug inventory before the order is created.
+            Every line is checked against current Shutterbug inventory before secure Stripe checkout opens.
           </p>
         </div>
 
@@ -172,10 +173,10 @@ export function CheckoutFormClient({ defaultName = '', defaultEmail = '', error 
           disabled={hasBlockingIssue}
           className="min-h-12 rounded-full bg-forest px-5 py-3 text-sm font-semibold text-white disabled:opacity-50"
         >
-          Create pending order
+          Continue to secure payment
         </button>
         <p className="text-xs leading-5 text-ink/58">
-          No payment will be collected on this step. Inventory is not deducted until a later payment-confirmation flow.
+          Payment is handled by Stripe. Your order is marked paid only after Stripe confirms payment by webhook.
         </p>
       </aside>
     </form>

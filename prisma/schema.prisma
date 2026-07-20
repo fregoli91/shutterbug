@@ -214,6 +214,8 @@ model Order {
   billingAddress    Json?
   provider          PaymentProvider    @default(STRIPE)
   providerReference String?            @unique
+  stripeCheckoutSessionId String?      @unique
+  stripePaymentIntentId String?        @unique
   status            OrderStatus        @default(PENDING_PAYMENT)
   paymentStatus     PaymentStatus      @default(PENDING)
   fulfillmentStatus FulfillmentStatus  @default(UNFULFILLED)

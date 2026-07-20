@@ -3,6 +3,7 @@ import Image from 'next/image';
 import { ClearCartOnSuccess } from '@/components/cart/ClearCartOnSuccess';
 import { getCustomerSession } from '@/lib/customer-auth';
 import { formatCents } from '@/lib/money';
+import { orderStatusClassName, orderStatusLabel } from '@/lib/order-status';
 import { getPrisma } from '@/lib/prisma';
 
 type Props = {
@@ -24,12 +25,15 @@ export default async function CheckoutSuccessPage({ searchParams }: Props) {
   const customer = await getCustomerSession();
   const order =
     prisma && sessionId
-      ? await prisma.order.findUnique({ where: { providerReference: sessionId }, include: { items: true } })
+      ? await prisma.order.findFirst({
+          where: { OR: [{ stripeCheckoutSessionId: sessionId }, { providerReference: sessionId }] },
+          include: { items: true }
+        })
       : null;
 
   return (
     <section className="px-4 py-12 sm:px-6 lg:px-8">
-      <ClearCartOnSuccess />
+      {sessionId ? <ClearCartOnSuccess /> : null}
       <div className="mx-auto grid max-w-5xl overflow-hidden rounded-lg border border-ink/10 bg-white shadow-sm lg:grid-cols-[20rem_1fr]">
         <Image
           src="/shutterbug-checkout-success.png"
@@ -43,16 +47,18 @@ export default async function CheckoutSuccessPage({ searchParams }: Props) {
           <p className="text-sm font-bold uppercase tracking-[0.22em] text-moss">Checkout</p>
           <h1 className="mt-3 font-serif text-4xl font-bold text-ink">Thank you for your order</h1>
           <p className="mt-4 leading-7 text-ink/70">
-            Stripe has returned you to Shutterbug Camera Shop. Payment confirmation is finalized by webhook, and your
-            order status will update automatically.
+            Stripe has returned you to Shutterbug Camera Shop. Payment confirmation is finalized by webhook, so your
+            order status may show pending for a moment before updating.
           </p>
 
           {order ? (
             <div className="mt-6 rounded-lg bg-cream p-5">
               <p className="font-semibold text-ink">Order {order.orderNumber}</p>
-              <p className="mt-2 text-sm text-ink/70">
-                {order.paymentStatus} - Total {formatCents(order.totalCents, order.currency)}
-              </p>
+              <div className="mt-3 flex flex-wrap items-center gap-3">
+                <span className={orderStatusClassName(order.status)}>{orderStatusLabel(order.status)}</span>
+                <p className="text-sm text-ink/70">Payment: {order.paymentStatus}</p>
+              </div>
+              <p className="mt-3 text-sm font-bold text-ink">Total {formatCents(order.totalCents, order.currency)}</p>
               <div className="mt-4 grid gap-2 text-sm text-ink/70">
                 {order.items.map((item) => (
                   <p key={item.id}>
@@ -63,7 +69,7 @@ export default async function CheckoutSuccessPage({ searchParams }: Props) {
             </div>
           ) : (
             <p className="mt-6 rounded-lg bg-cream p-4 text-sm text-ink/70">
-              Order details will appear here after database and webhook configuration are connected.
+              Order details will appear here after database, Stripe session, and webhook configuration are connected.
             </p>
           )}
 

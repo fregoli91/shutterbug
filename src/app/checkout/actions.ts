@@ -1,6 +1,7 @@
 'use server';
 
 import { redirect } from 'next/navigation';
+import Stripe from 'stripe';
 import {
   FulfillmentStatus,
   OrderStatus,
@@ -43,6 +44,14 @@ function checkoutError(code: string): never {
   redirect(`/checkout?error=${encodeURIComponent(code)}`);
 }
 
+function siteUrl() {
+  return (process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000').replace(/\/$/, '');
+}
+
+function stripeImageUrl(image: string) {
+  return image.startsWith('https://') ? image : undefined;
+}
+
 export async function createPendingOrderAction(formData: FormData) {
   const cartItems = parseCart(formData);
   if (!cartItems.length) checkoutError('empty');
@@ -71,6 +80,7 @@ export async function createPendingOrderAction(formData: FormData) {
   }
   if (!validation.items.length) checkoutError('empty');
   if (validation.hasBlockingIssue) checkoutError('inventory');
+  if (!process.env.STRIPE_SECRET_KEY) checkoutError('stripe');
 
   const customer = await getCustomerSession();
   const shippingAddress: Prisma.InputJsonObject = {
@@ -91,7 +101,7 @@ export async function createPendingOrderAction(formData: FormData) {
       customerEmail: email,
       customerName: name,
       customerPhone: phone || null,
-      provider: PaymentProvider.MANUAL,
+      provider: PaymentProvider.STRIPE,
       status: OrderStatus.PENDING_PAYMENT,
       paymentStatus: PaymentStatus.PENDING,
       fulfillmentStatus: FulfillmentStatus.UNFULFILLED,
@@ -114,11 +124,85 @@ export async function createPendingOrderAction(formData: FormData) {
       },
       history: {
         create: {
-          message: 'Pending order created after server-side cart validation. Payment has not been collected.'
+          message: 'Pending Stripe order created after server-side cart validation.'
         }
       }
     }
   });
 
-  redirect(`/orders/${order.id}?created=1`);
+  const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
+  let session: Stripe.Checkout.Session;
+
+  try {
+    session = await stripe.checkout.sessions.create({
+      mode: 'payment',
+      client_reference_id: order.id,
+      customer_email: email,
+      line_items: validation.items.map((item) => {
+        const image = stripeImageUrl(item.image);
+        return {
+          quantity: item.validatedQuantity,
+          price_data: {
+            currency: 'usd',
+            unit_amount: item.unitPriceCents,
+            product_data: {
+              name: item.title,
+              description: `${item.condition}${item.sku ? ` | ${item.sku}` : ''}`,
+              images: image ? [image] : undefined,
+              metadata: {
+                productId: item.id,
+                slug: item.slug,
+                sku: item.sku
+              }
+            }
+          }
+        };
+      }),
+      success_url: `${siteUrl()}/checkout/success?session_id={CHECKOUT_SESSION_ID}`,
+      cancel_url: `${siteUrl()}/checkout/cancel?order_id=${order.id}`,
+      metadata: {
+        orderId: order.id,
+        orderNumber: order.orderNumber
+      },
+      payment_intent_data: {
+        metadata: {
+          orderId: order.id,
+          orderNumber: order.orderNumber
+        }
+      }
+    });
+  } catch {
+    await prisma.order.update({
+      where: { id: order.id },
+      data: {
+        history: { create: { message: 'Stripe Checkout session could not be created.' } }
+      }
+    });
+    checkoutError('stripe');
+  }
+
+  if (!session.url) {
+    await prisma.order.update({
+      where: { id: order.id },
+      data: {
+        history: { create: { message: 'Stripe Checkout session did not return a redirect URL.' } }
+      }
+    });
+    checkoutError('stripe');
+  }
+
+  const paymentIntentId =
+    typeof session.payment_intent === 'string' ? session.payment_intent : session.payment_intent?.id ?? null;
+
+  await prisma.order.update({
+    where: { id: order.id },
+    data: {
+      providerReference: session.id,
+      stripeCheckoutSessionId: session.id,
+      stripePaymentIntentId: paymentIntentId,
+      history: { create: { message: `Stripe Checkout session created: ${session.id}` } }
+    }
+  });
+
+  redirect(session.url);
 }
