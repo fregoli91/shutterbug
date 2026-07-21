@@ -15,12 +15,11 @@ type SessionPayload = {
 };
 
 function getSecret() {
-  return (
-    process.env.CUSTOMER_SESSION_SECRET ||
-    process.env.ADMIN_SESSION_SECRET ||
-    process.env.NEXTAUTH_SECRET ||
-    'development-only-customer-secret'
-  );
+  const secret = process.env.CUSTOMER_SESSION_SECRET || process.env.ADMIN_SESSION_SECRET || process.env.NEXTAUTH_SECRET;
+  if (!secret && process.env.NODE_ENV === 'production') {
+    throw new Error('CUSTOMER_SESSION_SECRET, ADMIN_SESSION_SECRET, or NEXTAUTH_SECRET is required in production.');
+  }
+  return secret || 'development-only-customer-secret';
 }
 
 function sign(value: string) {

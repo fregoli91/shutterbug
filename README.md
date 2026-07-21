@@ -23,10 +23,14 @@ Required for the full ecommerce flow:
 NEXT_PUBLIC_SITE_URL=https://shutterbugcamerashop.com
 NEXT_PUBLIC_AMAZON_STORE_URL=https://www.amazon.com/shops/shutterbugcamera
 DATABASE_URL=postgresql://USER:PASSWORD@HOST:5432/DATABASE?schema=public
+ADMIN_EMAIL=fregoli90@yahoo.com
 ADMIN_USERNAME=admin
 ADMIN_PASSWORD=change-me
 ADMIN_SESSION_SECRET=replace-with-a-long-random-secret
 CUSTOMER_SESSION_SECRET=replace-with-another-long-random-secret
+EMAIL_FROM="Shutterbug Camera Shop <support@shutterbugcamerashop.com>"
+ADMIN_ORDER_EMAIL=fregoli90@yahoo.com
+RESEND_API_KEY=re_xxx
 STRIPE_SECRET_KEY=sk_live_or_test_xxx
 NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY=pk_live_or_test_xxx
 STRIPE_WEBHOOK_SECRET=whsec_xxx
@@ -56,10 +60,12 @@ npm run prisma:generate
 Apply migrations to production:
 
 ```bash
-npm run prisma:migrate
+npx prisma migrate deploy
 ```
 
-Current schema includes products, product images, customers, orders, order items, and order status history.
+`npm run prisma:migrate` is an alias for Prisma's production migration deploy command. Only run it where the real `DATABASE_URL` is configured, never against the placeholder value from `.env.example`.
+
+Current schema includes products, product images, customers, orders, order items, order status history, paid email tracking, and fulfillment tracking.
 
 ## Admin Access
 
@@ -77,7 +83,7 @@ Login route:
 
 Admin auth uses environment variables:
 
-- `ADMIN_USERNAME`
+- `ADMIN_EMAIL` or `ADMIN_USERNAME` for the login identifier
 - `ADMIN_PASSWORD`
 - `ADMIN_SESSION_SECRET`
 
@@ -120,11 +126,13 @@ checkout.session.completed
 
 Payment flow:
 
-1. Cart posts items to `/api/checkout/stripe`.
+1. Checkout form posts cart and shipping details through the server action.
 2. Server validates product stock and creates a pending order.
 3. Stripe Checkout collects payment and shipping details.
 4. Successful payment redirects to `/checkout/success`.
-5. Stripe webhook marks the order paid, stores customer details, links the order to a customer when possible, and decrements inventory.
+5. Stripe webhook verifies the signature, marks the order paid, stores customer details, links the order to a customer when possible, and decrements inventory.
+6. Paid order emails are sent only after webhook-confirmed payment.
+7. Admin fulfillment updates add tracking and send the customer shipping confirmation email once.
 
 ## Image Uploads
 
@@ -135,16 +143,17 @@ Admin product image uploads use Cloudinary. Set:
 - `CLOUDINARY_API_SECRET`
 - `CLOUDINARY_UPLOAD_FOLDER`
 
-Do not store uploaded product images directly in the repo.
+Uploaded product images are sent to Cloudinary and saved on products as hosted URLs. They are not written to the repo or local server filesystem, so uploads are durable across app redeploys when Cloudinary is configured. Do not switch this to `public/uploads` or another local folder on production hosting unless that host has persistent storage mounted at the exact upload path.
 
 ## Deployment
 
-The site is deployed on Vercel. Before pushing live:
+The site is designed for Vercel-compatible Next.js hosting and can run on Render-style Node hosting if persistent runtime assumptions are handled. Before pushing live:
 
-1. Add all production environment variables in Vercel.
+1. Add all production environment variables in the host dashboard.
 2. Run production Prisma migrations against the production `DATABASE_URL`.
 3. Configure the Stripe webhook endpoint.
-4. Confirm `/admin/login`, `/signup`, `/login`, `/account`, `/cart`, and `/shop` work in the deployed environment.
+4. Confirm Cloudinary uploads work from `/admin/products/new`.
+5. Confirm `/admin/login`, `/signup`, `/login`, `/account`, `/cart`, `/checkout`, `/shop`, `/sitemap.xml`, and `/google-merchant-feed.xml` work in the deployed environment.
 
 ## Build
 

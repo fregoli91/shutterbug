@@ -6,7 +6,11 @@ const COOKIE_NAME = 'shutterbug_admin';
 const SESSION_TTL_SECONDS = 60 * 60 * 12;
 
 function getSecret() {
-  return process.env.ADMIN_SESSION_SECRET || process.env.NEXTAUTH_SECRET || 'development-only-admin-secret';
+  const secret = process.env.ADMIN_SESSION_SECRET || process.env.NEXTAUTH_SECRET;
+  if (!secret && process.env.NODE_ENV === 'production') {
+    throw new Error('ADMIN_SESSION_SECRET or NEXTAUTH_SECRET is required in production.');
+  }
+  return secret || 'development-only-admin-secret';
 }
 
 function sign(value: string) {
