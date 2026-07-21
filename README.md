@@ -155,6 +155,12 @@ The site is designed for Vercel-compatible Next.js hosting and can run on Render
 4. Confirm Cloudinary uploads work from `/admin/products/new`.
 5. Confirm `/admin/login`, `/signup`, `/login`, `/account`, `/cart`, `/checkout`, `/shop`, `/sitemap.xml`, and `/google-merchant-feed.xml` work in the deployed environment.
 
+Use the staging checklist runner before launch:
+
+```txt
+docs/STAGING_TEST_RUNNER.md
+```
+
 ## Build
 
 ```bash
