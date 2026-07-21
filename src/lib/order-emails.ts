@@ -1,4 +1,4 @@
-import { PaymentStatus, type Prisma } from '@/generated/prisma/client';
+import { FulfillmentStatus, OrderStatus, PaymentStatus, type Prisma } from '@/generated/prisma/client';
 import { getPublicSiteUrl, sendTransactionalEmail } from '@/lib/email';
 import { formatCents } from '@/lib/money';
 import { requirePrisma } from '@/lib/prisma';
@@ -32,6 +32,10 @@ function orderUrl(order: PaidOrder) {
 
 function adminOrderUrl(order: PaidOrder) {
   return `${getPublicSiteUrl()}/admin/orders/${order.id}`;
+}
+
+function trackingUrl(order: PaidOrder) {
+  return order.trackingUrl || orderUrl(order);
 }
 
 function formatAddressLines(address: unknown) {
@@ -257,6 +261,63 @@ ${adminOrderUrl(order)}`;
   };
 }
 
+export function buildCustomerShippingEmail(order: PaidOrder) {
+  const displayName = order.customerName?.trim() || 'there';
+  const trackingLabel = [order.carrier, order.trackingNumber].filter(Boolean).join(' ');
+  const text = `Hi ${displayName},
+
+Good news. Your Shutterbug order has shipped.
+
+Order: ${order.orderNumber}
+Carrier: ${order.carrier || 'Carrier not specified'}
+Tracking: ${order.trackingNumber || 'Tracking number pending'}
+Status: ${order.status}
+
+Track or view your order:
+${trackingUrl(order)}
+
+Items:
+${itemRowsText(order)}
+
+Questions? Contact ${site.supportEmail}.`;
+
+  const html = shell(`
+    <h1 style="font-family:Georgia,serif;margin:12px 0 8px">Your Shutterbug order has shipped</h1>
+    <p>Hi ${escapeHtml(displayName)}, good news. Your camera gear is on the way.</p>
+    <div style="background:#fde9cd;border-radius:8px;padding:16px;margin:20px 0">
+      <div><strong>Order:</strong> ${escapeHtml(order.orderNumber)}</div>
+      <div><strong>Carrier:</strong> ${escapeHtml(order.carrier || 'Carrier not specified')}</div>
+      <div><strong>Tracking:</strong> ${escapeHtml(order.trackingNumber || 'Tracking number pending')}</div>
+      <div><strong>Status:</strong> ${escapeHtml(order.status)}</div>
+    </div>
+    <table style="width:100%;border-collapse:collapse;margin:20px 0">
+      <thead>
+        <tr>
+          <th align="left" style="font-size:12px;text-transform:uppercase;color:#2f6f4e">Item</th>
+          <th align="center" style="font-size:12px;text-transform:uppercase;color:#2f6f4e">Qty</th>
+          <th align="right" style="font-size:12px;text-transform:uppercase;color:#2f6f4e">Total</th>
+        </tr>
+      </thead>
+      <tbody>${itemRowsHtml(order)}</tbody>
+    </table>
+    <p style="margin:24px 0">
+      <a href="${trackingUrl(order)}" style="display:inline-block;background:#24543a;color:white;text-decoration:none;border-radius:999px;padding:12px 20px;font-weight:700">${
+        trackingLabel ? 'Track shipment' : 'View order'
+      }</a>
+    </p>
+    <p style="font-size:14px;color:rgba(22,35,29,.72)">Questions? Reply to this email or contact ${escapeHtml(
+      site.supportEmail
+    )}.</p>
+  `);
+
+  return {
+    to: order.customerEmail,
+    subject: `Your Shutterbug order ${order.orderNumber} has shipped`,
+    html,
+    text
+  };
+}
+
 async function claimCustomerEmail(prisma: PrismaClientLike, orderId: string) {
   const result = await prisma.order.updateMany({
     where: {
@@ -280,6 +341,22 @@ async function claimAdminEmail(prisma: PrismaClientLike, orderId: string) {
       OR: [{ adminEmailSendingAt: null }, { adminEmailSendingAt: { lt: staleClaimCutoff() } }]
     },
     data: { adminEmailSendingAt: new Date() }
+  });
+
+  return result.count > 0;
+}
+
+async function claimShippingEmail(prisma: PrismaClientLike, orderId: string) {
+  const result = await prisma.order.updateMany({
+    where: {
+      id: orderId,
+      paymentStatus: PaymentStatus.PAID,
+      status: { in: [OrderStatus.SHIPPED, OrderStatus.DELIVERED] },
+      fulfillmentStatus: { in: [FulfillmentStatus.SHIPPED, FulfillmentStatus.DELIVERED] },
+      shippingEmailSentAt: null,
+      OR: [{ shippingEmailSendingAt: null }, { shippingEmailSendingAt: { lt: staleClaimCutoff() } }]
+    },
+    data: { shippingEmailSendingAt: new Date() }
   });
 
   return result.count > 0;
@@ -358,6 +435,56 @@ export async function sendPaidOrderEmails(orderId: string) {
         history: {
           create: {
             message: `Admin paid order email failed: ${error instanceof Error ? error.message : 'Unknown error'}`
+          }
+        }
+      }
+    });
+  }
+}
+
+export async function sendShippingConfirmationEmail(orderId: string) {
+  const prisma = requirePrisma();
+  const order = await prisma.order.findUnique({
+    where: { id: orderId },
+    include: { items: true }
+  });
+  const shippedOrderStatuses: OrderStatus[] = [OrderStatus.SHIPPED, OrderStatus.DELIVERED];
+  const shippedFulfillmentStatuses: FulfillmentStatus[] = [FulfillmentStatus.SHIPPED, FulfillmentStatus.DELIVERED];
+
+  if (
+    !order ||
+    order.paymentStatus !== PaymentStatus.PAID ||
+    !shippedOrderStatuses.includes(order.status) ||
+    !shippedFulfillmentStatuses.includes(order.fulfillmentStatus) ||
+    order.shippingEmailSentAt ||
+    !(await claimShippingEmail(prisma, order.id))
+  ) {
+    return;
+  }
+
+  try {
+    const email = buildCustomerShippingEmail(order);
+    const result = await sendTransactionalEmail(email);
+    await prisma.order.update({
+      where: { id: order.id },
+      data: {
+        shippingEmailSendingAt: null,
+        shippingEmailSentAt: new Date(),
+        history: {
+          create: {
+            message: `Customer shipping email sent via ${result.provider}.`
+          }
+        }
+      }
+    });
+  } catch (error) {
+    await prisma.order.update({
+      where: { id: order.id },
+      data: {
+        shippingEmailSendingAt: null,
+        history: {
+          create: {
+            message: `Customer shipping email failed: ${error instanceof Error ? error.message : 'Unknown error'}`
           }
         }
       }

@@ -14,7 +14,7 @@ import {
   STORAGE_TYPES
 } from '@/lib/catalog';
 import { categories } from '@/lib/categories';
-import { AdminImageUploader } from './AdminImageUploader';
+import { AdminProductImageManager } from './AdminProductImageManager';
 
 type AdminProduct = Prisma.ProductGetPayload<{ include: { images: true } }>;
 
@@ -267,16 +267,7 @@ export function ProductForm({ action, product, submitLabel }: Props) {
         </div>
       </div>
 
-      <div className="grid gap-4 rounded-lg border border-ink/10 bg-white p-5 shadow-sm md:grid-cols-[1fr_16rem]">
-        <div className="grid gap-4">
-          <Field label="Main image URL" name="heroImage" defaultValue={heroImage} />
-          <TextArea id="galleryImages" label="Additional image URLs" name="galleryImages" defaultValue={join(galleryImages)} />
-        </div>
-        <div className="grid gap-3 content-start">
-          <AdminImageUploader targetId="heroImage" mode="replace" />
-          <AdminImageUploader targetId="galleryImages" />
-        </div>
-      </div>
+      <AdminProductImageManager mainImageUrl={heroImage} galleryImageUrls={galleryImages} productTitle={product?.title ?? ''} />
 
       <div className="grid gap-4 rounded-lg border border-ink/10 bg-white p-5 shadow-sm md:grid-cols-2">
         <TextArea label="Included accessories" name="included" defaultValue={join(product?.included)} />

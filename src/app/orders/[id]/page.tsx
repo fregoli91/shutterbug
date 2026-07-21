@@ -35,6 +35,7 @@ export default async function OrderSummaryPage({ params, searchParams }: Props) 
 
   const created = asString(query.created) === '1';
   const paymentCollected = order.paymentStatus === PaymentStatus.PAID;
+  const trackingLabel = [order.carrier, order.trackingNumber].filter(Boolean).join(' ');
 
   return (
     <section className="px-4 py-10 sm:px-6 lg:px-8">
@@ -49,7 +50,7 @@ export default async function OrderSummaryPage({ params, searchParams }: Props) 
             </div>
             <p className="mt-4 max-w-2xl text-sm leading-6 text-ink/65">
               {paymentCollected
-                ? 'Stripe has confirmed payment for this order. Inventory is reduced only after the signed webhook succeeds.'
+                ? 'Stripe has confirmed payment for this order. We will update this page as the order moves through fulfillment.'
                 : 'This order is waiting for Stripe payment confirmation. Inventory is not deducted until payment is confirmed by webhook.'}
             </p>
 
@@ -102,11 +103,27 @@ export default async function OrderSummaryPage({ params, searchParams }: Props) 
             </div>
 
             <div className="rounded-lg border border-ink/10 bg-white p-5 shadow-sm">
-              <p className="font-serif text-xl font-bold text-ink">Next step</p>
-              <p className="mt-3 text-sm leading-6 text-ink/65">
-                Payment processing will be connected next. For now, this page confirms the pending order record and
-                item snapshots.
-              </p>
+              <p className="font-serif text-xl font-bold text-ink">Fulfillment</p>
+              <div className="mt-3 grid gap-2 text-sm leading-6 text-ink/65">
+                <p>Status: {order.fulfillmentStatus.replace(/_/g, ' ')}</p>
+                <p>Carrier: {order.carrier || 'Not added yet'}</p>
+                <p>Tracking: {order.trackingNumber || 'Not added yet'}</p>
+                {order.shippedAt ? <p>Shipped: {order.shippedAt.toLocaleDateString('en-US')}</p> : null}
+                {order.deliveredAt ? <p>Delivered: {order.deliveredAt.toLocaleDateString('en-US')}</p> : null}
+              </div>
+              {order.trackingUrl ? (
+                <a
+                  href={order.trackingUrl}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="mt-4 inline-flex text-sm font-semibold text-moss hover:text-ink"
+                >
+                  Track shipment
+                </a>
+              ) : null}
+              {!order.trackingUrl && trackingLabel ? (
+                <p className="mt-4 text-sm font-semibold text-moss">{trackingLabel}</p>
+              ) : null}
               <Link href="/contact" className="mt-4 inline-flex text-sm font-semibold text-moss hover:text-ink">
                 Contact support
               </Link>

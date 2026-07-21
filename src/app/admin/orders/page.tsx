@@ -34,7 +34,18 @@ export default async function AdminOrdersPage() {
           >
             <div>
               <p className="font-semibold text-ink">{order.orderNumber}</p>
-              <p className="mt-1 text-sm text-ink/60">{order.customerEmail}</p>
+              <p className="mt-1 text-sm text-ink/60">
+                {order.customerEmail} | {order.items.length} item{order.items.length === 1 ? '' : 's'}
+              </p>
+              <p className="mt-1 text-xs font-semibold uppercase tracking-[0.12em] text-moss">
+                {order.fulfillmentStatus.replace(/_/g, ' ')}
+                {order.trackingNumber ? ` | ${order.carrier ? `${order.carrier} ` : ''}${order.trackingNumber}` : ''}
+              </p>
+              {order.shippingEmailSentAt ? (
+                <p className="mt-1 text-xs text-ink/55">
+                  Shipping email sent {order.shippingEmailSentAt.toLocaleDateString('en-US')}
+                </p>
+              ) : null}
             </div>
             <span className={orderStatusClassName(order.status)}>{orderStatusLabel(order.status)}</span>
             <p className="font-bold text-ink">{formatCents(order.totalCents, order.currency)}</p>

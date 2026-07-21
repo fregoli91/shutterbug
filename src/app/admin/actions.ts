@@ -7,15 +7,21 @@ import {
   CameraType,
   FulfillmentStatus,
   OrderStatus,
+  PaymentStatus,
   ProductCondition,
   ProductImageRole,
   ProductStatus
 } from '@/generated/prisma/client';
 import { clearAdminSession, requireAdmin } from '@/lib/admin-auth';
+import { sendShippingConfirmationEmail } from '@/lib/order-emails';
 import { requirePrisma } from '@/lib/prisma';
 
 function field(formData: FormData, name: string) {
   return String(formData.get(name) ?? '').trim();
+}
+
+function optionalField(formData: FormData, name: string) {
+  return field(formData, name) || null;
 }
 
 function lines(formData: FormData, name: string) {
@@ -202,23 +208,217 @@ export async function deleteProductAction(formData: FormData) {
   redirect('/admin/products?deleted=1');
 }
 
-export async function markOrderShippedAction(formData: FormData) {
+function adminOrderRedirect(id: string, params: Record<string, string>): never {
+  const query = new URLSearchParams(params);
+  redirect(`/admin/orders/${id}?${query.toString()}`);
+}
+
+function revalidateOrderPaths(id: string) {
+  revalidatePath('/admin/orders');
+  revalidatePath(`/admin/orders/${id}`);
+  revalidatePath(`/orders/${id}`);
+  revalidatePath('/account/orders');
+  revalidatePath(`/account/orders/${id}`);
+}
+
+function fulfillmentFields(formData: FormData) {
+  return {
+    carrier: optionalField(formData, 'carrier'),
+    trackingNumber: optionalField(formData, 'trackingNumber'),
+    trackingUrl: optionalField(formData, 'trackingUrl'),
+    adminNotes: optionalField(formData, 'adminNotes')
+  };
+}
+
+function isPaidFulfillable(order: { paymentStatus: PaymentStatus; status: OrderStatus }) {
+  const unavailableStatuses: OrderStatus[] = [OrderStatus.PENDING_PAYMENT, OrderStatus.CANCELLED, OrderStatus.REFUNDED];
+  return order.paymentStatus === PaymentStatus.PAID && !unavailableStatuses.includes(order.status);
+}
+
+export async function updateOrderFulfillmentDetailsAction(formData: FormData) {
   await requireAdmin();
   const prisma = requirePrisma();
   const id = field(formData, 'id');
-  const trackingNumber = field(formData, 'trackingNumber');
+  const details = fulfillmentFields(formData);
 
   await prisma.order.update({
     where: { id },
     data: {
-      status: OrderStatus.SHIPPED,
-      fulfillmentStatus: FulfillmentStatus.SHIPPED,
-      trackingNumber,
+      ...details,
       history: {
-        create: { message: trackingNumber ? `Marked shipped: ${trackingNumber}` : 'Marked shipped' }
+        create: { message: 'Fulfillment details updated.' }
       }
     }
   });
 
+  revalidateOrderPaths(id);
+  adminOrderRedirect(id, { saved: '1' });
+}
+
+export async function markOrderProcessingAction(formData: FormData) {
+  await requireAdmin();
+  const prisma = requirePrisma();
+  const id = field(formData, 'id');
+  const order = await prisma.order.findUnique({
+    where: { id },
+    select: { paymentStatus: true, status: true, processingAt: true }
+  });
+
+  const alreadyFulfilledStatuses: OrderStatus[] = [OrderStatus.SHIPPED, OrderStatus.DELIVERED];
+  if (!order || !isPaidFulfillable(order) || alreadyFulfilledStatuses.includes(order.status)) {
+    adminOrderRedirect(id, { error: 'invalid-transition' });
+  }
+
+  await prisma.order.update({
+    where: { id },
+    data: {
+      status: OrderStatus.PROCESSING,
+      fulfillmentStatus: FulfillmentStatus.PROCESSING,
+      processingAt: order.processingAt ?? new Date(),
+      history: {
+        create: { message: 'Marked processing.' }
+      }
+    }
+  });
+
+  revalidateOrderPaths(id);
+  adminOrderRedirect(id, { processing: '1' });
+}
+
+export async function markOrderShippedAction(formData: FormData) {
+  await requireAdmin();
+  const prisma = requirePrisma();
+  const id = field(formData, 'id');
+  const details = fulfillmentFields(formData);
+  if (!details.trackingNumber) {
+    adminOrderRedirect(id, { error: 'tracking-required' });
+  }
+
+  const order = await prisma.order.findUnique({
+    where: { id },
+    select: { paymentStatus: true, status: true, processingAt: true, shippedAt: true }
+  });
+
+  if (!order || !isPaidFulfillable(order) || order.status === OrderStatus.DELIVERED) {
+    adminOrderRedirect(id, { error: 'invalid-transition' });
+  }
+
+  await prisma.order.update({
+    where: { id },
+    data: {
+      ...details,
+      status: OrderStatus.SHIPPED,
+      fulfillmentStatus: FulfillmentStatus.SHIPPED,
+      processingAt: order.processingAt ?? new Date(),
+      shippedAt: order.shippedAt ?? new Date(),
+      history: {
+        create: {
+          message: details.carrier
+            ? `Marked shipped with ${details.carrier}: ${details.trackingNumber}`
+            : `Marked shipped: ${details.trackingNumber}`
+        }
+      }
+    }
+  });
+
+  await sendShippingConfirmationEmail(id);
+  revalidateOrderPaths(id);
   redirect(`/admin/orders/${id}?shipped=1`);
+}
+
+export async function markOrderDeliveredAction(formData: FormData) {
+  await requireAdmin();
+  const prisma = requirePrisma();
+  const id = field(formData, 'id');
+  const order = await prisma.order.findUnique({
+    where: { id },
+    select: { paymentStatus: true, status: true, shippedAt: true, deliveredAt: true }
+  });
+
+  const deliverableStatuses: OrderStatus[] = [OrderStatus.SHIPPED, OrderStatus.DELIVERED];
+  if (!order || order.paymentStatus !== PaymentStatus.PAID || !deliverableStatuses.includes(order.status)) {
+    adminOrderRedirect(id, { error: 'invalid-transition' });
+  }
+
+  await prisma.order.update({
+    where: { id },
+    data: {
+      status: OrderStatus.DELIVERED,
+      fulfillmentStatus: FulfillmentStatus.DELIVERED,
+      shippedAt: order.shippedAt ?? new Date(),
+      deliveredAt: order.deliveredAt ?? new Date(),
+      history: {
+        create: { message: 'Marked delivered.' }
+      }
+    }
+  });
+
+  revalidateOrderPaths(id);
+  adminOrderRedirect(id, { delivered: '1' });
+}
+
+export async function markOrderCancelledAction(formData: FormData) {
+  await requireAdmin();
+  const prisma = requirePrisma();
+  const id = field(formData, 'id');
+  const order = await prisma.order.findUnique({
+    where: { id },
+    select: { paymentStatus: true, status: true, cancelledAt: true }
+  });
+
+  const uncancellableStatuses: OrderStatus[] = [
+    OrderStatus.SHIPPED,
+    OrderStatus.DELIVERED,
+    OrderStatus.REFUNDED,
+    OrderStatus.CANCELLED
+  ];
+  if (!order || order.paymentStatus === PaymentStatus.PAID || uncancellableStatuses.includes(order.status)) {
+    adminOrderRedirect(id, { error: 'cancel-paid-order' });
+  }
+
+  await prisma.order.update({
+    where: { id },
+    data: {
+      status: OrderStatus.CANCELLED,
+      paymentStatus: PaymentStatus.CANCELED,
+      fulfillmentStatus: FulfillmentStatus.CANCELED,
+      cancelledAt: order.cancelledAt ?? new Date(),
+      history: {
+        create: { message: 'Marked cancelled.' }
+      }
+    }
+  });
+
+  revalidateOrderPaths(id);
+  adminOrderRedirect(id, { cancelled: '1' });
+}
+
+export async function markOrderRefundedAction(formData: FormData) {
+  await requireAdmin();
+  const prisma = requirePrisma();
+  const id = field(formData, 'id');
+  const order = await prisma.order.findUnique({
+    where: { id },
+    select: { paymentStatus: true, status: true, refundedAt: true }
+  });
+
+  if (!order || order.paymentStatus !== PaymentStatus.PAID || order.status === OrderStatus.PENDING_PAYMENT) {
+    adminOrderRedirect(id, { error: 'invalid-transition' });
+  }
+
+  await prisma.order.update({
+    where: { id },
+    data: {
+      status: OrderStatus.REFUNDED,
+      paymentStatus: PaymentStatus.REFUNDED,
+      fulfillmentStatus: FulfillmentStatus.CANCELED,
+      refundedAt: order.refundedAt ?? new Date(),
+      history: {
+        create: { message: 'Marked refunded in Shutterbug admin. Process any money movement in Stripe separately if needed.' }
+      }
+    }
+  });
+
+  revalidateOrderPaths(id);
+  adminOrderRedirect(id, { refunded: '1' });
 }

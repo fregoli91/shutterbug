@@ -60,7 +60,7 @@ export default async function AccountOrdersPage() {
                         width={64}
                         height={64}
                         sizes="4rem"
-                        unoptimized={item.imageUrl.endsWith('.svg')}
+                        unoptimized={item.imageUrl.endsWith('.svg') || item.imageUrl.startsWith('http')}
                         className="h-16 w-16 rounded-md bg-white object-cover object-center"
                       />
                     ) : (
@@ -78,8 +78,16 @@ export default async function AccountOrdersPage() {
               </div>
 
               <div className="mt-5 grid gap-1 text-sm text-ink/65">
-                <p>Tracking: {order.trackingNumber || 'Not added yet'}</p>
+                <p>
+                  Tracking:{' '}
+                  {[order.carrier, order.trackingNumber].filter(Boolean).join(' ') || 'Not added yet'}
+                </p>
                 <p>Shipping status: {formatStatus(order.fulfillmentStatus)}</p>
+                {order.trackingUrl ? (
+                  <a href={order.trackingUrl} target="_blank" rel="noreferrer" className="font-semibold text-moss hover:text-ink">
+                    Track shipment
+                  </a>
+                ) : null}
               </div>
               <div className="mt-5 flex flex-wrap gap-3">
                 <Link

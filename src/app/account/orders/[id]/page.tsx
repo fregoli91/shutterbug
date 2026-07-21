@@ -29,6 +29,7 @@ export default async function AccountOrderDetailPage({ params }: Props) {
   });
 
   if (!order) notFound();
+  const trackingLabel = [order.carrier, order.trackingNumber].filter(Boolean).join(' ');
 
   return (
     <AccountFeaturePage
@@ -56,7 +57,7 @@ export default async function AccountOrderDetailPage({ params }: Props) {
                     width={64}
                     height={64}
                     sizes="4rem"
-                    unoptimized={item.imageUrl.endsWith('.svg')}
+                    unoptimized={item.imageUrl.endsWith('.svg') || item.imageUrl.startsWith('http')}
                     className="h-16 w-16 rounded-md bg-white object-cover object-center"
                   />
                 ) : (
@@ -98,9 +99,24 @@ export default async function AccountOrderDetailPage({ params }: Props) {
 
           <div className="rounded-lg border border-ink/10 bg-white p-6 shadow-sm">
             <p className="font-serif text-2xl font-bold text-ink">Tracking</p>
-            <p className="mt-3 text-sm leading-6 text-ink/68">
-              {order.trackingNumber || 'Tracking has not been added yet. This page will update when fulfillment details are available.'}
-            </p>
+            <div className="mt-3 grid gap-2 text-sm leading-6 text-ink/68">
+              <p>Carrier: {order.carrier || 'Not added yet'}</p>
+              <p>Tracking: {order.trackingNumber || 'Not added yet'}</p>
+              <p>Fulfillment: {order.fulfillmentStatus.replace(/_/g, ' ')}</p>
+              {order.shippedAt ? <p>Shipped: {order.shippedAt.toLocaleDateString('en-US')}</p> : null}
+              {order.deliveredAt ? <p>Delivered: {order.deliveredAt.toLocaleDateString('en-US')}</p> : null}
+            </div>
+            {order.trackingUrl ? (
+              <a
+                href={order.trackingUrl}
+                target="_blank"
+                rel="noreferrer"
+                className="mt-4 inline-flex text-sm font-semibold text-moss hover:text-ink"
+              >
+                Track shipment
+              </a>
+            ) : null}
+            {!order.trackingUrl && trackingLabel ? <p className="mt-4 text-sm font-semibold text-moss">{trackingLabel}</p> : null}
           </div>
           <div className="rounded-lg border border-ink/10 bg-white p-6 shadow-sm">
             <p className="font-serif text-2xl font-bold text-ink">Need help?</p>

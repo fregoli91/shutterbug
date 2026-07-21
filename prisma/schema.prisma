@@ -228,7 +228,17 @@ model Order {
   shippingCents     Int                @default(0)
   taxCents          Int                @default(0)
   totalCents        Int
+  carrier           String?
   trackingNumber    String?
+  trackingUrl       String?
+  adminNotes        String?
+  processingAt      DateTime?
+  shippedAt         DateTime?
+  deliveredAt       DateTime?
+  cancelledAt       DateTime?
+  refundedAt        DateTime?
+  shippingEmailSendingAt DateTime?
+  shippingEmailSentAt DateTime?
   notes             String?
   items             OrderItem[]
   history           OrderStatusEvent[]
