@@ -409,41 +409,64 @@ function LoggedInHome({
 }
 
 function DirectStoreCallout() {
+  const banner = (
+    <Image
+      src="/shutterbug-amazon-store-banner.png"
+      alt="Visit Shutterbug Camera Shop on Amazon"
+      width={2172}
+      height={724}
+      sizes="(min-width: 1024px) 44vw, 100vw"
+      className="aspect-[3/1] w-full bg-cream object-cover object-center"
+    />
+  );
+
   return (
     <section className="bg-cream px-4 py-8 sm:px-6 lg:px-8">
-      <div className="mx-auto grid max-w-7xl gap-5 rounded-lg border border-ink/10 bg-white p-5 shadow-sm sm:grid-cols-[5rem_1fr] sm:items-center lg:grid-cols-[6rem_1fr_auto] lg:p-6">
-        <Image
-          src="/shutterbug-accent-wave.png"
-          alt=""
-          width={96}
-          height={96}
-          sizes="6rem"
-          className="h-20 w-20 rounded-full bg-sand object-cover object-center lg:h-24 lg:w-24"
-        />
-        <div>
-          <p className="font-serif text-2xl font-bold text-ink">Shop Shutterbug direct or at Amazon.com</p>
-          <p className="mt-2 max-w-3xl text-sm leading-6 text-ink/68">
-            Buy direct from Shutterbug Camera Shop here, with select camera listings also available through our
-            Amazon.com store for shoppers who prefer that checkout experience.
-          </p>
-        </div>
+      <div className="mx-auto grid max-w-7xl gap-5 rounded-lg border border-ink/10 bg-white p-4 shadow-sm lg:grid-cols-[minmax(0,1fr)_minmax(24rem,0.95fr)] lg:items-center lg:p-5">
         {site.amazonStoreUrl ? (
           <a
             href={site.amazonStoreUrl}
             target="_blank"
             rel="noopener noreferrer"
-            className="inline-flex min-h-11 items-center justify-center rounded-full bg-forest px-5 text-sm font-semibold text-white transition hover:bg-moss sm:col-start-2 lg:col-start-auto"
+            className="group block overflow-hidden rounded-lg border border-ink/10 bg-cream shadow-sm transition hover:border-moss/35 lg:order-2"
           >
-            Shop now at Amazon.com
+            {banner}
           </a>
         ) : (
-          <Link
-            href="/contact"
-            className="inline-flex min-h-11 items-center justify-center rounded-full border border-ink/15 bg-cream px-5 text-sm font-semibold text-ink transition hover:border-moss hover:text-moss sm:col-start-2 lg:col-start-auto"
-          >
-            Ask what is available
-          </Link>
+          <div className="overflow-hidden rounded-lg border border-ink/10 bg-cream shadow-sm lg:order-2">{banner}</div>
         )}
+        <div className="lg:order-1">
+          <p className="font-serif text-2xl font-bold text-ink">Shop Shutterbug direct or at Amazon.com</p>
+          <p className="mt-2 max-w-3xl text-sm leading-6 text-ink/68">
+            Buy direct from Shutterbug Camera Shop here, with select camera listings also available through our
+            Amazon.com store for shoppers who prefer that checkout experience.
+          </p>
+          <div className="mt-5 flex flex-col gap-3 sm:flex-row">
+            <Link
+              href="/shop"
+              className="inline-flex min-h-11 items-center justify-center rounded-full border border-ink/15 bg-cream px-5 text-sm font-semibold text-ink transition hover:border-moss hover:text-moss"
+            >
+              Shop our site
+            </Link>
+            {site.amazonStoreUrl ? (
+              <a
+                href={site.amazonStoreUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex min-h-11 items-center justify-center rounded-full bg-forest px-5 text-sm font-semibold text-white transition hover:bg-moss"
+              >
+                Shop now at Amazon.com
+              </a>
+            ) : (
+              <Link
+                href="/contact"
+                className="inline-flex min-h-11 items-center justify-center rounded-full bg-forest px-5 text-sm font-semibold text-white transition hover:bg-moss"
+              >
+                Ask what is available
+              </Link>
+            )}
+          </div>
+        </div>
       </div>
     </section>
   );
