@@ -20,7 +20,7 @@ Use `npm.cmd run build` on Windows PowerShell if script execution policy blocks 
 Required for the full ecommerce flow:
 
 ```env
-NEXT_PUBLIC_SITE_URL=https://shutterbugcamerashop.com
+NEXT_PUBLIC_SITE_URL=https://www.shutterbugcamerashop.com
 NEXT_PUBLIC_AMAZON_STORE_URL=https://www.amazon.com/shops/shutterbugcamera
 DATABASE_URL=postgresql://USER:PASSWORD@HOST:5432/DATABASE?schema=public
 ADMIN_EMAIL=fregoli90@yahoo.com
