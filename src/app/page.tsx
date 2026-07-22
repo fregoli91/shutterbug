@@ -530,7 +530,7 @@ function CategoryGrid({ featuredCategories }: { featuredCategories: Category[] }
 function SignupCallout() {
   return (
     <section className="bg-cream px-4 py-16 sm:px-6 lg:px-8">
-      <div className="mx-auto grid max-w-7xl gap-8 rounded-lg border border-ink/10 bg-white p-6 shadow-sm lg:grid-cols-[1fr_20rem] lg:items-center lg:p-8">
+      <div className="mx-auto grid max-w-7xl gap-8 rounded-lg border border-ink/10 bg-white p-6 shadow-sm lg:grid-cols-[1fr_26rem] lg:items-center lg:p-8">
         <div>
           <p className="text-sm font-bold uppercase tracking-[0.24em] text-moss">Become a Shutterbug customer</p>
           <h2 className="mt-3 font-serif text-4xl font-bold text-ink">Find a vintage camera worth keeping.</h2>
@@ -565,12 +565,12 @@ function SignupCallout() {
           </div>
         </div>
         <Image
-          src="/shutterbug-accent-camera.png"
-          alt="Shutterbug mascot holding a camera"
-          width={640}
-          height={640}
-          sizes="(min-width: 1024px) 20rem, 100vw"
-          className="aspect-square w-full rounded-lg bg-sand object-cover object-center"
+          src="/shutterbug-customer-account-hero.png"
+          alt="Shutterbug customer account, checkout, liked products, and package tracking"
+          width={1448}
+          height={1086}
+          sizes="(min-width: 1024px) 26rem, 100vw"
+          className="aspect-[4/3] w-full rounded-lg bg-sand object-cover object-center"
         />
       </div>
     </section>
