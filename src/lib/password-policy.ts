@@ -1,4 +1,4 @@
-export const PASSWORD_MIN_LENGTH = 15;
+export const PASSWORD_MIN_LENGTH = 9;
 export const PASSWORD_MAX_LENGTH = 128;
 
 const weakPasswordFragments = [

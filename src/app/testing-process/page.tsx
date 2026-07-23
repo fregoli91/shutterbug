@@ -88,6 +88,14 @@ export default function TestingProcessPage() {
             </div>
           </div>
           <div className="rounded-lg border border-ink/10 bg-white p-8 shadow-sm">
+            <Image
+              src="/shutterbug-parts-repair-page.png"
+              alt="Parts and repair items disclosure explaining sold as-is camera listings"
+              width={1536}
+              height={1024}
+              sizes="(min-width: 1024px) 50vw, 100vw"
+              className="mb-6 aspect-[3/2] w-full rounded-lg bg-cream object-contain object-center"
+            />
             <p className="font-serif text-3xl font-bold text-ink">Parts / Repair Items</p>
             <p className="mt-4 leading-7 text-ink/70">
               Parts/repair cameras are not treated the same as ready-to-shoot cameras. These items are sold as-is and

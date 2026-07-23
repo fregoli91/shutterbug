@@ -31,7 +31,12 @@ const errorMessages: Record<string, string> = {
   config: 'Customer accounts need a configured database before signup can work.'
 };
 
-const trustItems = ['Email verification', 'Order history', 'Saved liked products', 'Easier support'];
+const trustItems = [
+  'Track your orders',
+  'View past purchases',
+  'Save products you like',
+  'Get help faster if you need support'
+];
 
 export default async function SignupPage({ searchParams }: Props) {
   const params = searchParams ? await searchParams : {};
@@ -47,39 +52,48 @@ export default async function SignupPage({ searchParams }: Props) {
   return (
     <section className="bg-cream px-4 py-10 sm:px-6 lg:px-8">
       <div className="mx-auto grid max-w-6xl gap-6 lg:grid-cols-[0.9fr_1.1fr] lg:items-start">
-        <aside className="rounded-lg border border-ink/10 bg-white p-6 text-center shadow-sm sm:p-8 lg:sticky lg:top-32 lg:text-left">
-          <div className="flex justify-center lg:justify-start">
-            <Image
-              src="/shutterbug-signup.png"
-              alt="Shutterbug welcoming a new customer account"
-              width={112}
-              height={112}
-              sizes="7rem"
-              className="h-24 w-24 rounded-full border border-ink/10 bg-sand object-cover object-center shadow-sm sm:h-28 sm:w-28"
-            />
-          </div>
-          <p className="mt-6 text-sm font-bold uppercase tracking-[0.22em] text-moss">New customer</p>
-          <h1 className="mt-3 font-serif text-4xl font-bold leading-tight text-ink sm:text-5xl">
-            Join Shutterbug with confidence.
-          </h1>
-          <p className="mt-4 leading-7 text-ink/70">
-            Create one verified account for camera purchases, saved products, tracking, and support after checkout.
-          </p>
+        <aside className="rounded-lg border border-ink/10 bg-white p-5 shadow-sm sm:p-7 lg:sticky lg:top-32">
+          <div className="grid gap-5 md:grid-cols-[minmax(0,1fr)_minmax(15rem,0.9fr)] md:items-center lg:grid-cols-1">
+            <div className="text-center md:text-left">
+              <p className="text-sm font-bold uppercase tracking-[0.22em] text-moss">New customer</p>
+              <h1 className="mt-3 font-serif text-4xl font-bold leading-tight text-ink sm:text-5xl">
+                New to Shutterbug?
+              </h1>
+              <p className="mt-4 leading-7 text-ink/70">
+                Create an account to keep your orders, saved items, and support history in one place.
+              </p>
+            </div>
 
-          <div className="mt-6 grid gap-2 sm:grid-cols-2 lg:grid-cols-1">
-            {trustItems.map((item) => (
-              <div key={item} className="rounded-lg border border-ink/10 bg-cream px-4 py-3 text-sm font-semibold text-ink/75">
-                {item}
-              </div>
-            ))}
-          </div>
+            <div className="grid gap-2 sm:grid-cols-2 md:grid-cols-1">
+              {trustItems.map((item) => (
+                <div
+                  key={item}
+                  className="rounded-lg border border-ink/10 bg-cream px-4 py-3 text-sm font-semibold text-ink/75"
+                >
+                  {item}
+                </div>
+              ))}
+            </div>
 
-          <div className="mt-6 rounded-lg bg-mint p-4 text-sm leading-6 text-ink/72">
-            <p className="font-semibold text-ink">What happens next?</p>
-            <p className="mt-2">
-              We send a verification link to your email before account access. Your payment details stay with trusted
-              checkout providers, not stored in your Shutterbug account.
-            </p>
+            <div className="rounded-lg bg-mint p-4 text-sm leading-6 text-ink/72">
+              <p className="font-semibold text-ink">What happens next?</p>
+              <p className="mt-2">
+                After you sign up, we&apos;ll send a verification link to your email. Your payment details are handled
+                securely by our checkout provider and are not stored in your Shutterbug account.
+              </p>
+            </div>
+
+            <div className="overflow-hidden rounded-lg border border-ink/10 bg-cream shadow-sm md:col-start-2 md:row-span-3 md:row-start-1 lg:col-auto lg:row-auto">
+              <Image
+                src="/shutterbug-signup-customer-illustration.png"
+                alt="Clay-style Shutterbug signup scene with a customer account, verified email, order tracking, and support icons"
+                width={1536}
+                height={1152}
+                sizes="(min-width: 1024px) 32vw, (min-width: 768px) 38vw, 100vw"
+                className="aspect-[4/3] w-full object-contain object-center"
+                priority
+              />
+            </div>
           </div>
         </aside>
 
