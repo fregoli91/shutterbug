@@ -545,11 +545,19 @@ function CategoryGrid({ featuredCategories }: { featuredCategories: Category[] }
 function SignupCallout() {
   return (
     <section className="bg-cream px-4 py-16 sm:px-6 lg:px-8">
-      <div className="mx-auto grid max-w-7xl gap-8 rounded-lg border border-ink/10 bg-white p-6 shadow-sm lg:grid-cols-[1fr_26rem] lg:items-center lg:p-8">
+      <div className="mx-auto max-w-7xl rounded-lg border border-ink/10 bg-white p-6 shadow-sm lg:p-8">
         <div>
           <p className="text-sm font-bold uppercase tracking-[0.24em] text-moss">Become a Shutterbug customer</p>
           <h2 className="mt-3 font-serif text-4xl font-bold text-ink">Find a vintage camera worth keeping.</h2>
-          <p className="mt-4 max-w-3xl leading-7 text-ink/70">
+          <Image
+            src="/shutterbug-customer-account-hero.png"
+            alt="Shutterbug customer account, checkout, liked products, and package tracking"
+            width={1448}
+            height={1086}
+            sizes="(min-width: 1280px) 72rem, 100vw"
+            className="mt-6 aspect-[4/3] w-full rounded-lg bg-sand object-cover object-center sm:aspect-[16/9]"
+          />
+          <p className="mt-6 max-w-3xl leading-7 text-ink/70">
             Create your account to shop tested digital and film cameras, track your orders, and keep every Shutterbug
             purchase connected in one place.
           </p>
@@ -579,14 +587,6 @@ function SignupCallout() {
             </Link>
           </div>
         </div>
-        <Image
-          src="/shutterbug-customer-account-hero.png"
-          alt="Shutterbug customer account, checkout, liked products, and package tracking"
-          width={1448}
-          height={1086}
-          sizes="(min-width: 1024px) 26rem, 100vw"
-          className="aspect-[4/3] w-full rounded-lg bg-sand object-cover object-center"
-        />
       </div>
     </section>
   );

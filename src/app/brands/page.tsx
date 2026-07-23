@@ -37,7 +37,7 @@ export default async function BrandsPage() {
     <section className="bg-cream px-4 py-14 sm:px-6 lg:px-8">
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }} />
       <div className="mx-auto max-w-7xl">
-        <div className="grid gap-8 lg:grid-cols-[1fr_24rem] lg:items-end">
+        <div className="grid gap-8">
           <div className="max-w-3xl">
             <p className="text-sm font-bold uppercase tracking-[0.28em] text-moss">Shop by brand</p>
             <h1 className="mt-3 font-serif text-5xl font-bold tracking-tight text-ink sm:text-6xl">
@@ -48,20 +48,22 @@ export default async function BrandsPage() {
               around real availability, clear condition notes, included accessories, and testing details.
             </p>
           </div>
-          <div className="rounded-lg border border-ink/10 bg-white p-5 shadow-sm">
+          <div className="overflow-hidden rounded-lg border border-ink/10 bg-white shadow-sm">
             <Image
-              src="/shutterbug-accent-camera.png"
-              alt=""
-              width={640}
-              height={640}
-              sizes="(min-width: 1024px) 24rem, 100vw"
-              className="mb-5 aspect-square w-full rounded-lg bg-sand object-cover object-center"
+              src="/shutterbug-shop-by-brand-page.png"
+              alt="Shop by brand with Canon, Nikon, Sony, Olympus, Fujifilm, Kodak, and Epson used camera shelves"
+              width={1672}
+              height={941}
+              sizes="(min-width: 1280px) 80rem, 100vw"
+              className="aspect-[16/9] w-full bg-sand object-cover object-center"
             />
-            <p className="font-serif text-2xl font-bold text-ink">Camera-first browsing</p>
-            <p className="mt-3 text-sm leading-6 text-ink/68">
-              Brand pages stay useful even when a one-off item sells out, so shoppers can find similar gear or ask
-              Shutterbug to source a specific model.
-            </p>
+            <div className="p-5 sm:p-6">
+              <p className="font-serif text-2xl font-bold text-ink">Camera-first browsing</p>
+              <p className="mt-3 max-w-3xl text-sm leading-6 text-ink/68">
+                Brand pages stay useful even when a one-off item sells out, so shoppers can find similar gear or ask
+                Shutterbug to source a specific model.
+              </p>
+            </div>
           </div>
         </div>
 
