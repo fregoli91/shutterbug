@@ -102,6 +102,24 @@ Customer routes:
 
 Customer passwords are hashed with Node `scrypt`; plain-text passwords are never stored. Customer sessions use signed HTTP-only cookies and `CUSTOMER_SESSION_SECRET`.
 
+## Email Delivery
+
+Customer verification emails, paid order emails, admin order alerts, and shipping emails use Resend through `RESEND_API_KEY`.
+
+For production, verify `shutterbugcamerashop.com` in Resend and use:
+
+```env
+EMAIL_FROM=Shutterbug Camera Shop <support@shutterbugcamerashop.com>
+```
+
+If you are only testing before the domain is verified, Resend's sample sender can be used temporarily:
+
+```env
+EMAIL_FROM=onboarding@resend.dev
+```
+
+In Vercel, enter env values without wrapping quotes. After changing `RESEND_API_KEY` or `EMAIL_FROM`, redeploy Production so the new values are loaded.
+
 Logged-in customers see `Account` in the navbar. Logged-out shoppers see `Login`. Customers can still check out as guests, but logging in before checkout saves the order to account history.
 
 ## Checkout

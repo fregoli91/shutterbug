@@ -25,14 +25,20 @@ function escapeHtml(value: string) {
     .replace(/'/g, '&#39;');
 }
 
+function cleanEnvValue(value: string | undefined) {
+  const trimmed = value?.trim();
+  if (!trimmed) return '';
+  return trimmed.replace(/^(['"])(.*)\1$/, '$2').trim();
+}
+
 export async function sendTransactionalEmail({
   to,
   subject,
   html,
   text
 }: SendEmailOptions): Promise<EmailSendResult> {
-  const resendApiKey = process.env.RESEND_API_KEY;
-  const from = process.env.EMAIL_FROM || `Shutterbug Camera Shop <${site.supportEmail}>`;
+  const resendApiKey = cleanEnvValue(process.env.RESEND_API_KEY);
+  const from = cleanEnvValue(process.env.EMAIL_FROM) || `Shutterbug Camera Shop <${site.supportEmail}>`;
 
   if (!resendApiKey) {
     if (process.env.NODE_ENV === 'production') {
@@ -58,7 +64,8 @@ export async function sendTransactionalEmail({
   });
 
   if (!response.ok) {
-    throw new Error(`Resend email failed with status ${response.status}`);
+    const errorBody = await response.text().catch(() => '');
+    throw new Error(`Resend email failed with status ${response.status}${errorBody ? `: ${errorBody}` : ''}`);
   }
 
   return { sent: true, provider: 'resend' };
