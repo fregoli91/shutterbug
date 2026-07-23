@@ -686,17 +686,30 @@ function TrustCards() {
 function TestingProcessCallout() {
   return (
     <section className="bg-mint px-4 py-16 sm:px-6 lg:px-8">
-      <div className="mx-auto grid max-w-7xl gap-8 rounded-lg border border-ink/10 bg-white p-8 shadow-sm lg:grid-cols-[1fr_auto] lg:items-center">
+      <div className="mx-auto grid max-w-7xl gap-8 rounded-lg border border-ink/10 bg-white p-6 shadow-sm lg:grid-cols-[minmax(0,1fr)_minmax(22rem,0.95fr)] lg:items-center lg:p-8">
         <div>
           <p className="text-sm font-bold uppercase tracking-[0.24em] text-moss">Testing process preview</p>
           <h2 className="mt-3 font-serif text-4xl font-bold text-ink">Know what works before it arrives.</h2>
           <p className="mt-4 max-w-3xl leading-7 text-ink/70">See how each camera is checked before it is listed.</p>
+          <Link
+            href="/testing-process"
+            className="mt-6 inline-flex min-h-11 items-center justify-center rounded-full bg-forest px-7 text-center font-semibold text-white transition hover:bg-moss"
+          >
+            See how we test
+          </Link>
         </div>
         <Link
           href="/testing-process"
-          className="rounded-full bg-forest px-7 py-3 text-center font-semibold text-white transition hover:bg-moss"
+          className="group block overflow-hidden rounded-lg border border-ink/10 bg-cream shadow-sm transition hover:-translate-y-1 hover:border-moss/30 hover:shadow-soft"
         >
-          See how we test
+          <Image
+            src="/shutterbug-testing-process-preview.png"
+            alt="Shutterbug testing process checklist for power, lens, flash, buttons, battery, and sample photos"
+            width={1672}
+            height={941}
+            sizes="(min-width: 1024px) 44vw, 100vw"
+            className="aspect-[16/9] w-full bg-cream object-cover object-center transition duration-500 group-hover:scale-[1.02]"
+          />
         </Link>
       </div>
     </section>
