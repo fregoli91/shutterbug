@@ -264,7 +264,7 @@ function LoggedOutHome({
 
       <TrustCards />
 
-      <CategoryPills title="Popular brands" />
+      <CategoryPills title="Popular brands" showPopularBrandsImage />
 
       <SignupCallout />
 
@@ -472,11 +472,26 @@ function DirectStoreCallout() {
   );
 }
 
-function CategoryPills({ title }: { title: string }) {
+function CategoryPills({ title, showPopularBrandsImage = false }: { title: string; showPopularBrandsImage?: boolean }) {
   return (
     <section className="bg-cream px-4 py-14 sm:px-6 lg:px-8">
       <div className="mx-auto max-w-7xl">
         <p className="text-sm font-bold uppercase tracking-[0.24em] text-moss">{title}</p>
+        {showPopularBrandsImage ? (
+          <Link
+            href="/brands"
+            className="group mt-5 block overflow-hidden rounded-lg border border-ink/10 bg-white shadow-sm transition hover:-translate-y-1 hover:border-moss/30 hover:shadow-soft"
+          >
+            <Image
+              src="/shutterbug-popular-brands.png"
+              alt="Popular Shutterbug Camera Shop brands including Canon, Nikon, Sony, Olympus, Fujifilm, Kodak, HP, Epson, Nintendo, and Apple"
+              width={1672}
+              height={941}
+              sizes="(min-width: 1280px) 80rem, 100vw"
+              className="aspect-[1672/941] w-full bg-sand object-cover object-center transition duration-500 group-hover:scale-[1.02]"
+            />
+          </Link>
+        ) : null}
         <div className="mt-5 flex flex-wrap gap-2">
           {brandLinks.map(([label, href]) => (
             <Link
