@@ -5,6 +5,7 @@ import { headers } from 'next/headers';
 import { Prisma } from '@/generated/prisma/client';
 import { createCustomerAccount, createCustomerEmailVerificationToken, normalizeEmail } from '@/lib/customer-auth';
 import { getPublicSiteUrl, sendCustomerVerificationEmail } from '@/lib/email';
+import { getPrisma } from '@/lib/prisma';
 import { validateCustomerPassword } from '@/lib/password-policy';
 
 function cleanRedirect(value: FormDataEntryValue | null) {
@@ -19,6 +20,12 @@ async function getRequestBaseUrl() {
   const protocol =
     headerStore.get('x-forwarded-proto') || (host.startsWith('localhost') || host.startsWith('127.') ? 'http' : 'https');
   return `${protocol}://${host}`;
+}
+
+function redirectToCheckEmail(email: string, status: string, redirectTo: string): never {
+  redirect(
+    `/signup/check-email?email=${encodeURIComponent(email)}&status=${status}&redirect=${encodeURIComponent(redirectTo)}`
+  );
 }
 
 export async function signupAction(formData: FormData) {
@@ -43,6 +50,13 @@ export async function signupAction(formData: FormData) {
     customer = await createCustomerAccount({ email, name, password });
   } catch (error) {
     if (error instanceof Prisma.PrismaClientKnownRequestError && error.code === 'P2002') {
+      const prisma = getPrisma();
+      const existingCustomer = prisma
+        ? await prisma.customer.findUnique({ where: { email }, select: { email: true, emailVerifiedAt: true } })
+        : null;
+      if (existingCustomer && !existingCustomer.emailVerifiedAt) {
+        redirectToCheckEmail(existingCustomer.email, 'unverified', redirectTo);
+      }
       redirect(`/signup?error=exists&redirect=${encodeURIComponent(redirectTo)}`);
     }
     if (error instanceof Error && error.message.includes('DATABASE_URL')) {
@@ -65,7 +79,5 @@ export async function signupAction(formData: FormData) {
     status = 'email-error';
   }
 
-  redirect(
-    `/signup/check-email?email=${encodeURIComponent(customer.email)}&status=${status}&redirect=${encodeURIComponent(redirectTo)}`
-  );
+  redirectToCheckEmail(customer.email, status, redirectTo);
 }

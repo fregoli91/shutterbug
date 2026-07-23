@@ -25,10 +25,18 @@ function cleanRedirect(value: string | string[] | undefined) {
 
 const errorMessages: Record<string, string> = {
   missing: 'Enter your email and password.',
-  password: `Use a stronger password with at least ${PASSWORD_MIN_LENGTH} characters.`,
   mismatch: 'Make sure both password fields match.',
   exists: 'An account already exists for that email. Try logging in instead.',
   config: 'Customer accounts need a configured database before signup can work.'
+};
+
+const passwordReasonMessages: Record<string, string> = {
+  'too-short': `Use at least ${PASSWORD_MIN_LENGTH} characters.`,
+  'too-long': `Use ${PASSWORD_MAX_LENGTH} characters or fewer.`,
+  common: 'Avoid common words, keyboard patterns, and obvious Shutterbug/camera phrases.',
+  personal: 'Avoid using your name or email address in the password.',
+  repeated: 'Avoid long repeated character runs.',
+  invalid: `Use a stronger password with at least ${PASSWORD_MIN_LENGTH} characters.`
 };
 
 const trustItems = [
@@ -47,10 +55,23 @@ export default async function SignupPage({ searchParams }: Props) {
   const customer = await getCustomerSession();
   if (customer) redirect(redirectTo);
 
-  const error = errorMessages[asString(params.error)];
+  const errorCode = asString(params.error);
+  const error =
+    errorCode === 'password'
+      ? passwordReasonMessages[asString(params.reason)] ?? passwordReasonMessages.invalid
+      : errorMessages[errorCode];
 
   return (
     <section className="bg-cream px-4 py-10 sm:px-6 lg:px-8">
+      {error ? (
+        <p
+          role="alert"
+          className="mx-auto mb-5 max-w-6xl rounded-lg border border-ink/10 bg-sand p-4 text-sm font-semibold leading-6 text-ink shadow-sm"
+        >
+          {error}
+        </p>
+      ) : null}
+
       <div className="mx-auto grid max-w-6xl gap-6 lg:grid-cols-[0.9fr_1.1fr] lg:items-start">
         <aside className="rounded-lg border border-ink/10 bg-white p-5 shadow-sm sm:p-7 lg:sticky lg:top-32">
           <div className="grid gap-5 md:grid-cols-[minmax(0,1fr)_minmax(15rem,0.9fr)] md:items-center lg:grid-cols-1">
@@ -117,8 +138,6 @@ export default async function SignupPage({ searchParams }: Props) {
               Save time at checkout and keep your Shutterbug camera history connected.
             </p>
           </div>
-
-          {error ? <p className="mt-5 rounded-lg bg-sand p-3 text-sm font-semibold text-ink">{error}</p> : null}
 
           <form action={signupAction} className="mt-6 grid gap-4">
             <input type="hidden" name="redirect" value={redirectTo} />
