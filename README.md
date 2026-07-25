@@ -22,7 +22,8 @@ Required for the full ecommerce flow:
 ```env
 NEXT_PUBLIC_SITE_URL=https://www.shutterbugcamerashop.com
 NEXT_PUBLIC_AMAZON_STORE_URL=https://www.amazon.com/shops/shutterbugcamera
-DATABASE_URL=postgresql://USER:PASSWORD@HOST:5432/DATABASE?schema=public
+DATABASE_URL=postgresql://USER:PASSWORD@HOST:6543/DATABASE?pgbouncer=true
+DIRECT_URL=postgresql://USER:PASSWORD@HOST:5432/DATABASE
 ADMIN_EMAIL=fregoli90@yahoo.com
 ADMIN_USERNAME=admin
 ADMIN_PASSWORD=change-me
@@ -51,6 +52,8 @@ PAYPAL_CLIENT_SECRET=your-paypal-client-secret
 
 Use Supabase Postgres, Neon, Prisma Postgres, or another Vercel-compatible PostgreSQL database.
 
+For Supabase, set `DATABASE_URL` to the pooled runtime URL and set `DIRECT_URL` to the session/direct connection for Prisma migrations. `prisma.config.ts` uses `DIRECT_URL` for Prisma CLI commands when it is present, while the app runtime uses `DATABASE_URL`.
+
 Generate the Prisma client after schema changes:
 
 ```bash
@@ -63,7 +66,7 @@ Apply migrations to production:
 npx prisma migrate deploy
 ```
 
-`npm run prisma:migrate` is an alias for Prisma's production migration deploy command. Only run it where the real `DATABASE_URL` is configured, never against the placeholder value from `.env.example`.
+`npm run prisma:migrate` is an alias for Prisma's production migration deploy command. Only run it where the real production/staging database URLs are configured, never against the placeholder values from `.env.example`.
 
 Current schema includes products, product images, customers, orders, order items, order status history, paid email tracking, and fulfillment tracking.
 

@@ -11,6 +11,7 @@ Set these in the staging host before testing:
 - `NEXT_PUBLIC_SITE_URL`
 - `NEXT_PUBLIC_AMAZON_STORE_URL`
 - `DATABASE_URL`
+- `DIRECT_URL` if your database provider uses a pooled runtime URL and a separate direct/session URL for migrations
 - `ADMIN_EMAIL` or `ADMIN_USERNAME`
 - `ADMIN_PASSWORD`
 - `ADMIN_SESSION_SECRET`
@@ -40,7 +41,7 @@ Fail condition:
 
 ## 2. Database Migration
 
-Run only with the staging `DATABASE_URL` configured:
+Run only with the staging database URLs configured. For Supabase, use the pooled connection as `DATABASE_URL` and the session/direct connection as `DIRECT_URL`:
 
 ```bash
 npx prisma migrate deploy

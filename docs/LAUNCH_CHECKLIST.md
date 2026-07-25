@@ -13,6 +13,7 @@ This checklist captures the production readiness audit for the current store fou
 - `NEXT_PUBLIC_SITE_URL`
 - `NEXT_PUBLIC_AMAZON_STORE_URL`
 - `DATABASE_URL`
+- `DIRECT_URL` if using Supabase or another provider that separates pooled runtime and direct/session migration URLs
 - `ADMIN_EMAIL` or `ADMIN_USERNAME`
 - `ADMIN_PASSWORD`
 - `ADMIN_SESSION_SECRET`
@@ -99,6 +100,7 @@ Before launch, run through this with Stripe test mode and real test products:
 ## Remaining Blockers Before Real Orders
 
 - Production `DATABASE_URL` must be configured.
+- Production `DIRECT_URL` should be configured when Prisma migrations need a direct/session connection.
 - Production migrations must be deployed.
 - Stripe webhook endpoint must be registered and tested.
 - Resend email sending must be configured with a verified sender/domain.
