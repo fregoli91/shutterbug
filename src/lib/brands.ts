@@ -21,7 +21,9 @@ const priorityBrands = [
   'Minolta',
   'Leica',
   'Polaroid',
-  'HP'
+  'HP',
+  'Brother',
+  'Lexmark'
 ];
 
 export function getBrandSlug(name: string) {
@@ -34,6 +36,13 @@ export function brandNameFromSlug(slug: string) {
 }
 
 function brandDescription(name: string, count: number) {
+  const printerBrands = new Set(['Brother', 'HP', 'Lexmark']);
+  if (printerBrands.has(name)) {
+    return count > 0
+      ? `Shop tested used ${name} printers from Shutterbug Camera Shop with clear condition notes, included cable, ink or toner details when applicable, and honest availability.`
+      : `Browse Shutterbug's ${name} printer page for future inventory, restock interest, and tested used-printer listings.`;
+  }
+
   const base =
     count > 0
       ? `Shop ${name} cameras and gear from Shutterbug Camera Shop with clear condition notes, testing details, real photos, and honest availability.`

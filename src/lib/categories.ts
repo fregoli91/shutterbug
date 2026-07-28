@@ -301,10 +301,14 @@ export const categories: Category[] = [
   }),
   category({
     slug: 'printers',
-    name: 'Printers',
-    description: 'Photo printers, compact printers, printer accessories, and tested imaging devices.',
-    seoTitle: 'Used Photo Printers',
-    keywords: ['photo printer', 'used printer']
+    name: 'Used Printers',
+    navLabel: 'Printers',
+    description:
+      'Tested used printers from Canon, Brother, HP, Lexmark, and other trusted brands, with clear condition notes, included cables, ink or toner details when applicable, and secure packing.',
+    seoTitle: 'Used Printers | Canon, Brother, HP & Lexmark | Shutterbug Camera Shop',
+    intro:
+      'Shop used printers from Canon, Brother, HP, Lexmark, and other trusted brands. Each listing includes clear condition notes, what was tested, what is included, and any known issues before checkout.',
+    keywords: ['used printers', 'Canon printer', 'Brother printer', 'HP printer', 'Lexmark printer']
   }),
   category({
     slug: 'electronics',
@@ -369,6 +373,7 @@ export const featuredCategorySlugs = [
   'film-cameras',
   'lenses',
   'camera-accessories',
+  'printers',
   'parts-repair'
 ];
 

@@ -28,6 +28,7 @@ const searchSuggestions = [
   'Kodak EasyShare',
   'Panasonic Lumix',
   'Film Cameras',
+  'Printers',
   'Lenses',
   'Battery Chargers',
   'Parts Repair'

@@ -64,7 +64,11 @@ export function googleProductCategory(product: Product) {
     return 'Cameras & Optics > Camera & Optic Accessories';
   }
 
-  if (product.categorySlug === 'scanners-printers' || product.productType?.toLowerCase().includes('printer')) {
+  if (
+    product.categorySlug === 'printers' ||
+    product.categorySlug === 'scanners-printers' ||
+    product.productType?.toLowerCase().includes('printer')
+  ) {
     return 'Electronics > Print, Copy, Scan & Fax';
   }
 

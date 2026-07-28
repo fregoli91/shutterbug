@@ -52,7 +52,10 @@ export function Footer() {
           <p className="text-sm font-semibold uppercase tracking-[0.2em] text-cream/60">Shop</p>
           <div className="mt-4 grid gap-1 text-sm text-cream/75">
             <Link href="/shop" className="flex min-h-9 items-center transition hover:text-white">
-              All Cameras
+              All Products
+            </Link>
+            <Link href="/categories/printers" className="flex min-h-9 items-center transition hover:text-white">
+              Used Printers
             </Link>
             <Link href="/brands" className="flex min-h-9 items-center transition hover:text-white">
               Camera Brands

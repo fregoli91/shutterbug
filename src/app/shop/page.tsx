@@ -52,6 +52,7 @@ const popularSearches = [
   ['Olympus', '/shop?q=Olympus'],
   ['Sony Cyber-shot', '/shop?q=Sony+Cyber-shot'],
   ['Film cameras', '/categories/film-cameras'],
+  ['Printers', '/categories/printers'],
   ['Lenses', '/categories/lenses'],
   ['Battery chargers', '/shop?productType=Battery+Chargers']
 ];

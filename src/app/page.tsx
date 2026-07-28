@@ -262,6 +262,8 @@ function LoggedOutHome({
         </div>
       </section>
 
+      <PrinterCallout />
+
       <TrustCards />
 
       <CategoryPills title="Popular brands" showPopularBrandsImage />
@@ -403,6 +405,7 @@ function LoggedInHome({
       </section>
 
       <CategoryGrid featuredCategories={featuredCategories} />
+      <PrinterCallout />
       <TrustCards />
     </>
   );
@@ -587,6 +590,58 @@ function SignupCallout() {
             </Link>
           </div>
         </div>
+      </div>
+    </section>
+  );
+}
+
+function PrinterCallout() {
+  const printerBrands = ['Canon', 'Brother', 'HP', 'Lexmark'];
+
+  return (
+    <section className="bg-cream px-4 py-14 sm:px-6 lg:px-8">
+      <div className="mx-auto grid max-w-7xl overflow-hidden rounded-lg border border-ink/10 bg-white shadow-sm lg:grid-cols-[minmax(0,1fr)_minmax(22rem,0.8fr)]">
+        <div className="p-6 sm:p-8 lg:p-10">
+          <p className="text-sm font-bold uppercase tracking-[0.24em] text-moss">More than cameras</p>
+          <h2 className="mt-3 max-w-3xl font-serif text-4xl font-bold text-ink">
+            Used printers, tested and packed with care.
+          </h2>
+          <p className="mt-4 max-w-3xl leading-7 text-ink/70">
+            Printers are one of our strongest categories. Browse used Canon, Brother, HP, and Lexmark printers with
+            clear condition notes, included accessories, and honest testing details.
+          </p>
+          <div className="mt-6 flex flex-wrap gap-2">
+            {printerBrands.map((brand) => (
+              <Link
+                key={brand}
+                href={`/brands/${brand.toLowerCase()}`}
+                className="rounded-full border border-moss/20 bg-cream px-4 py-2 text-sm font-semibold text-ink/75 transition hover:border-moss hover:text-moss"
+              >
+                {brand}
+              </Link>
+            ))}
+          </div>
+          <Link
+            href="/categories/printers"
+            className="mt-7 inline-flex min-h-11 items-center justify-center rounded-full bg-forest px-7 text-sm font-semibold text-white transition hover:bg-moss"
+          >
+            Shop Printers
+          </Link>
+        </div>
+
+        <Link
+          href="/categories/printers"
+          aria-label="Shop tested used printers"
+          className="group grid min-h-72 content-center gap-6 border-t border-ink/10 bg-mint p-8 text-center transition hover:bg-sage/70 lg:border-l lg:border-t-0"
+        >
+          <div className="mx-auto grid h-28 w-36 place-items-center rounded-lg border-[6px] border-forest bg-cream shadow-soft transition group-hover:-translate-y-1">
+            <div className="h-12 w-24 rounded-sm border-4 border-forest bg-white" />
+          </div>
+          <div>
+            <p className="font-serif text-3xl font-bold text-ink">Printer inventory</p>
+            <p className="mt-2 text-sm font-semibold text-moss">Tested when possible. Packed securely.</p>
+          </div>
+        </Link>
       </div>
     </section>
   );
