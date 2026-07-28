@@ -106,8 +106,8 @@ export const products: Product[] = [
     conditionSummary: 'Clean body, bright screen, light normal wear.',
     price: 344.99,
     status: 'active',
-    heroImage: '/placeholder-camera.svg',
-    gallery: ['/placeholder-camera.svg'],
+    heroImage: '/shutterbug-product-placeholder.png',
+    gallery: ['/shutterbug-product-placeholder.png'],
     shortDescription:
       'A clean Canon PowerShot SD1000 with the classic compact digital camera look. Tested, photographed, and ready to shoot.',
     seoDescription:
@@ -142,8 +142,8 @@ export const products: Product[] = [
     conditionSummary: 'Fully tested with light body wear.',
     price: 179.99,
     status: 'active',
-    heroImage: '/placeholder-camera.svg',
-    gallery: ['/placeholder-camera.svg'],
+    heroImage: '/shutterbug-product-placeholder.png',
+    gallery: ['/shutterbug-product-placeholder.png'],
     shortDescription:
       'A compact Olympus digital camera with a simple point-and-shoot feel and nostalgic photo character.',
     seoDescription:
@@ -178,8 +178,8 @@ export const products: Product[] = [
     conditionSummary: 'Slim pocket camera, final testing pending before sale.',
     price: 149.99,
     status: 'archived',
-    heroImage: '/placeholder-camera.svg',
-    gallery: ['/placeholder-camera.svg'],
+    heroImage: '/shutterbug-product-placeholder.png',
+    gallery: ['/shutterbug-product-placeholder.png'],
     shortDescription:
       'Slim Nikon Coolpix compact camera. Final photos, testing details, and checkout will be added before sale.',
     seoDescription:
@@ -214,8 +214,8 @@ export const products: Product[] = [
     conditionSummary: 'Sold example page for a high-demand compact model.',
     price: 199.99,
     status: 'sold_out',
-    heroImage: '/placeholder-camera.svg',
-    gallery: ['/placeholder-camera.svg'],
+    heroImage: '/shutterbug-product-placeholder.png',
+    gallery: ['/shutterbug-product-placeholder.png'],
     shortDescription:
       'Sold-out Sony Cyber-shot model page example. Keep these pages indexed and collect restock interest for high-demand cameras.',
     seoDescription:
@@ -336,8 +336,8 @@ function dbProductToProduct(product: ProductWithImages): Product {
     priceCents: product.priceCents,
     quantity: product.quantity,
     status: publicStatus,
-    heroImage: hero ?? '/placeholder-camera.svg',
-    gallery: gallery.length ? gallery : ['/placeholder-camera.svg'],
+    heroImage: hero ?? '/shutterbug-product-placeholder.png',
+    gallery: gallery.length ? gallery : ['/shutterbug-product-placeholder.png'],
     shortDescription: product.shortDescription || product.description,
     seoTitle: product.seoTitle ?? undefined,
     seoDescription: product.seoDescription || product.shortDescription || product.description,

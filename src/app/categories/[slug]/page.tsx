@@ -11,6 +11,36 @@ import { buildBreadcrumbJsonLd, buildCollectionPageJsonLd, jsonLdGraph } from '@
 
 type Props = { params: Promise<{ slug: string }> };
 
+const categoryHeroImages: Record<
+  string,
+  { src: string; alt: string; width: number; height: number }
+> = {
+  'parts-repair': {
+    src: '/shutterbug-parts-repair.png',
+    alt: 'Shutterbug mascot repairing a vintage camera',
+    width: 640,
+    height: 640
+  },
+  'camera-accessories': {
+    src: '/shutterbug-accessories-page.png',
+    alt: 'Camera straps, flash, chargers, batteries, cases, filters, remote, and cables at Shutterbug Camera Shop',
+    width: 1448,
+    height: 1086
+  },
+  lenses: {
+    src: '/shutterbug-lenses-page.png',
+    alt: 'Used camera lenses displayed with condition tags and inspection details at Shutterbug Camera Shop',
+    width: 1672,
+    height: 941
+  },
+  printers: {
+    src: '/shutterbug-printers-page.png',
+    alt: 'Used photo, inkjet, and laser printers displayed with ink cartridges and paper at Shutterbug Camera Shop',
+    width: 1448,
+    height: 1086
+  }
+};
+
 export async function generateStaticParams() {
   return categories.map((category) => ({ slug: category.slug }));
 }
@@ -46,7 +76,7 @@ export default async function CategoryPage({ params }: Props) {
     categoryProducts.map((product) => product.id)
   );
   const relatedCategories = getRelatedCategories(category.slug);
-  const categoryHeroImage = category.slug === 'parts-repair' ? '/shutterbug-parts-repair.png' : null;
+  const categoryHeroImage = categoryHeroImages[category.slug];
   const isPrinterCategory = category.slug === 'printers';
   const trustItems = isPrinterCategory
     ? ['Tested when possible', 'Clear condition notes', 'Includes / does-not-include details', 'Packed securely for shipment']
@@ -82,23 +112,13 @@ export default async function CategoryPage({ params }: Props) {
           <div className="rounded-lg border border-ink/10 bg-white p-5 shadow-sm">
             {categoryHeroImage ? (
               <Image
-                src={categoryHeroImage}
-                alt="Shutterbug mascot repairing a vintage camera"
-                width={640}
-                height={640}
+                src={categoryHeroImage.src}
+                alt={categoryHeroImage.alt}
+                width={categoryHeroImage.width}
+                height={categoryHeroImage.height}
                 sizes="(min-width: 1024px) 22rem, 100vw"
-                className="mb-5 aspect-square w-full rounded-lg bg-sand object-cover object-center"
+                className="mb-5 h-auto w-full rounded-lg bg-sand object-contain object-center"
               />
-            ) : isPrinterCategory ? (
-              <div className="mb-5 grid min-h-64 content-center gap-5 rounded-lg border border-moss/15 bg-mint p-6 text-center">
-                <div className="mx-auto grid h-20 w-24 place-items-center rounded-lg border-4 border-forest bg-cream shadow-sm">
-                  <div className="h-8 w-16 rounded-sm border-2 border-forest bg-white" />
-                </div>
-                <div>
-                  <p className="font-serif text-2xl font-bold text-ink">Tested used printers</p>
-                  <p className="mt-2 text-sm leading-6 text-ink/65">Canon, Brother, HP, Lexmark, and more.</p>
-                </div>
-              </div>
             ) : null}
             <p className="font-serif text-2xl font-bold text-ink">Shutterbug standard</p>
             <ul className="mt-4 grid list-disc gap-2 pl-5 text-sm leading-6 text-ink/70">

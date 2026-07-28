@@ -41,5 +41,5 @@ export async function getCustomerLikedProducts(customerId: string) {
 
 export function getLikedProductHeroImage(like: LikedProductRecord) {
   const sorted = [...like.product.images].sort((a, b) => a.sortOrder - b.sortOrder);
-  return sorted.find((image) => image.role === ProductImageRole.HERO)?.url ?? sorted[0]?.url ?? '/placeholder-camera.svg';
+  return sorted.find((image) => image.role === ProductImageRole.HERO)?.url ?? sorted[0]?.url ?? '/shutterbug-product-placeholder.png';
 }

@@ -58,13 +58,13 @@ export default async function OrderSummaryPage({ params, searchParams }: Props) 
               {order.items.map((item) => (
                 <div key={item.id} className="grid gap-3 rounded-lg bg-cream p-3 sm:grid-cols-[5rem_1fr_auto] sm:items-center">
                   <Image
-                    src={item.imageUrl ?? '/placeholder-camera.svg'}
+                    src={item.imageUrl ?? '/shutterbug-product-placeholder.png'}
                     alt={item.productTitle}
                     width={80}
                     height={80}
                     sizes="5rem"
                     unoptimized={
-                      (item.imageUrl ?? '/placeholder-camera.svg').endsWith('.svg') ||
+                      (item.imageUrl ?? '/shutterbug-product-placeholder.png').endsWith('.svg') ||
                       (item.imageUrl ?? '').startsWith('http')
                     }
                     className="aspect-square rounded-lg bg-sand object-contain"

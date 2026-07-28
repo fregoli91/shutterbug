@@ -94,13 +94,13 @@ export default async function AdminOrderDetailPage({ params, searchParams }: Pro
               {order.items.map((item) => (
                 <div key={item.id} className="grid gap-3 rounded-lg bg-cream p-3 sm:grid-cols-[4rem_1fr_auto]">
                   <Image
-                    src={item.imageUrl ?? '/placeholder-camera.svg'}
+                    src={item.imageUrl ?? '/shutterbug-product-placeholder.png'}
                     alt={item.productTitle}
                     width={64}
                     height={64}
                     sizes="4rem"
                     unoptimized={
-                      (item.imageUrl ?? '/placeholder-camera.svg').endsWith('.svg') ||
+                      (item.imageUrl ?? '/shutterbug-product-placeholder.png').endsWith('.svg') ||
                       (item.imageUrl ?? '').startsWith('http')
                     }
                     className="aspect-square rounded-lg bg-white object-contain"

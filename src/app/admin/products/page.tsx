@@ -153,7 +153,7 @@ export default async function AdminProductsPage({ searchParams }: Props) {
 
       <div className="mt-6 grid gap-3">
         {products.map((product) => {
-          const imageUrl = product.mainImageUrl || product.images[0]?.url || '/placeholder-camera.svg';
+          const imageUrl = product.mainImageUrl || product.images[0]?.url || '/shutterbug-product-placeholder.png';
 
           return (
             <Link

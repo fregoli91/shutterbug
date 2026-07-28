@@ -17,7 +17,7 @@ function placeholderItem(id: string, quantity: number): CartValidationItem {
     sku: '',
     slug: '',
     title: 'Checking item...',
-    image: '/placeholder-camera.svg',
+    image: '/shutterbug-product-placeholder.png',
     condition: 'Checking current inventory',
     statusLabel: 'Checking',
     requestedQuantity: quantity,

@@ -62,7 +62,7 @@ function issueResponse(id: string, quantity: number, issue: string): CartValidat
     sku: '',
     slug: '',
     title: 'Unavailable item',
-    image: '/placeholder-camera.svg',
+    image: '/shutterbug-product-placeholder.png',
     condition: 'Unavailable',
     statusLabel: 'Unavailable',
     requestedQuantity: quantity,
@@ -94,7 +94,7 @@ function conditionLabel(condition: DbProductCondition) {
 function imageUrl(product: DatabaseCartProduct) {
   const sortedImages = [...product.images].sort((a, b) => a.sortOrder - b.sortOrder);
   const relationHero = sortedImages.find((image) => image.role === ProductImageRole.HERO)?.url ?? sortedImages[0]?.url;
-  return product.mainImageUrl || product.imageUrls[0] || relationHero || '/placeholder-camera.svg';
+  return product.mainImageUrl || product.imageUrls[0] || relationHero || '/shutterbug-product-placeholder.png';
 }
 
 function validationFromDatabaseProducts(

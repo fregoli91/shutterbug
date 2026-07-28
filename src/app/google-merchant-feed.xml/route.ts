@@ -22,7 +22,7 @@ function escapeXml(value: unknown) {
 }
 
 function hasMerchantReadyImage(product: Product) {
-  return Boolean(product.heroImage && !product.heroImage.includes('placeholder-camera.svg'));
+  return Boolean(product.heroImage && !product.heroImage.includes('shutterbug-product-placeholder.png'));
 }
 
 function productDescription(product: Product) {

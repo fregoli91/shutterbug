@@ -632,15 +632,16 @@ function PrinterCallout() {
         <Link
           href="/categories/printers"
           aria-label="Shop tested used printers"
-          className="group grid min-h-72 content-center gap-6 border-t border-ink/10 bg-mint p-8 text-center transition hover:bg-sage/70 lg:border-l lg:border-t-0"
+          className="group block overflow-hidden border-t border-ink/10 bg-mint transition lg:border-l lg:border-t-0"
         >
-          <div className="mx-auto grid h-28 w-36 place-items-center rounded-lg border-[6px] border-forest bg-cream shadow-soft transition group-hover:-translate-y-1">
-            <div className="h-12 w-24 rounded-sm border-4 border-forest bg-white" />
-          </div>
-          <div>
-            <p className="font-serif text-3xl font-bold text-ink">Printer inventory</p>
-            <p className="mt-2 text-sm font-semibold text-moss">Tested when possible. Packed securely.</p>
-          </div>
+          <Image
+            src="/used-printers-shutterbug.png"
+            alt="A display of used printers, ink cartridges, cables, paper, and packing supplies at Shutterbug Camera Shop"
+            width={1450}
+            height={1086}
+            sizes="(min-width: 1024px) 38vw, 100vw"
+            className="aspect-[4/3] h-full w-full bg-sand object-cover object-center transition duration-500 group-hover:scale-[1.02]"
+          />
         </Link>
       </div>
     </section>
