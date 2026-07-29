@@ -2,7 +2,7 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { AddToCartButton } from '@/components/cart/AddToCartButton';
 import { ProductLikeButton } from '@/components/ProductLikeButton';
-import { Product, formatPrice, getAvailabilityLabel, isPurchasable } from '@/lib/products';
+import { Product, formatPrice, isPurchasable } from '@/lib/products';
 
 export function ProductCard({
   product,
@@ -13,7 +13,6 @@ export function ProductCard({
   liked?: boolean;
   signedIn?: boolean;
 }) {
-  const availabilityLabel = getAvailabilityLabel(product.status);
   const purchasable = isPurchasable(product);
   const productHref = `/shop/${product.slug}`;
 
@@ -31,16 +30,13 @@ export function ProductCard({
             className="h-full w-full object-contain"
           />
         </Link>
-        <span className="absolute left-2 top-2 max-w-[calc(100%-4rem)] truncate rounded-full bg-white px-2.5 py-1 text-[0.65rem] font-bold uppercase tracking-[0.08em] text-forest shadow-sm sm:left-4 sm:top-4 sm:px-3 sm:text-xs sm:tracking-[0.14em]">
-          {availabilityLabel}
-        </span>
         <ProductLikeButton
           productId={product.id}
           productSlug={product.slug}
           liked={liked}
           signedIn={signedIn}
           redirectTo={productHref}
-          className={`absolute right-2 top-2 flex h-10 w-10 items-center justify-center rounded-full border shadow-sm transition sm:right-4 sm:top-4 ${
+          className={`absolute right-2 top-2 z-10 flex h-9 w-9 items-center justify-center rounded-full border shadow-sm transition sm:right-4 sm:top-4 sm:h-10 sm:w-10 ${
             liked
               ? 'border-forest bg-forest text-white hover:bg-moss'
               : 'border-ink/10 bg-white text-ink hover:border-moss hover:text-moss'
@@ -72,9 +68,6 @@ export function ProductCard({
         <p className="mt-3 hidden text-sm leading-6 text-ink/65 sm:line-clamp-2">{product.shortDescription}</p>
 
         <div className="mt-4 hidden gap-1 text-sm text-ink/68 sm:grid">
-          <p>
-            <span className="font-semibold text-ink">Status:</span> {availabilityLabel}
-          </p>
           <p>
             <span className="font-semibold text-ink">Note:</span> {product.conditionSummary}
           </p>

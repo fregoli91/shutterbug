@@ -684,10 +684,10 @@ function FeaturedProducts({
           <Image
             src={featureImage}
             alt={featureImageAlt ?? ''}
-            width={1600}
-            height={900}
+            width={1448}
+            height={1086}
             sizes="100vw"
-            className="mt-8 aspect-[4/3] w-full rounded-lg border border-ink/10 bg-sand object-cover object-center shadow-sm sm:aspect-[16/7]"
+            className="mt-8 h-auto w-full rounded-lg border border-ink/10 bg-sand object-contain object-center shadow-sm"
           />
         ) : null}
         <div className="mt-10 grid grid-cols-2 gap-3 sm:gap-6 md:grid-cols-3 lg:grid-cols-4">

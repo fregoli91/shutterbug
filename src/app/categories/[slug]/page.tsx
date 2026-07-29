@@ -33,6 +33,18 @@ const categoryHeroImages: Record<
     width: 1672,
     height: 941
   },
+  'film-cameras': {
+    src: '/shutterbug-film-cameras-page.png',
+    alt: 'Used film cameras, film rolls, lenses, and accessories displayed at Shutterbug Camera Shop',
+    width: 1448,
+    height: 1086
+  },
+  'vintage-digital-cameras': {
+    src: '/shutterbug-vintage-digital-cameras-page.png',
+    alt: 'Tested vintage compact digital cameras with memory cards, wrist strap, and camera case at Shutterbug Camera Shop',
+    width: 1448,
+    height: 1086
+  },
   printers: {
     src: '/shutterbug-printers-page.png',
     alt: 'Used photo, inkjet, and laser printers displayed with ink cartridges and paper at Shutterbug Camera Shop',
