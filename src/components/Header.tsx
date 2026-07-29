@@ -195,12 +195,6 @@ export async function Header() {
               {category!.navLabel}
             </Link>
           ))}
-          <Link href="/categories/lenses" className="transition hover:text-moss">
-            Lenses
-          </Link>
-          <Link href="/categories/camera-accessories" className="transition hover:text-moss">
-            Accessories
-          </Link>
           <Link href="/brands" className="transition hover:text-moss">
             Brands
           </Link>

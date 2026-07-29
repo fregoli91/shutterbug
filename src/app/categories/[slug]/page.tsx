@@ -45,6 +45,30 @@ const categoryHeroImages: Record<
     width: 1448,
     height: 1086
   },
+  'canon-powershot-cameras': {
+    src: '/shutterbug-canon-powershot-page.png',
+    alt: 'Canon cameras, lenses, printer, camera bag, and photo prints displayed at Shutterbug Camera Shop',
+    width: 1672,
+    height: 941
+  },
+  'nikon-coolpix-cameras': {
+    src: '/shutterbug-nikon-coolpix-page.png',
+    alt: 'Nikon Coolpix compact cameras, DSLR cameras, and rugged camera displayed at Shutterbug Camera Shop',
+    width: 1448,
+    height: 1086
+  },
+  'olympus-digital-cameras': {
+    src: '/shutterbug-olympus-digital-cameras-page.png',
+    alt: 'Olympus compact digital and film cameras displayed at Shutterbug Camera Shop',
+    width: 1448,
+    height: 1086
+  },
+  'sony-cyber-shot-cameras': {
+    src: '/shutterbug-sony-cyber-shot-page.png',
+    alt: 'Sony Cyber-shot compact and mirrorless cameras displayed at Shutterbug Camera Shop',
+    width: 1448,
+    height: 1086
+  },
   printers: {
     src: '/shutterbug-printers-page.png',
     alt: 'Used photo, inkjet, and laser printers displayed with ink cartridges and paper at Shutterbug Camera Shop',
@@ -111,34 +135,37 @@ export default async function CategoryPage({ params }: Props) {
     <section className="px-4 py-14 sm:px-6 lg:px-8">
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }} />
       <div className="mx-auto max-w-7xl">
-        <div className="grid gap-8 lg:grid-cols-[1fr_22rem] lg:items-end">
-          <div className="max-w-3xl">
-            <p className="text-sm font-bold uppercase tracking-[0.28em] text-moss">
-              {isPrinterCategory ? 'Printer category' : 'Camera category'}
-            </p>
-            <h1 className="mt-3 font-serif text-5xl font-bold text-ink">
-              {isPrinterCategory ? category.name : category.seoTitle}
-            </h1>
-            <p className="mt-5 text-lg leading-8 text-ink/70">{category.intro}</p>
+        <header className="max-w-4xl">
+          <p className="text-sm font-bold uppercase tracking-[0.28em] text-moss">
+            {isPrinterCategory ? 'Printer category' : 'Camera category'}
+          </p>
+          <h1 className="mt-3 font-serif text-4xl font-bold text-ink sm:text-5xl">
+            {isPrinterCategory ? category.name : category.seoTitle}
+          </h1>
+          <p className="mt-4 text-base leading-7 text-ink/70 sm:text-lg sm:leading-8">{category.intro}</p>
+        </header>
+
+        {categoryHeroImage ? (
+          <div className="relative mt-7 aspect-[4/3] max-h-[30rem] overflow-hidden rounded-lg border border-ink/10 bg-sand shadow-sm sm:aspect-[16/7]">
+            <Image
+              src={categoryHeroImage.src}
+              alt={categoryHeroImage.alt}
+              fill
+              sizes="(min-width: 1280px) 80rem, 100vw"
+              className="object-contain object-center sm:object-cover"
+            />
           </div>
-          <div className="rounded-lg border border-ink/10 bg-white p-5 shadow-sm">
-            {categoryHeroImage ? (
-              <Image
-                src={categoryHeroImage.src}
-                alt={categoryHeroImage.alt}
-                width={categoryHeroImage.width}
-                height={categoryHeroImage.height}
-                sizes="(min-width: 1024px) 22rem, 100vw"
-                className="mb-5 h-auto w-full rounded-lg bg-sand object-contain object-center"
-              />
-            ) : null}
-            <p className="font-serif text-2xl font-bold text-ink">Shutterbug standard</p>
-            <ul className="mt-4 grid list-disc gap-2 pl-5 text-sm leading-6 text-ink/70">
-              {trustItems.map((item) => (
-                <li key={item}>{item}</li>
-              ))}
-            </ul>
-          </div>
+        ) : null}
+
+        <div className="mt-5 flex flex-wrap gap-2" aria-label="Shutterbug listing standards">
+          {trustItems.map((item) => (
+            <span
+              key={item}
+              className="rounded-full border border-moss/15 bg-white px-4 py-2 text-sm font-semibold text-ink/70 shadow-sm"
+            >
+              {item}
+            </span>
+          ))}
         </div>
 
         <div className="mt-8 flex flex-wrap gap-2">
