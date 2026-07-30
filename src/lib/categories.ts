@@ -97,6 +97,16 @@ export const categories: Category[] = [
     keywords: ['Nikon Coolpix camera', 'used Nikon Coolpix']
   }),
   category({
+    slug: 'polaroid-cameras',
+    name: 'Polaroid Cameras',
+    navLabel: 'Polaroid',
+    description: 'Used Polaroid instant cameras with clear condition notes, testing details, and included accessories.',
+    seoTitle: 'Used Polaroid Cameras',
+    intro:
+      'Shop Polaroid instant cameras with clear condition notes, tested functions when possible, and exact details about included accessories.',
+    keywords: ['Polaroid camera', 'used Polaroid camera', 'instant camera']
+  }),
+  category({
     slug: 'sony-cyber-shot-cameras',
     name: 'Sony Cyber-shot Cameras',
     navLabel: 'Sony Cyber-shot',
@@ -369,6 +379,7 @@ export const featuredCategorySlugs = [
   'vintage-digital-cameras',
   'canon-powershot-cameras',
   'nikon-coolpix-cameras',
+  'polaroid-cameras',
   'sony-cyber-shot-cameras',
   'film-cameras',
   'lenses',

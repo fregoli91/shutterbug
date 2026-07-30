@@ -57,6 +57,12 @@ const categoryHeroImages: Record<
     width: 1448,
     height: 1086
   },
+  'polaroid-cameras': {
+    src: '/shutterbug-polaroid-cameras-page.png',
+    alt: 'Polaroid instant cameras and instant photo prints displayed at Shutterbug Camera Shop',
+    width: 1448,
+    height: 1086
+  },
   'olympus-digital-cameras': {
     src: '/shutterbug-olympus-digital-cameras-page.png',
     alt: 'Olympus compact digital and film cameras displayed at Shutterbug Camera Shop',

@@ -30,18 +30,20 @@ export function ProductCard({
             className="h-full w-full object-contain"
           />
         </Link>
-        <ProductLikeButton
-          productId={product.id}
-          productSlug={product.slug}
-          liked={liked}
-          signedIn={signedIn}
-          redirectTo={productHref}
-          className={`absolute right-2 top-2 z-10 flex h-9 w-9 items-center justify-center rounded-full border shadow-sm transition sm:right-4 sm:top-4 sm:h-10 sm:w-10 ${
-            liked
-              ? 'border-forest bg-forest text-white hover:bg-moss'
-              : 'border-ink/10 bg-white text-ink hover:border-moss hover:text-moss'
-          }`}
-        />
+        <div className="absolute right-2 top-2 z-20 sm:right-4 sm:top-4">
+          <ProductLikeButton
+            productId={product.id}
+            productSlug={product.slug}
+            liked={liked}
+            signedIn={signedIn}
+            redirectTo={productHref}
+            className={`flex h-10 w-10 items-center justify-center rounded-full border shadow-sm transition sm:h-11 sm:w-11 ${
+              liked
+                ? 'border-forest bg-forest text-white hover:bg-moss'
+                : 'border-ink/10 bg-white text-ink hover:border-moss hover:text-moss'
+            }`}
+          />
+        </div>
       </div>
 
       <div className="flex flex-1 flex-col p-3 sm:p-5">

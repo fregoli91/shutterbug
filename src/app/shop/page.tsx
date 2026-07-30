@@ -729,18 +729,20 @@ function ProductListResult({
             className="aspect-square w-full object-contain"
           />
         </Link>
-        <ProductLikeButton
-          productId={product.id}
-          productSlug={product.slug}
-          liked={liked}
-          signedIn={signedIn}
-          redirectTo={productHref}
-          className={`absolute right-2 top-2 flex h-10 w-10 items-center justify-center rounded-full border shadow-sm transition ${
-            liked
-              ? 'border-forest bg-forest text-white hover:bg-moss'
-              : 'border-ink/10 bg-white text-ink hover:border-moss hover:text-moss'
-          }`}
-        />
+        <div className="absolute right-2 top-2 z-20">
+          <ProductLikeButton
+            productId={product.id}
+            productSlug={product.slug}
+            liked={liked}
+            signedIn={signedIn}
+            redirectTo={productHref}
+            className={`flex h-11 w-11 items-center justify-center rounded-full border shadow-sm transition ${
+              liked
+                ? 'border-forest bg-forest text-white hover:bg-moss'
+                : 'border-ink/10 bg-white text-ink hover:border-moss hover:text-moss'
+            }`}
+          />
+        </div>
       </div>
       <div className="min-w-0">
         <div className="flex flex-wrap gap-2 text-xs font-bold uppercase tracking-[0.12em]">
