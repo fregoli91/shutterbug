@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import Image from 'next/image';
 import { notFound } from 'next/navigation';
 import type { Metadata } from 'next';
 import { ProductCard } from '@/components/ProductCard';
@@ -9,6 +10,15 @@ import { site } from '@/lib/seo';
 import { buildBreadcrumbJsonLd, buildCollectionPageJsonLd, jsonLdGraph } from '@/lib/seo-utils';
 
 type Props = { params: Promise<{ slug: string }> };
+
+const brandHeroImages: Record<string, { src: string; alt: string; width: number; height: number }> = {
+  olympus: {
+    src: '/shutterbug-olympus-digital-cameras-page.png',
+    alt: 'Olympus compact digital and film cameras displayed at Shutterbug Camera Shop',
+    width: 1448,
+    height: 1086
+  }
+};
 
 export function generateStaticParams() {
   return getStaticBrandParams();
@@ -36,6 +46,7 @@ export default async function BrandPage({ params }: Props) {
   const { slug } = await params;
   const brand = await getBrandPageBySlug(slug);
   if (!brand) notFound();
+  const brandHeroImage = brandHeroImages[brand.slug];
 
   const customer = await getCustomerSession();
   const likedProductIds = await getLikedProductIds(
@@ -60,15 +71,28 @@ export default async function BrandPage({ params }: Props) {
     <section className="bg-cream px-4 py-14 sm:px-6 lg:px-8">
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }} />
       <div className="mx-auto max-w-7xl">
-        <div className="grid gap-8 lg:grid-cols-[1fr_22rem] lg:items-end">
-          <div className="max-w-3xl">
-            <p className="text-sm font-bold uppercase tracking-[0.28em] text-moss">Brand guide</p>
-            <h1 className="mt-3 font-serif text-5xl font-bold tracking-tight text-ink sm:text-6xl">
-              {brand.name} cameras and gear.
-            </h1>
-            <p className="mt-5 text-lg leading-8 text-ink/70">{brand.description}</p>
+        <div className="max-w-3xl">
+          <p className="text-sm font-bold uppercase tracking-[0.28em] text-moss">Brand guide</p>
+          <h1 className="mt-3 font-serif text-5xl font-bold tracking-tight text-ink sm:text-6xl">
+            {brand.name} cameras and gear.
+          </h1>
+          <p className="mt-5 text-lg leading-8 text-ink/70">{brand.description}</p>
+        </div>
+
+        {brandHeroImage ? (
+          <div className="relative mt-7 aspect-[4/3] max-h-[30rem] overflow-hidden rounded-lg border border-ink/10 bg-sand shadow-sm sm:aspect-[16/7]">
+            <Image
+              src={brandHeroImage.src}
+              alt={brandHeroImage.alt}
+              fill
+              sizes="(min-width: 1280px) 80rem, (min-width: 768px) calc(100vw - 3rem), calc(100vw - 2rem)"
+              className="object-contain object-center sm:object-cover"
+            />
           </div>
-          <div className="rounded-lg border border-ink/10 bg-white p-5 shadow-sm">
+        ) : null}
+
+        <div className="mt-5 flex flex-col gap-5 rounded-lg border border-ink/10 bg-white p-5 shadow-sm sm:flex-row sm:items-center sm:justify-between">
+          <div className="max-w-3xl">
             <p className="font-serif text-2xl font-bold text-ink">
               {brand.products.length ? 'Current Shutterbug listings' : 'Looking for this brand?'}
             </p>
@@ -77,25 +101,25 @@ export default async function BrandPage({ params }: Props) {
                 ? 'Open a listing to see testing notes, included accessories, disclosed flaws, and stock status.'
                 : 'This page is ready for future inventory. Send us a note and we can help source or review a camera.'}
             </p>
-            <div className="mt-5 flex flex-col gap-2">
-              <Link
-                href={`/shop?brand=${encodeURIComponent(brand.name)}`}
-                className="inline-flex min-h-11 items-center justify-center rounded-full bg-forest px-5 text-sm font-semibold text-white transition hover:bg-moss"
-              >
-                Search {brand.name}
-              </Link>
-              <Link
-                href="/sell-your-camera"
-                className="inline-flex min-h-11 items-center justify-center rounded-full border border-ink/15 bg-cream px-5 text-sm font-semibold text-ink transition hover:border-moss hover:text-moss"
-              >
-                Sell us this brand
-              </Link>
-            </div>
+          </div>
+          <div className="flex shrink-0 flex-col gap-2 sm:min-w-48">
+            <Link
+              href={`/shop?brand=${encodeURIComponent(brand.name)}`}
+              className="inline-flex min-h-11 items-center justify-center rounded-full bg-forest px-5 text-sm font-semibold text-white transition hover:bg-moss"
+            >
+              Search {brand.name}
+            </Link>
+            <Link
+              href="/sell-your-camera"
+              className="inline-flex min-h-11 items-center justify-center rounded-full border border-ink/15 bg-cream px-5 text-sm font-semibold text-ink transition hover:border-moss hover:text-moss"
+            >
+              Sell us this brand
+            </Link>
           </div>
         </div>
 
         {brand.products.length ? (
-          <div className="mt-12 grid grid-cols-2 gap-3 sm:gap-6 lg:grid-cols-4">
+          <div className="mt-10 grid grid-cols-2 gap-3 sm:gap-6 lg:grid-cols-4">
             {brand.products.map((product) => (
               <ProductCard
                 key={product.id}

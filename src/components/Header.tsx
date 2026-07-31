@@ -8,7 +8,7 @@ import { getCustomerSession } from '@/lib/customer-auth';
 
 const primaryNav = [
   { href: '/shop', label: 'Shop Cameras' },
-  { href: '/brands', label: 'Brands' },
+  { href: '/brands/olympus', label: 'Olympus' },
   { href: '/categories/vintage-digital-cameras', label: 'Categories' },
   { href: '/sell-your-camera', label: 'Sell Your Camera' },
   { href: '/testing-process', label: 'Testing Process' },
@@ -19,6 +19,11 @@ const primaryNav = [
 const desktopCategories = featuredCategorySlugs
   .map((slug) => categories.find((category) => category.slug === slug))
   .filter(Boolean);
+
+const categoryNavLabels: Record<string, string> = {
+  'canon-powershot-cameras': 'Canon',
+  'nikon-coolpix-cameras': 'Nikon'
+};
 
 const searchSuggestions = [
   'Canon PowerShot',
@@ -179,7 +184,7 @@ export async function Header() {
               href={`/categories/${category!.slug}`}
               className="flex min-h-10 shrink-0 items-center rounded-full border border-ink/10 bg-white px-4 shadow-sm transition hover:border-moss/40 hover:text-moss"
             >
-              {category!.navLabel}
+              {categoryNavLabels[category!.slug] ?? category!.navLabel}
             </Link>
           ))}
         </nav>
@@ -192,11 +197,11 @@ export async function Header() {
           </Link>
           {desktopCategories.map((category) => (
             <Link key={category!.slug} href={`/categories/${category!.slug}`} className="transition hover:text-moss">
-              {category!.navLabel}
+              {categoryNavLabels[category!.slug] ?? category!.navLabel}
             </Link>
           ))}
-          <Link href="/brands" className="transition hover:text-moss">
-            Brands
+          <Link href="/brands/olympus" className="transition hover:text-moss">
+            Olympus
           </Link>
           <Link href="/testing-process" className="ml-auto text-moss transition hover:text-forest">
             Tested Gear Promise

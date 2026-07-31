@@ -15,6 +15,7 @@ import {
 import { clearAdminSession, requireAdmin } from '@/lib/admin-auth';
 import { sendShippingConfirmationEmail } from '@/lib/order-emails';
 import { requirePrisma } from '@/lib/prisma';
+import { getCameraProductTemplate } from '@/lib/product-templates';
 
 function field(formData: FormData, name: string) {
   return String(formData.get(name) ?? '').trim();
@@ -151,6 +152,89 @@ export async function createProductAction(formData: FormData) {
   revalidatePath('/sitemap.xml');
   revalidatePath('/google-merchant-feed.xml');
   redirect(`/admin/products/${product.id}/edit?created=1`);
+}
+
+export async function createProductFromTemplateAction(formData: FormData) {
+  await requireAdmin();
+  const prisma = requirePrisma();
+  const template = getCameraProductTemplate(field(formData, 'templateKey'));
+
+  if (!template) {
+    redirect('/admin/products/templates?error=template-not-found');
+  }
+
+  const baseSlug = slugify(`${template.brand} ${template.model}`);
+  let slug = baseSlug;
+  let suffix = 2;
+
+  while (await prisma.product.findUnique({ where: { slug }, select: { id: true } })) {
+    slug = `${baseSlug}-${suffix}`;
+    suffix += 1;
+  }
+
+  const product = await prisma.product.create({
+    data: {
+      sku: null,
+      slug,
+      title: template.title,
+      brand: template.brand,
+      manufacturer: template.brand,
+      model: template.model,
+      categorySlug: template.categorySlug,
+      categorySlugs: template.categorySlugs,
+      subcategorySlug: template.subcategorySlug,
+      productType: template.productType,
+      cameraType: template.cameraType,
+      format: template.format,
+      condition: ProductCondition.USED_GOOD,
+      functionalStatus: 'Untested',
+      testedStatus: 'Untested',
+      conditionSummary: 'Exact-item grading required before publishing.',
+      conditionNotes: 'Confirm the cosmetic condition of this exact camera before publishing.',
+      priceCents: 0,
+      quantity: 1,
+      status: ProductStatus.DRAFT,
+      description: template.description,
+      shortDescription: template.shortDescription,
+      seoTitle: template.seoTitle,
+      seoDescription: template.seoDescription,
+      tags: template.tags,
+      lensMount: '',
+      filmFormat: template.filmFormat ?? '',
+      storageType: '',
+      includesBattery: false,
+      includesCharger: false,
+      includesMemoryCard: false,
+      includesCase: false,
+      includesStrap: false,
+      includesManual: false,
+      includesOriginalBox: false,
+      actualPhotos: false,
+      samplePhotos: false,
+      partsRepair: false,
+      forPartsOrRepair: false,
+      featured: false,
+      newArrival: false,
+      badges: [],
+      included: [],
+      doesNotInclude: [],
+      tested: [],
+      goodFor: template.goodFor,
+      cosmeticNotes: [],
+      functionalNotes: ['Complete the Shutterbug testing checklist for this exact camera before publishing.'],
+      flaws: [],
+      notes: [
+        'DRAFT TEMPLATE: Add the exact price, actual photos, condition, testing results, included accessories, and known flaws before setting this product to Active.'
+      ],
+      shippingNote: 'Ships from Shutterbug Camera Shop with protective packing.',
+      returnsNote: 'Review the returns policy and exact-item notes before checkout.',
+      mainImageUrl: '',
+      imageUrls: []
+    }
+  });
+
+  revalidatePath('/admin/products');
+  redirect(`/admin/products/${product.id}/edit?template=1`);
 }
 
 export async function updateProductAction(formData: FormData) {

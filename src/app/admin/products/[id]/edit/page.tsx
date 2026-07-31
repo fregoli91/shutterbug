@@ -5,15 +5,24 @@ import { ProductForm } from '@/components/admin/ProductForm';
 import { requireAdmin } from '@/lib/admin-auth';
 import { getPrisma } from '@/lib/prisma';
 
-type Props = { params: Promise<{ id: string }> };
+type Props = {
+  params: Promise<{ id: string }>;
+  searchParams?: Promise<Record<string, string | string[] | undefined>>;
+};
 
 export const metadata = {
   title: 'Edit Product'
 };
 
-export default async function EditProductPage({ params }: Props) {
+function firstParam(value: string | string[] | undefined) {
+  return Array.isArray(value) ? value[0] : value;
+}
+
+export default async function EditProductPage({ params, searchParams }: Props) {
   await requireAdmin();
   const { id } = await params;
+  const query = searchParams ? await searchParams : {};
+  const createdFromTemplate = firstParam(query.template) === '1';
   const prisma = getPrisma();
   if (!prisma) notFound();
   const product = await prisma.product.findUnique({ where: { id }, include: { images: true } });
@@ -41,6 +50,12 @@ export default async function EditProductPage({ params }: Props) {
           </form>
         </div>
       </div>
+      {createdFromTemplate ? (
+        <div className="mb-6 rounded-lg border border-moss/25 bg-mint/50 p-5 text-sm leading-6 text-ink/75">
+          Draft created from a model template. Add actual photos and confirm the price, condition, testing, included
+          accessories, and flaws before changing its status to Active.
+        </div>
+      ) : null}
       <ProductForm action={updateProductAction} product={product} submitLabel="Save product" />
     </AdminShell>
   );

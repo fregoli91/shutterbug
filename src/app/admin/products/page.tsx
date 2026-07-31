@@ -89,9 +89,20 @@ export default async function AdminProductsPage({ searchParams }: Props) {
             Add, edit, archive, and mark single-seller Shutterbug inventory as active or sold out.
           </p>
         </div>
-        <Link href="/admin/products/new" className="rounded-full bg-forest px-5 py-3 text-sm font-semibold text-white">
-          Add product
-        </Link>
+        <div className="flex flex-wrap gap-2">
+          <Link
+            href="/admin/products/templates"
+            className="inline-flex min-h-11 items-center rounded-full border border-forest/20 bg-mint px-5 text-sm font-semibold text-forest"
+          >
+            Use model template
+          </Link>
+          <Link
+            href="/admin/products/new"
+            className="inline-flex min-h-11 items-center rounded-full bg-forest px-5 text-sm font-semibold text-white"
+          >
+            Add from scratch
+          </Link>
+        </div>
       </div>
 
       <form
