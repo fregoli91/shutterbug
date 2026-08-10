@@ -142,6 +142,24 @@ function LoggedOutHome({
               </p>
             </div>
 
+            <Link
+              href="/shop?sort=newest"
+              className="group relative block aspect-[8/5] overflow-hidden rounded-lg border border-ink/10 bg-sand shadow-sm lg:hidden"
+            >
+              <Image
+                src="/shutterbug-shelf-cameras-display.png"
+                alt="Shutterbug shelf display of cameras, lenses, bags, and accessories"
+                width={1600}
+                height={1000}
+                sizes="calc(100vw - 1.5rem)"
+                className="h-full w-full object-cover object-center"
+              />
+              <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-ink/85 via-ink/35 to-transparent p-4 text-white">
+                <p className="text-xs font-bold uppercase tracking-[0.22em] text-cream">Fresh finds</p>
+                <p className="mt-1 font-serif text-2xl font-bold">Browse the Shutterbug shelf</p>
+              </div>
+            </Link>
+
             <div className="grid gap-3 sm:flex sm:justify-start lg:justify-end">
               <Link
                 href="/shop"
@@ -172,7 +190,7 @@ function LoggedOutHome({
         <div className="mx-auto grid max-w-7xl gap-5 lg:grid-cols-[1.15fr_1fr] lg:items-stretch">
           <Link
             href="/shop?sort=newest"
-            className="group relative block min-h-72 overflow-hidden rounded-lg border border-ink/10 bg-sand shadow-sm"
+            className="group relative hidden min-h-72 overflow-hidden rounded-lg border border-ink/10 bg-sand shadow-sm lg:block"
           >
             <Image
               src="/shutterbug-shelf-cameras-display.png"
