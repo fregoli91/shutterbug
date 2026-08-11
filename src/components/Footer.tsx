@@ -60,6 +60,12 @@ export function Footer() {
             <Link href="/brands" className="flex min-h-9 items-center transition hover:text-white">
               Camera Brands
             </Link>
+            <Link href="/guides" className="flex min-h-9 items-center transition hover:text-white">
+              Camera Buying Guides
+            </Link>
+            <Link href="/amazon" className="flex min-h-9 items-center transition hover:text-white">
+              Shutterbug on Amazon
+            </Link>
             {categories.slice(0, 5).map((category) => (
               <Link
                 key={category.slug}

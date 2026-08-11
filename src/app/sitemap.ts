@@ -2,15 +2,19 @@ import type { MetadataRoute } from 'next';
 import { site } from '@/lib/seo';
 import { categories } from '@/lib/categories';
 import { getBrandPages } from '@/lib/brands';
-import { getActiveCatalogProducts } from '@/lib/products';
+import { getCatalogProducts } from '@/lib/products';
+import { guides } from '@/lib/guides';
+import { isPriorityBrand, isPriorityCategory } from '@/lib/seo-content';
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const now = new Date();
-  const [catalog, brands] = await Promise.all([getActiveCatalogProducts(), getBrandPages()]);
+  const [catalog, brands] = await Promise.all([getCatalogProducts(), getBrandPages()]);
   const staticRoutes = [
     '',
     '/shop',
     '/brands',
+    '/guides',
+    '/amazon',
     '/sell-your-camera',
     '/about',
     '/buyer-guarantee',
@@ -26,20 +30,40 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     lastModified: now
   }));
 
-  const categoryRoutes = categories.map((category) => ({
-    url: `${site.domain}/categories/${category.slug}`,
-    lastModified: now
+  const categoryRoutes = categories
+    .filter(
+      (category) =>
+        isPriorityCategory(category.slug) || catalog.some((product) => product.categorySlug === category.slug)
+    )
+    .map((category) => ({
+      url: `${site.domain}/categories/${category.slug}`,
+      lastModified: now
+    }));
+
+  const brandRoutes = brands
+    .filter((brand) => isPriorityBrand(brand.slug) || brand.products.length > 0)
+    .map((brand) => ({
+      url: `${site.domain}/brands/${brand.slug}`,
+      lastModified: now
+    }));
+
+  const productRoutes = catalog
+    .filter(
+      (product) =>
+        product.status === 'active' ||
+        (product.status === 'sold_out' &&
+          product.actualPhotos &&
+          Boolean(product.seoDescription || product.shortDescription))
+    )
+    .map((product) => ({
+      url: `${site.domain}/shop/${product.slug}`,
+      lastModified: now
+    }));
+
+  const guideRoutes = guides.map((guide) => ({
+    url: `${site.domain}/guides/${guide.slug}`,
+    lastModified: new Date(guide.updatedAt)
   }));
 
-  const brandRoutes = brands.map((brand) => ({
-    url: `${site.domain}/brands/${brand.slug}`,
-    lastModified: now
-  }));
-
-  const productRoutes = catalog.map((product) => ({
-    url: `${site.domain}/shop/${product.slug}`,
-    lastModified: now
-  }));
-
-  return [...staticRoutes, ...categoryRoutes, ...brandRoutes, ...productRoutes];
+  return [...staticRoutes, ...categoryRoutes, ...brandRoutes, ...productRoutes, ...guideRoutes];
 }

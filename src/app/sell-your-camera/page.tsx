@@ -1,11 +1,23 @@
 import Image from 'next/image';
+import Link from 'next/link';
+import type { Metadata } from 'next';
+import { site } from '@/lib/seo';
+import { buildBreadcrumbJsonLd, jsonLdGraph } from '@/lib/seo-utils';
 
-export const metadata = {
-  title: 'Sell Your Camera',
+export const metadata: Metadata = {
+  title: 'Sell Your Camera | Used & Vintage Camera Trade-In',
   description:
-    'Sell vintage digital cameras, film cameras, lenses, batteries, chargers, and camera gear to Shutterbug Camera Shop.'
+    'Sell a used digital camera, film camera, lens, collection, or camera accessories to Shutterbug Camera Shop. Learn what we buy and how the quote process works.',
+  alternates: { canonical: '/sell-your-camera' },
+  openGraph: {
+    title: 'Sell Your Used or Vintage Camera | Shutterbug Camera Shop',
+    description:
+      'Tell Shutterbug about your digital camera, film camera, lens, accessories, or camera collection and learn how the quote process works.',
+    url: `${site.domain}/sell-your-camera`,
+    type: 'website',
+    images: [{ url: `${site.domain}/shutterbug-trade-in.png`, alt: 'Sell a used camera to Shutterbug Camera Shop' }]
+  }
 };
-
 const steps = [
   ['1. Tell us what you have', 'Share brand, model, condition, accessories, and whether it powers on.'],
   ['2. Send photos', 'Upload or email clear photos of the front, back, lens, screen, battery door, and accessories.'],
@@ -26,8 +38,24 @@ const wanted = [
 ];
 
 export default function SellYourCameraPage() {
+  const structuredData = jsonLdGraph([
+    {
+      '@type': 'WebPage',
+      name: 'Sell Your Camera',
+      description: metadata.description,
+      url: `${site.domain}/sell-your-camera`,
+      isPartOf: { '@id': `${site.domain}/#website` },
+      about: { '@id': `${site.domain}/#organization` }
+    },
+    buildBreadcrumbJsonLd([
+      { name: 'Home', url: '/' },
+      { name: 'Sell Your Camera', url: '/sell-your-camera' }
+    ])
+  ]);
+
   return (
     <section className="px-4 py-14 sm:px-6 lg:px-8">
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }} />
       <div className="mx-auto max-w-7xl">
         <div className="grid gap-10 lg:grid-cols-[1fr_28rem]">
           <div>
@@ -103,6 +131,24 @@ export default function SellYourCameraPage() {
               </span>
             ))}
           </div>
+        </div>
+        <div className="mt-8 border-t border-ink/10 pt-8">
+          <p className="font-serif text-2xl font-bold text-ink">Research before you sell</p>
+          <p className="mt-3 max-w-3xl text-sm leading-7 text-ink/70">
+            Not sure what kind of camera you have? These pages can help you identify the format and understand the
+            details that matter when describing older gear.
+          </p>
+          <nav aria-label="Camera selling research" className="mt-5 flex flex-wrap gap-3">
+            <Link href="/guides/how-to-buy-a-used-camera" className="font-semibold text-moss underline-offset-4 hover:underline">
+              Used camera inspection guide
+            </Link>
+            <Link href="/categories/vintage-digital-cameras" className="font-semibold text-moss underline-offset-4 hover:underline">
+              Vintage digital cameras
+            </Link>
+            <Link href="/categories/film-cameras" className="font-semibold text-moss underline-offset-4 hover:underline">
+              Film cameras
+            </Link>
+          </nav>
         </div>
       </div>
     </section>

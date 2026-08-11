@@ -184,7 +184,6 @@ export function buildProductJsonLd(product: Product, category?: Category): JsonL
     manufacturer: product.manufacturer || product.brand,
     model: product.model,
     sku: product.sku,
-    mpn: product.model,
     description: product.seoDescription || product.shortDescription,
     image: gallery,
     category: category?.name ?? product.categorySlug,

@@ -4,11 +4,12 @@ import type { Metadata } from 'next';
 import { getBrandPages } from '@/lib/brands';
 import { site } from '@/lib/seo';
 import { buildBreadcrumbJsonLd, buildCollectionPageJsonLd, jsonLdGraph } from '@/lib/seo-utils';
+import { isPriorityBrand } from '@/lib/seo-content';
 
 export const metadata: Metadata = {
   title: 'Camera Brands',
   description:
-    'Browse used Canon, Nikon, Olympus, Sony, Kodak, Fujifilm, Panasonic, Pentax, Minolta, Leica, Polaroid, and HP camera listings at Shutterbug Camera Shop.',
+    'Browse useful used-camera pages for Canon, Nikon, Olympus, Sony, Polaroid, Kodak, Fujifilm, Panasonic, Pentax, and Minolta at Shutterbug Camera Shop.',
   alternates: { canonical: '/brands' },
   openGraph: {
     title: 'Camera Brands | Shutterbug Camera Shop',
@@ -20,7 +21,7 @@ export const metadata: Metadata = {
 };
 
 export default async function BrandsPage() {
-  const brands = await getBrandPages();
+  const brands = (await getBrandPages()).filter((brand) => isPriorityBrand(brand.slug) || brand.products.length > 0);
   const structuredData = jsonLdGraph([
     buildCollectionPageJsonLd({
       name: 'Camera Brands',

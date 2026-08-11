@@ -62,6 +62,16 @@ export default async function ProductPage({ params }: Props) {
   const purchasable = isPurchasable(product);
   const primaryActionLabel = purchasable ? 'Add to cart' : product.status === 'active' ? 'Contact to buy' : 'Ask about restock';
   const primaryActionHref = purchasable ? '/cart' : '/contact';
+  const researchLinks = [
+    { label: `More ${product.brand} cameras`, href: `/brands/${getBrandSlug(product.brand)}` },
+    { label: `Browse ${category?.name ?? 'similar camera gear'}`, href: `/categories/${product.categorySlug}` },
+    { label: 'How to buy a used camera', href: '/guides/how-to-buy-a-used-camera' }
+  ];
+  if (product.categorySlug.includes('film') || product.cameraType === 'Film Camera') {
+    researchLinks.push({ label: '35mm film camera buying guide', href: '/guides/35mm-film-camera-buying-guide' });
+  } else if (product.cameraType !== 'Accessory') {
+    researchLinks.push({ label: 'What is a CCD camera?', href: '/guides/what-is-a-ccd-camera' });
+  }
   const structuredData = jsonLdGraph([
     buildProductJsonLd(product, category),
     buildBreadcrumbJsonLd([
@@ -99,7 +109,7 @@ export default async function ProductPage({ params }: Props) {
                 >
                   <Image
                     src={image}
-                    alt=""
+                    alt={`${product.title} view ${index + 1}`}
                     width={220}
                     height={220}
                     sizes="5rem"
@@ -261,6 +271,20 @@ export default async function ProductPage({ params }: Props) {
             ]}
           />
         </div>
+      </section>
+
+      <section className="px-4 pb-16 sm:px-6 lg:px-8">
+        <nav className="mx-auto max-w-7xl rounded-lg border border-ink/10 bg-mint p-6" aria-label="Research this camera">
+          <p className="text-sm font-bold uppercase tracking-[0.22em] text-moss">Research this camera</p>
+          <h2 className="mt-2 font-serif text-2xl font-bold text-ink">More buying context</h2>
+          <div className="mt-4 flex flex-wrap gap-2">
+            {researchLinks.map((link) => (
+              <Link key={link.href} href={link.href} className="rounded-full bg-white px-4 py-2 text-sm font-semibold text-ink/72 hover:text-moss">
+                {link.label}
+              </Link>
+            ))}
+          </div>
+        </nav>
       </section>
 
       {similarProducts.length > 0 ? (

@@ -1,5 +1,6 @@
 import Link from 'next/link';
 import Image from 'next/image';
+import type { Metadata } from 'next';
 import { ProductCard } from '@/components/ProductCard';
 import { SectionHeading } from '@/components/SectionHeading';
 import { categories, featuredCategorySlugs, type Category } from '@/lib/categories';
@@ -7,6 +8,10 @@ import { getLikedProductIds } from '@/lib/customer-likes';
 import { getCustomerSession } from '@/lib/customer-auth';
 import { formatPrice, getCatalogProducts, type Product } from '@/lib/products';
 import { site } from '@/lib/seo';
+
+export const metadata: Metadata = {
+  alternates: { canonical: '/' }
+};
 
 type CustomerSession = NonNullable<Awaited<ReturnType<typeof getCustomerSession>>>;
 

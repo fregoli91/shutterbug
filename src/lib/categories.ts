@@ -40,6 +40,15 @@ function category({
 
 export const categories: Category[] = [
   category({
+    slug: 'vintage-cameras',
+    name: 'Vintage Cameras',
+    description: 'Used vintage digital and film cameras with honest testing details, condition notes, and clearly listed accessories.',
+    seoTitle: 'Used Vintage Cameras for Sale',
+    intro:
+      'Shop used vintage digital and film cameras with exact-item condition notes, clear testing details, and included accessories listed before checkout.',
+    keywords: ['vintage cameras', 'used vintage cameras', 'vintage camera shop']
+  }),
+  category({
     slug: 'vintage-digital-cameras',
     name: 'Vintage Digital Cameras',
     navLabel: 'Vintage Digital',
@@ -376,6 +385,7 @@ export const categories: Category[] = [
 ];
 
 export const featuredCategorySlugs = [
+  'vintage-cameras',
   'vintage-digital-cameras',
   'canon-powershot-cameras',
   'nikon-coolpix-cameras',

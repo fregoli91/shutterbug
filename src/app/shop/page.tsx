@@ -1,5 +1,6 @@
 import Link from 'next/link';
 import Image from 'next/image';
+import type { Metadata } from 'next';
 import { ProductLikeButton } from '@/components/ProductLikeButton';
 import { ProductCard } from '@/components/ProductCard';
 import { AddToCartButton } from '@/components/cart/AddToCartButton';
@@ -19,25 +20,32 @@ import { getCustomerSession } from '@/lib/customer-auth';
 import { site } from '@/lib/seo';
 import { buildBreadcrumbJsonLd, buildCollectionPageJsonLd, jsonLdGraph } from '@/lib/seo-utils';
 
-export const metadata = {
-  title: 'Shop Tested Vintage Cameras',
-  description:
-    'Shop tested vintage digital cameras, film cameras, lenses, accessories, parts and repair gear, and used camera equipment from Shutterbug Camera Shop.',
-  alternates: { canonical: '/shop' },
-  openGraph: {
-    title: 'Shop Tested Vintage Cameras | Shutterbug Camera Shop',
-    description:
-      'Search tested vintage digital cameras, film cameras, lenses, accessories, and used camera gear with honest condition notes.',
-    url: `${site.domain}/shop`,
-    type: 'website'
-  }
-};
-
 type SearchParams = Record<string, string | string[] | undefined>;
 type Props = {
   searchParams?: Promise<SearchParams>;
 };
 
+export async function generateMetadata({ searchParams }: Props): Promise<Metadata> {
+  const params = (await searchParams) ?? {};
+  const hasFilters = Object.values(params).some((value) =>
+    Array.isArray(value) ? value.some(Boolean) : Boolean(value)
+  );
+
+  return {
+    title: 'Used Cameras for Sale',
+    description:
+      'Shop tested used vintage digital cameras, film cameras, lenses, accessories, parts and repair gear, and camera equipment from Shutterbug Camera Shop.',
+    alternates: { canonical: '/shop' },
+    robots: hasFilters ? { index: false, follow: true } : undefined,
+    openGraph: {
+      title: 'Used Cameras for Sale | Shutterbug Camera Shop',
+      description:
+        'Browse tested vintage digital cameras, film cameras, lenses, accessories, and used camera gear with honest condition notes.',
+      url: `${site.domain}/shop`,
+      type: 'website'
+    }
+  };
+}
 const availabilityOptions = [
   { value: 'active', label: 'Active' },
   { value: 'sold_out', label: 'Sold out' }
@@ -47,14 +55,14 @@ const categoryLabels = new Map(categories.map((category) => [category.slug, cate
 const includeLabels = new Map(INCLUDE_FILTER_OPTIONS.map((option) => [option.value, option.label]));
 const availabilityLabels = new Map(availabilityOptions.map((option) => [option.value, option.label]));
 const popularSearches = [
-  ['Canon PowerShot', '/shop?q=Canon+PowerShot'],
-  ['Nikon Coolpix', '/shop?q=Nikon+Coolpix'],
-  ['Olympus', '/shop?q=Olympus'],
-  ['Sony Cyber-shot', '/shop?q=Sony+Cyber-shot'],
+  ['Canon PowerShot', '/categories/canon-powershot-cameras'],
+  ['Nikon Coolpix', '/categories/nikon-coolpix-cameras'],
+  ['Olympus', '/brands/olympus'],
+  ['Sony Cyber-shot', '/categories/sony-cyber-shot-cameras'],
   ['Film cameras', '/categories/film-cameras'],
   ['Printers', '/categories/printers'],
   ['Lenses', '/categories/lenses'],
-  ['Battery chargers', '/shop?productType=Battery+Chargers']
+  ['Battery chargers', '/categories/batteries-chargers']
 ];
 
 function asArray(value: string | string[] | undefined) {

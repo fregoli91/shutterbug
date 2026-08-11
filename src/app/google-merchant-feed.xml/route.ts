@@ -36,9 +36,17 @@ function productDescription(product: Product) {
     .join(' ');
 }
 
+function additionalImageLinks(product: Product) {
+  return Array.from(new Set(product.gallery))
+    .filter((image) => image && image !== product.heroImage && !image.includes('shutterbug-product-placeholder.png'))
+    .slice(0, 10)
+    .map((image) => `      <g:additional_image_link>${escapeXml(imageUrl(image))}</g:additional_image_link>`)
+    .join('\n');
+}
 function productItemXml(product: Product) {
   const category = getCategory(product.categorySlug);
   const price = (product.priceCents ? product.priceCents / 100 : product.price).toFixed(2);
+  const additionalImages = additionalImageLinks(product);
 
   return `
     <item>
@@ -47,11 +55,12 @@ function productItemXml(product: Product) {
       <description>${escapeXml(productDescription(product))}</description>
       <link>${escapeXml(absoluteUrl(`/shop/${product.slug}`))}</link>
       <g:image_link>${escapeXml(imageUrl(product.heroImage))}</g:image_link>
+${additionalImages}
       <g:availability>${escapeXml(merchantAvailability(product))}</g:availability>
       <g:price>${escapeXml(`${price} USD`)}</g:price>
       <g:condition>${escapeXml(merchantCondition(product))}</g:condition>
       <g:brand>${escapeXml(product.brand)}</g:brand>
-      <g:mpn>${escapeXml(product.model || product.sku)}</g:mpn>
+      <g:identifier_exists>no</g:identifier_exists>
       <g:product_type>${escapeXml(productTypePath(product, category))}</g:product_type>
       <g:google_product_category>${escapeXml(googleProductCategory(product))}</g:google_product_category>
       <g:shipping>

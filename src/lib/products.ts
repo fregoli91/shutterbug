@@ -433,11 +433,22 @@ export async function getProductBySlug(slug: string) {
   return getProduct(slug);
 }
 
+function productMatchesCategory(product: Product, categorySlug: string) {
+  if (categorySlug === 'vintage-cameras') {
+    return (
+      product.cameraType === 'Vintage Digital' ||
+      product.cameraType === 'Film Camera' ||
+      product.categorySlugs.includes('vintage-digital-cameras') ||
+      product.categorySlugs.includes('film-cameras')
+    );
+  }
+
+  return product.categorySlug === categorySlug || product.categorySlugs.includes(categorySlug);
+}
+
 export async function getProductsByCategoryAsync(categorySlug: string) {
   const catalog = await getCatalogProducts();
-  return catalog.filter(
-    (product) => product.categorySlug === categorySlug || product.categorySlugs.includes(categorySlug)
-  );
+  return catalog.filter((product) => productMatchesCategory(product, categorySlug));
 }
 
 export async function getSimilarProductsAsync(product: Product, limit = 3) {
@@ -480,9 +491,7 @@ export function getProduct(slug: string) {
 }
 
 export function getProductsByCategory(categorySlug: string) {
-  return publicProducts.filter(
-    (product) => product.categorySlug === categorySlug || product.categorySlugs.includes(categorySlug)
-  );
+  return publicProducts.filter((product) => productMatchesCategory(product, categorySlug));
 }
 
 export function getSimilarProducts(product: Product, limit = 3) {
