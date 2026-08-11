@@ -4,6 +4,7 @@ import { categories } from '@/lib/categories';
 import { getBrandPages } from '@/lib/brands';
 import { getCatalogProducts } from '@/lib/products';
 import { guides } from '@/lib/guides';
+import { blogPosts } from '@/lib/blog';
 import { isPriorityBrand, isPriorityCategory } from '@/lib/seo-content';
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
@@ -14,6 +15,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     '/shop',
     '/brands',
     '/guides',
+    '/blog',
     '/amazon',
     '/sell-your-camera',
     '/about',
@@ -65,5 +67,10 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     lastModified: new Date(guide.updatedAt)
   }));
 
-  return [...staticRoutes, ...categoryRoutes, ...brandRoutes, ...productRoutes, ...guideRoutes];
+  const blogRoutes = blogPosts.map((post) => ({
+    url: `${site.domain}/blog/${post.slug}`,
+    lastModified: new Date(post.updatedAt)
+  }));
+
+  return [...staticRoutes, ...categoryRoutes, ...brandRoutes, ...productRoutes, ...guideRoutes, ...blogRoutes];
 }
