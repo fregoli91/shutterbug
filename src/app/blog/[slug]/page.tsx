@@ -157,6 +157,23 @@ export default async function BlogArticlePage({ params }: Props) {
                 <p key={index}><RichText segments={paragraph} /></p>
               ))}
             </div>
+            {section.items?.length ? (
+              <ul className="mt-6 grid gap-3 text-[1.02rem] leading-7 text-ink/76 sm:grid-cols-2">
+                {section.items.map((item) => (
+                  <li key={item} className="flex gap-3 rounded-lg bg-mint/60 px-4 py-3">
+                    <span aria-hidden="true" className="mt-2.5 h-1.5 w-1.5 shrink-0 rounded-full bg-moss" />
+                    <span>{item}</span>
+                  </li>
+                ))}
+              </ul>
+            ) : null}
+            {section.closingParagraphs?.length ? (
+              <div className="mt-5 grid gap-5 text-[1.05rem] leading-8 text-ink/76">
+                {section.closingParagraphs.map((paragraph, index) => (
+                  <p key={index}><RichText segments={paragraph} /></p>
+                ))}
+              </div>
+            ) : null}
           </section>
         ))}
 
