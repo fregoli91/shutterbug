@@ -12,6 +12,7 @@ const primaryNav = [
   { href: '/categories/vintage-digital-cameras', label: 'Categories' },
   { href: '/sell-your-camera', label: 'Sell Your Camera' },
   { href: '/testing-process', label: 'Testing Process' },
+  { href: '/blog', label: 'Journal' },
   { href: '/about', label: 'About' },
   { href: '/contact', label: 'Contact' }
 ];
@@ -79,6 +80,9 @@ export async function Header() {
             </Link>
             <Link href="/buyer-guarantee" className="transition hover:text-ink">
               Buyer Guarantee
+            </Link>
+            <Link href="/blog" className="transition hover:text-ink">
+              Journal
             </Link>
             <Link href="/returns" className="transition hover:text-ink">
               Returns

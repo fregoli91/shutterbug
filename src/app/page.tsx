@@ -303,6 +303,7 @@ function LoggedOutHome({
       />
 
       <TestingProcessCallout />
+      <JournalCallout />
     </>
   );
 }
@@ -430,6 +431,7 @@ function LoggedInHome({
       <CategoryGrid featuredCategories={featuredCategories} />
       <PrinterCallout />
       <TrustCards />
+      <JournalCallout />
     </>
   );
 }
@@ -762,6 +764,50 @@ function TrustCards() {
   );
 }
 
+function JournalCallout() {
+  return (
+    <section className="border-y border-ink/10 bg-mint px-4 py-12 sm:px-6 sm:py-14 lg:px-8">
+      <div className="mx-auto grid max-w-7xl gap-7 lg:grid-cols-[1.1fr_0.9fr] lg:items-center">
+        <Link
+          href="/blog"
+          className="block overflow-hidden rounded-lg border border-ink/10 bg-cream shadow-sm transition hover:border-moss/35"
+        >
+          <Image
+            src="/blog/shutterbug-journal.webp"
+            alt="The Shutterbug Journal with cameras, photography books, film, and the Shutterbug mascot"
+            width={1664}
+            height={936}
+            sizes="(min-width: 1024px) 55vw, 100vw"
+            className="h-auto w-full bg-sand object-contain"
+          />
+        </Link>
+        <div>
+          <p className="text-sm font-bold uppercase tracking-[0.24em] text-moss">From the Shutterbug Journal</p>
+          <h2 className="mt-3 font-serif text-3xl font-bold text-ink sm:text-4xl">
+            Camera stories and practical buying guides.
+          </h2>
+          <p className="mt-4 max-w-2xl leading-7 text-ink/70">
+            Explore vintage camera history, model guides, testing notes, and straightforward advice for choosing older gear.
+          </p>
+          <div className="mt-6 flex flex-col gap-3 sm:flex-row">
+            <Link
+              href="/blog"
+              className="inline-flex min-h-11 items-center justify-center rounded-full bg-forest px-6 text-sm font-semibold text-white transition hover:bg-moss"
+            >
+              Read the Journal
+            </Link>
+            <Link
+              href="/blog/canon-powershot-models-worth-knowing"
+              className="inline-flex min-h-11 items-center justify-center rounded-full border border-ink/15 bg-cream px-6 text-sm font-semibold text-ink transition hover:border-moss hover:text-moss"
+            >
+              Read the latest article
+            </Link>
+          </div>
+        </div>
+      </div>
+    </section>
+  );
+}
 function TestingProcessCallout() {
   return (
     <section className="bg-mint px-4 py-16 sm:px-6 lg:px-8">

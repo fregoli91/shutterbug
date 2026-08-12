@@ -56,9 +56,9 @@ export const blogPosts: BlogPost[] = [
     featured: true,
     image: {
       src: '/blog/how-we-test-used-cameras.webp',
-      alt: 'Shutterbug inspecting a used camera beside a testing checklist in a warm camera workshop',
-      width: 1672,
-      height: 941
+      alt: 'Shutterbug inspecting a used camera beside a detailed ten-step testing checklist',
+      width: 1536,
+      height: 1024
     },
     introduction: [
       text(
@@ -363,9 +363,9 @@ export const blogPosts: BlogPost[] = [
     featured: false,
     image: {
       src: '/blog/beginners-guide-vintage-digital-cameras.webp',
-      alt: 'A collection of compact vintage digital cameras with memory cards and a camera case',
-      width: 1448,
-      height: 1086
+      alt: 'Shutterbug beginner guide to vintage digital cameras with buying considerations and memory-card examples',
+      width: 1536,
+      height: 1024
     },
     introduction: [
       [
@@ -808,9 +808,9 @@ export const blogPosts: BlogPost[] = [
     featured: false,
     image: {
       src: '/blog/canon-powershot-models-worth-knowing.webp',
-      alt: 'Canon compact cameras, DSLR, lenses, and photo printer displayed in the Shutterbug camera shop',
-      width: 1600,
-      height: 900
+      alt: 'Shutterbug guide to Canon PowerShot models, finite supply, pricing, and buying considerations',
+      width: 1536,
+      height: 1024
     },
     introduction: [
       text(

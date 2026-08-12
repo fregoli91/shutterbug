@@ -5,6 +5,13 @@ import { blogCategories, blogPosts, formatBlogDate } from '@/lib/blog';
 import { site } from '@/lib/seo';
 import { buildBreadcrumbJsonLd, jsonLdGraph } from '@/lib/seo-utils';
 
+const journalImage = {
+  src: '/blog/shutterbug-journal.webp',
+  width: 1664,
+  height: 936,
+  alt: 'The Shutterbug Journal with cameras, photography books, film, and the Shutterbug mascot'
+};
+
 export const metadata: Metadata = {
   title: 'Shutterbug Journal',
   description:
@@ -18,17 +25,17 @@ export const metadata: Metadata = {
     siteName: site.name,
     type: 'website',
     images: [{
-      url: blogPosts[0].image.src,
-      width: blogPosts[0].image.width,
-      height: blogPosts[0].image.height,
-      alt: blogPosts[0].image.alt
+      url: journalImage.src,
+      width: journalImage.width,
+      height: journalImage.height,
+      alt: journalImage.alt
     }]
   },
   twitter: {
     card: 'summary_large_image',
     title: 'Shutterbug Journal | Cameras, Stories & Shop Updates',
     description: 'Camera stories, practical guides, and behind-the-scenes updates from Shutterbug Camera Shop.',
-    images: [blogPosts[0].image.src]
+    images: [journalImage.src]
   }
 };
 
@@ -77,6 +84,15 @@ export default function BlogPage() {
               </span>
             ))}
           </div>
+          <Image
+            src={journalImage.src}
+            alt={journalImage.alt}
+            width={journalImage.width}
+            height={journalImage.height}
+            priority
+            sizes="(min-width: 1280px) 1280px, 100vw"
+            className="mt-8 h-auto w-full rounded-lg border border-ink/10 bg-cream object-contain shadow-sm"
+          />
         </div>
       </header>
 
