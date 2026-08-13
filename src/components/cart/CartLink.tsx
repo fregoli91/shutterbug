@@ -14,7 +14,7 @@ export function CartLink({ compact = false }: { compact?: boolean }) {
       <Link
         href="/cart"
         aria-label={ariaLabel}
-        className="relative flex h-11 w-11 shrink-0 items-center justify-center rounded-full border border-ink/15 bg-cream p-0.5 shadow-sm transition hover:border-moss/40 sm:h-12 sm:w-12"
+        className="relative flex h-11 w-11 shrink-0 items-center justify-center rounded-lg border border-forest/15 bg-sand/70 p-1 shadow-[inset_0_1px_0_rgba(255,255,255,0.7),0_2px_5px_rgba(35,43,32,0.12)] transition hover:border-moss/40 hover:bg-sand"
       >
         <Image
           src="/shutterbug-cart-icon.png"
@@ -22,10 +22,10 @@ export function CartLink({ compact = false }: { compact?: boolean }) {
           width={48}
           height={48}
           sizes="3rem"
-          className="h-full w-full rounded-full object-cover"
+          className="h-full w-full rounded-md object-cover"
         />
         {count ? (
-          <span className="absolute -right-1 -top-1 flex h-5 min-w-5 items-center justify-center rounded-full bg-forest px-1 text-[0.65rem] font-bold leading-none text-white shadow-sm">
+          <span className="absolute -right-1 -top-1 flex h-5 min-w-5 items-center justify-center rounded-full bg-[#b8523b] px-1 text-[0.65rem] font-bold leading-none text-white shadow-sm">
             {displayCount}
           </span>
         ) : null}

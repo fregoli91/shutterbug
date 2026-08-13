@@ -631,6 +631,20 @@ function PrinterCallout() {
           <h2 className="mt-3 max-w-3xl font-serif text-4xl font-bold text-ink">
             Used printers, tested and packed with care.
           </h2>
+          <Link
+            href="/categories/printers"
+            aria-label="Shop tested used printers"
+            className="group mt-6 block overflow-hidden rounded-lg border border-ink/10 bg-mint transition lg:hidden"
+          >
+            <Image
+              src="/used-printers-shutterbug.png"
+              alt="A display of used printers, ink cartridges, cables, paper, and packing supplies at Shutterbug Camera Shop"
+              width={1450}
+              height={1086}
+              sizes="100vw"
+              className="h-auto w-full bg-sand object-contain object-center"
+            />
+          </Link>
           <p className="mt-4 max-w-3xl leading-7 text-ink/70">
             Printers are one of our strongest categories. Browse used Canon, Brother, HP, and Lexmark printers with
             clear condition notes, included accessories, and honest testing details.
@@ -657,7 +671,7 @@ function PrinterCallout() {
         <Link
           href="/categories/printers"
           aria-label="Shop tested used printers"
-          className="group block overflow-hidden border-t border-ink/10 bg-mint transition lg:border-l lg:border-t-0"
+          className="group hidden overflow-hidden border-l border-ink/10 bg-mint transition lg:block"
         >
           <Image
             src="/used-printers-shutterbug.png"
@@ -815,6 +829,19 @@ function TestingProcessCallout() {
         <div>
           <p className="text-sm font-bold uppercase tracking-[0.24em] text-moss">Testing process preview</p>
           <h2 className="mt-3 font-serif text-4xl font-bold text-ink">Know what works before it arrives.</h2>
+          <Link
+            href="/testing-process"
+            className="group mt-6 block overflow-hidden rounded-lg border border-ink/10 bg-cream shadow-sm lg:hidden"
+          >
+            <Image
+              src="/shutterbug-testing-process-preview.png"
+              alt="Shutterbug testing process checklist for power, lens, flash, buttons, battery, and sample photos"
+              width={1672}
+              height={941}
+              sizes="100vw"
+              className="h-auto w-full bg-cream object-contain"
+            />
+          </Link>
           <p className="mt-4 max-w-3xl leading-7 text-ink/70">See how each camera is checked before it is listed.</p>
           <Link
             href="/testing-process"
@@ -825,7 +852,7 @@ function TestingProcessCallout() {
         </div>
         <Link
           href="/testing-process"
-          className="group block overflow-hidden rounded-lg border border-ink/10 bg-cream shadow-sm transition hover:-translate-y-1 hover:border-moss/30 hover:shadow-soft"
+          className="group hidden overflow-hidden rounded-lg border border-ink/10 bg-cream shadow-sm transition hover:-translate-y-1 hover:border-moss/30 hover:shadow-soft lg:block"
         >
           <Image
             src="/shutterbug-testing-process-preview.png"
