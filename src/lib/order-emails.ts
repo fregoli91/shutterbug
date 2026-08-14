@@ -1,6 +1,8 @@
 import { FulfillmentStatus, OrderStatus, PaymentStatus, type Prisma } from '@/generated/prisma/client';
 import { getPublicSiteUrl, sendTransactionalEmail } from '@/lib/email';
 import { formatCents } from '@/lib/money';
+import { customerOrderPath } from '@/lib/order-access';
+import { customerPaymentStatusLabel, orderStatusLabel } from '@/lib/order-status';
 import { requirePrisma } from '@/lib/prisma';
 import { site } from '@/lib/seo';
 
@@ -27,7 +29,7 @@ function staleClaimCutoff() {
 }
 
 function orderUrl(order: PaidOrder) {
-  return `${getPublicSiteUrl()}/orders/${order.id}`;
+  return `${getPublicSiteUrl()}${customerOrderPath(order)}`;
 }
 
 function adminOrderUrl(order: PaidOrder) {
@@ -66,21 +68,30 @@ function itemRowsText(order: PaidOrder) {
 
 function itemRowsHtml(order: PaidOrder) {
   return order.items
-    .map(
-      (item) => `
+    .map((item) => {
+      const image = item.imageUrl
+        ? `<img src="${escapeHtml(item.imageUrl)}" alt="" width="56" height="56" style="display:block;width:56px;height:56px;object-fit:cover;border-radius:6px;background:#f6d8ad" />`
+        : '';
+
+      return `
         <tr>
           <td style="padding:12px 0;border-bottom:1px solid rgba(22,35,29,.12)">
-            <div style="font-weight:700">${escapeHtml(item.productTitle)}</div>
-            <div style="font-size:13px;color:rgba(22,35,29,.68)">${escapeHtml(
-              [item.productSku || item.productSlug, item.conditionLabel].filter(Boolean).join(' | ')
-            )}</div>
+            <div style="display:flex;align-items:center;gap:12px">
+              ${image}
+              <div>
+                <div style="font-weight:700">${escapeHtml(item.productTitle)}</div>
+                <div style="font-size:13px;color:rgba(22,35,29,.68)">${escapeHtml(
+                  [item.productSku || item.productSlug, item.conditionLabel].filter(Boolean).join(' | ')
+                )}</div>
+              </div>
+            </div>
           </td>
           <td style="padding:12px 0;border-bottom:1px solid rgba(22,35,29,.12);text-align:center">${item.quantity}</td>
           <td style="padding:12px 0;border-bottom:1px solid rgba(22,35,29,.12);text-align:right">${escapeHtml(
             formatCents(item.totalPriceCents, order.currency)
           )}</td>
-        </tr>`
-    )
+        </tr>`;
+    })
     .join('');
 }
 
@@ -133,8 +144,8 @@ export function buildCustomerPaidOrderEmail(order: PaidOrder) {
 Thank you for your Shutterbug order. Stripe has confirmed your payment.
 
 Order: ${order.orderNumber}
-Order status: ${order.status}
-Payment status: ${order.paymentStatus}
+Order status: ${orderStatusLabel(order.status)}
+Payment status: ${customerPaymentStatusLabel(order.paymentStatus)}
 
 Items:
 ${itemRowsText(order)}
@@ -154,8 +165,8 @@ Questions? Contact ${site.supportEmail}.`;
     <p>Hi ${escapeHtml(displayName)}, thank you for your order. Stripe has confirmed your payment.</p>
     <div style="background:#fde9cd;border-radius:8px;padding:16px;margin:20px 0">
       <div><strong>Order:</strong> ${escapeHtml(order.orderNumber)}</div>
-      <div><strong>Order status:</strong> ${escapeHtml(order.status)}</div>
-      <div><strong>Payment status:</strong> ${escapeHtml(order.paymentStatus)}</div>
+      <div><strong>Order status:</strong> ${escapeHtml(orderStatusLabel(order.status))}</div>
+      <div><strong>Payment status:</strong> ${escapeHtml(customerPaymentStatusLabel(order.paymentStatus))}</div>
     </div>
     <table style="width:100%;border-collapse:collapse;margin:20px 0">
       <thead>
@@ -194,8 +205,8 @@ export function buildAdminPaidOrderEmail(order: PaidOrder) {
 
 Order: ${order.orderNumber}
 Order ID: ${order.id}
-Order status: ${order.status}
-Payment status: ${order.paymentStatus}
+Order status: ${orderStatusLabel(order.status)}
+Payment status: ${customerPaymentStatusLabel(order.paymentStatus)}
 Provider: ${order.provider}
 Stripe session: ${order.stripeCheckoutSessionId || 'Not recorded'}
 Stripe payment intent: ${order.stripePaymentIntentId || 'Not recorded'}
@@ -221,8 +232,8 @@ ${adminOrderUrl(order)}`;
     <div style="background:#fde9cd;border-radius:8px;padding:16px;margin:20px 0">
       <div><strong>Order:</strong> ${escapeHtml(order.orderNumber)}</div>
       <div><strong>Order ID:</strong> ${escapeHtml(order.id)}</div>
-      <div><strong>Order status:</strong> ${escapeHtml(order.status)}</div>
-      <div><strong>Payment status:</strong> ${escapeHtml(order.paymentStatus)}</div>
+      <div><strong>Order status:</strong> ${escapeHtml(orderStatusLabel(order.status))}</div>
+      <div><strong>Payment status:</strong> ${escapeHtml(customerPaymentStatusLabel(order.paymentStatus))}</div>
       <div><strong>Provider:</strong> ${escapeHtml(order.provider)}</div>
       <div><strong>Stripe session:</strong> ${escapeHtml(order.stripeCheckoutSessionId || 'Not recorded')}</div>
       <div><strong>Stripe payment intent:</strong> ${escapeHtml(order.stripePaymentIntentId || 'Not recorded')}</div>
@@ -271,7 +282,7 @@ Good news. Your Shutterbug order has shipped.
 Order: ${order.orderNumber}
 Carrier: ${order.carrier || 'Carrier not specified'}
 Tracking: ${order.trackingNumber || 'Tracking number pending'}
-Status: ${order.status}
+Status: ${orderStatusLabel(order.status)}
 
 Track or view your order:
 ${trackingUrl(order)}
@@ -288,7 +299,7 @@ Questions? Contact ${site.supportEmail}.`;
       <div><strong>Order:</strong> ${escapeHtml(order.orderNumber)}</div>
       <div><strong>Carrier:</strong> ${escapeHtml(order.carrier || 'Carrier not specified')}</div>
       <div><strong>Tracking:</strong> ${escapeHtml(order.trackingNumber || 'Tracking number pending')}</div>
-      <div><strong>Status:</strong> ${escapeHtml(order.status)}</div>
+      <div><strong>Status:</strong> ${escapeHtml(orderStatusLabel(order.status))}</div>
     </div>
     <table style="width:100%;border-collapse:collapse;margin:20px 0">
       <thead>

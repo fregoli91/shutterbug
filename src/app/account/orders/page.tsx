@@ -1,7 +1,9 @@
 import Link from 'next/link';
 import Image from 'next/image';
+import { PaymentStatus } from '@/generated/prisma/client';
 import { AccountFeaturePage } from '@/components/account/AccountFeaturePage';
 import { formatCents } from '@/lib/money';
+import { customerFulfillmentStatusLabel, customerPaymentStatusLabel } from '@/lib/order-status';
 import { requireCustomer } from '@/lib/customer-auth';
 import { requirePrisma } from '@/lib/prisma';
 
@@ -14,7 +16,8 @@ export default async function AccountOrdersPage() {
   const prisma = requirePrisma();
   const orders = await prisma.order.findMany({
     where: {
-      OR: [{ customerId: customer.id }, { customerEmail: customer.email }]
+      customerId: customer.id,
+      paymentStatus: { in: [PaymentStatus.PAID, PaymentStatus.REFUNDED] }
     },
     include: { items: true },
     orderBy: { createdAt: 'desc' }
@@ -43,8 +46,8 @@ export default async function AccountOrdersPage() {
                   <p className="font-serif text-2xl font-bold text-ink">Order {order.orderNumber}</p>
                   <p className="mt-1 text-sm text-ink/60">{order.createdAt.toLocaleDateString('en-US')}</p>
                   <div className="mt-3 flex flex-wrap gap-2">
-                    <StatusPill label={formatStatus(order.paymentStatus)} />
-                    <StatusPill label={formatStatus(order.fulfillmentStatus)} />
+                    <StatusPill label={customerPaymentStatusLabel(order.paymentStatus)} />
+                    <StatusPill label={customerFulfillmentStatusLabel(order.fulfillmentStatus)} />
                   </div>
                 </div>
                 <p className="text-lg font-bold text-forest">{formatCents(order.totalCents, order.currency)}</p>
@@ -82,7 +85,7 @@ export default async function AccountOrdersPage() {
                   Tracking:{' '}
                   {[order.carrier, order.trackingNumber].filter(Boolean).join(' ') || 'Not added yet'}
                 </p>
-                <p>Shipping status: {formatStatus(order.fulfillmentStatus)}</p>
+                <p>Shipping status: {customerFulfillmentStatusLabel(order.fulfillmentStatus)}</p>
                 {order.trackingUrl ? (
                   <a href={order.trackingUrl} target="_blank" rel="noreferrer" className="font-semibold text-moss hover:text-ink">
                     Track shipment
@@ -141,8 +144,4 @@ function OrderSummary({ label, value }: { label: string; value: string }) {
 
 function StatusPill({ label }: { label: string }) {
   return <span className="rounded-full bg-mint px-3 py-1 text-xs font-bold uppercase tracking-[0.12em] text-forest">{label}</span>;
-}
-
-function formatStatus(status: string) {
-  return status.replace(/_/g, ' ').toLowerCase().replace(/\b\w/g, (letter) => letter.toUpperCase());
 }

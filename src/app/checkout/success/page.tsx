@@ -1,9 +1,8 @@
-import Link from 'next/link';
 import Image from 'next/image';
-import { ClearCartOnSuccess } from '@/components/cart/ClearCartOnSuccess';
+import { OrderConfirmationClient } from '@/components/checkout/OrderConfirmationClient';
 import { getCustomerSession } from '@/lib/customer-auth';
-import { formatCents } from '@/lib/money';
-import { orderStatusClassName, orderStatusLabel } from '@/lib/order-status';
+import { guestOrderAccessMatches } from '@/lib/order-access';
+import { toOrderConfirmation } from '@/lib/order-confirmation';
 import { getPrisma } from '@/lib/prisma';
 
 type Props = {
@@ -14,6 +13,8 @@ export const metadata = {
   title: 'Checkout Success'
 };
 
+export const dynamic = 'force-dynamic';
+
 function asString(value: string | string[] | undefined) {
   return Array.isArray(value) ? value[0] ?? '' : value ?? '';
 }
@@ -21,6 +22,7 @@ function asString(value: string | string[] | undefined) {
 export default async function CheckoutSuccessPage({ searchParams }: Props) {
   const params = searchParams ? await searchParams : {};
   const sessionId = asString(params.session_id);
+  const accessToken = asString(params.access);
   const prisma = getPrisma();
   const customer = await getCustomerSession();
   const order =
@@ -30,10 +32,12 @@ export default async function CheckoutSuccessPage({ searchParams }: Props) {
           include: { items: true }
         })
       : null;
+  const isOwner = Boolean(customer && order?.customerId === customer.id);
+  const hasGuestAccess = Boolean(order && guestOrderAccessMatches(order.guestAccessToken, accessToken));
+  const initialConfirmation = order && (isOwner || hasGuestAccess) ? toOrderConfirmation(order) : null;
 
   return (
     <section className="px-4 py-12 sm:px-6 lg:px-8">
-      {sessionId ? <ClearCartOnSuccess /> : null}
       <div className="mx-auto grid max-w-5xl overflow-hidden rounded-lg border border-ink/10 bg-white shadow-sm lg:grid-cols-[20rem_1fr]">
         <Image
           src="/shutterbug-checkout-success.png"
@@ -43,54 +47,11 @@ export default async function CheckoutSuccessPage({ searchParams }: Props) {
           sizes="(min-width: 1024px) 20rem, 100vw"
           className="h-full min-h-72 w-full bg-sand object-cover object-center"
         />
-        <div className="p-8">
-          <p className="text-sm font-bold uppercase tracking-[0.22em] text-moss">Checkout</p>
-          <h1 className="mt-3 font-serif text-4xl font-bold text-ink">Thank you for your order</h1>
-          <p className="mt-4 leading-7 text-ink/70">
-            Stripe has returned you to Shutterbug Camera Shop. Payment confirmation is finalized by webhook, so your
-            order status may show pending for a moment before updating.
-          </p>
-
-          {order ? (
-            <div className="mt-6 rounded-lg bg-cream p-5">
-              <p className="font-semibold text-ink">Order {order.orderNumber}</p>
-              <div className="mt-3 flex flex-wrap items-center gap-3">
-                <span className={orderStatusClassName(order.status)}>{orderStatusLabel(order.status)}</span>
-                <p className="text-sm text-ink/70">Payment: {order.paymentStatus}</p>
-              </div>
-              <p className="mt-3 text-sm font-bold text-ink">Total {formatCents(order.totalCents, order.currency)}</p>
-              <div className="mt-4 grid gap-2 text-sm text-ink/70">
-                {order.items.map((item) => (
-                  <p key={item.id}>
-                    {item.quantity} x {item.productTitle}
-                  </p>
-                ))}
-              </div>
-            </div>
-          ) : (
-            <p className="mt-6 rounded-lg bg-cream p-4 text-sm text-ink/70">
-              Order details will appear here after database, Stripe session, and webhook configuration are connected.
-            </p>
-          )}
-
-          <div className="mt-6 flex flex-wrap gap-3">
-            <Link href="/shop" className="rounded-full bg-forest px-5 py-3 text-sm font-semibold text-white">
-              Continue shopping
-            </Link>
-            <Link
-              href={customer ? '/account/orders' : '/signup?redirect=/account/orders'}
-              className="rounded-full border border-moss/30 bg-mint px-5 py-3 text-sm font-semibold text-ink"
-            >
-              {customer ? 'View order history' : 'Create account'}
-            </Link>
-            <Link
-              href="/contact"
-              className="rounded-full border border-ink/15 bg-white px-5 py-3 text-sm font-semibold text-ink"
-            >
-              Contact support
-            </Link>
-          </div>
-        </div>
+        <OrderConfirmationClient
+          sessionId={sessionId}
+          accessToken={accessToken}
+          initialConfirmation={initialConfirmation}
+        />
       </div>
     </section>
   );

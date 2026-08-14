@@ -1,8 +1,10 @@
 import Link from 'next/link';
 import Image from 'next/image';
+import { PaymentStatus } from '@/generated/prisma/client';
 import { logoutAction } from './actions';
 import { requireCustomer } from '@/lib/customer-auth';
 import { formatCents } from '@/lib/money';
+import { customerFulfillmentStatusLabel, customerPaymentStatusLabel } from '@/lib/order-status';
 import { requirePrisma } from '@/lib/prisma';
 
 export const metadata = {
@@ -62,11 +64,11 @@ export default async function AccountPage({ searchParams }: Props) {
   const status = asString(params.status);
   const [orderCount, likedCount, recentOrder] = await Promise.all([
     prisma.order.count({
-      where: { OR: [{ customerId: customer.id }, { customerEmail: customer.email }] }
+      where: { customerId: customer.id, paymentStatus: { in: [PaymentStatus.PAID, PaymentStatus.REFUNDED] } }
     }),
     prisma.customerProductLike.count({ where: { customerId: customer.id } }),
     prisma.order.findFirst({
-      where: { OR: [{ customerId: customer.id }, { customerEmail: customer.email }] },
+      where: { customerId: customer.id, paymentStatus: { in: [PaymentStatus.PAID, PaymentStatus.REFUNDED] } },
       orderBy: { createdAt: 'desc' },
       select: {
         id: true,
@@ -123,8 +125,9 @@ export default async function AccountPage({ searchParams }: Props) {
                 <p className="text-sm font-bold uppercase tracking-[0.18em] text-moss">Latest order</p>
                 <p className="mt-1 font-serif text-2xl font-bold text-ink">Order {recentOrder.orderNumber}</p>
                 <p className="mt-1 text-sm text-ink/60">
-                  {recentOrder.createdAt.toLocaleDateString('en-US')} | {recentOrder.paymentStatus} |{' '}
-                  {recentOrder.fulfillmentStatus}
+                  {recentOrder.createdAt.toLocaleDateString('en-US')} |{' '}
+                  {customerPaymentStatusLabel(recentOrder.paymentStatus)} |{' '}
+                  {customerFulfillmentStatusLabel(recentOrder.fulfillmentStatus)}
                 </p>
               </div>
               <div className="grid gap-2 sm:justify-items-end">

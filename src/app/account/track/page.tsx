@@ -1,6 +1,8 @@
 import Link from 'next/link';
+import { PaymentStatus } from '@/generated/prisma/client';
 import { AccountFeaturePage } from '@/components/account/AccountFeaturePage';
 import { formatCents } from '@/lib/money';
+import { customerFulfillmentStatusLabel, customerPaymentStatusLabel } from '@/lib/order-status';
 import { requireCustomer } from '@/lib/customer-auth';
 import { requirePrisma } from '@/lib/prisma';
 
@@ -13,7 +15,8 @@ export default async function AccountTrackPage() {
   const prisma = requirePrisma();
   const orders = await prisma.order.findMany({
     where: {
-      OR: [{ customerId: customer.id }, { customerEmail: customer.email }]
+      customerId: customer.id,
+      paymentStatus: { in: [PaymentStatus.PAID, PaymentStatus.REFUNDED] }
     },
     include: { items: true },
     orderBy: { createdAt: 'desc' },
@@ -34,7 +37,8 @@ export default async function AccountTrackPage() {
                 <div>
                   <p className="font-serif text-2xl font-bold text-ink">Order {order.orderNumber}</p>
                   <p className="mt-1 text-sm text-ink/60">
-                    {order.createdAt.toLocaleDateString('en-US')} | {order.paymentStatus} | {order.fulfillmentStatus}
+                    {order.createdAt.toLocaleDateString('en-US')} | {customerPaymentStatusLabel(order.paymentStatus)} |{' '}
+                    {customerFulfillmentStatusLabel(order.fulfillmentStatus)}
                   </p>
                 </div>
                 <p className="font-bold text-forest">{formatCents(order.totalCents, order.currency)}</p>

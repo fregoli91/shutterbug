@@ -1,8 +1,10 @@
 import { notFound } from 'next/navigation';
 import Link from 'next/link';
 import Image from 'next/image';
+import { PaymentStatus } from '@/generated/prisma/client';
 import { AccountFeaturePage } from '@/components/account/AccountFeaturePage';
 import { formatCents } from '@/lib/money';
+import { customerFulfillmentStatusLabel, customerPaymentStatusLabel } from '@/lib/order-status';
 import { requireCustomer } from '@/lib/customer-auth';
 import { requirePrisma } from '@/lib/prisma';
 
@@ -20,16 +22,22 @@ export default async function AccountOrderDetailPage({ params }: Props) {
     where: {
       OR: [
         { id, customerId: customer.id },
-        { id, customerEmail: customer.email },
-        { orderNumber: id, customerId: customer.id },
-        { orderNumber: id, customerEmail: customer.email }
-      ]
+        { orderNumber: id, customerId: customer.id }
+      ],
+      paymentStatus: { in: [PaymentStatus.PAID, PaymentStatus.REFUNDED] }
     },
-    include: { items: true, history: { orderBy: { createdAt: 'desc' } } }
+    include: { items: true }
   });
 
   if (!order) notFound();
   const trackingLabel = [order.carrier, order.trackingNumber].filter(Boolean).join(' ');
+  const updates: Array<{ label: string; date: Date }> = [];
+  if (order.paidAt) updates.push({ label: 'Payment confirmed', date: order.paidAt });
+  if (order.processingAt) updates.push({ label: 'Preparing your order', date: order.processingAt });
+  if (order.shippedAt) updates.push({ label: 'Order shipped', date: order.shippedAt });
+  if (order.deliveredAt) updates.push({ label: 'Order delivered', date: order.deliveredAt });
+  if (order.cancelledAt) updates.push({ label: 'Order cancelled', date: order.cancelledAt });
+  if (order.refundedAt) updates.push({ label: 'Order refunded', date: order.refundedAt });
 
   return (
     <AccountFeaturePage
@@ -40,8 +48,8 @@ export default async function AccountOrderDetailPage({ params }: Props) {
       <div className="grid gap-5">
         <div className="grid gap-4 rounded-lg border border-ink/10 bg-white p-6 shadow-sm md:grid-cols-4">
           <StatusTile label="Order date" value={order.createdAt.toLocaleDateString('en-US')} />
-          <StatusTile label="Payment" value={order.paymentStatus} />
-          <StatusTile label="Fulfillment" value={order.fulfillmentStatus} />
+          <StatusTile label="Payment" value={customerPaymentStatusLabel(order.paymentStatus)} />
+          <StatusTile label="Fulfillment" value={customerFulfillmentStatusLabel(order.fulfillmentStatus)} />
           <StatusTile label="Total" value={formatCents(order.totalCents, order.currency)} />
         </div>
 
@@ -102,7 +110,7 @@ export default async function AccountOrderDetailPage({ params }: Props) {
             <div className="mt-3 grid gap-2 text-sm leading-6 text-ink/68">
               <p>Carrier: {order.carrier || 'Not added yet'}</p>
               <p>Tracking: {order.trackingNumber || 'Not added yet'}</p>
-              <p>Fulfillment: {order.fulfillmentStatus.replace(/_/g, ' ')}</p>
+              <p>Fulfillment: {customerFulfillmentStatusLabel(order.fulfillmentStatus)}</p>
               {order.shippedAt ? <p>Shipped: {order.shippedAt.toLocaleDateString('en-US')}</p> : null}
               {order.deliveredAt ? <p>Delivered: {order.deliveredAt.toLocaleDateString('en-US')}</p> : null}
             </div>
@@ -129,14 +137,14 @@ export default async function AccountOrderDetailPage({ params }: Props) {
           </div>
         </div>
 
-        {order.history.length ? (
+        {updates.length ? (
           <div className="rounded-lg border border-ink/10 bg-white p-6 shadow-sm">
             <p className="font-serif text-2xl font-bold text-ink">Order updates</p>
             <div className="mt-5 grid gap-3">
-              {order.history.map((event) => (
-                <div key={event.id} className="rounded-lg bg-cream p-4">
-                  <p className="font-semibold text-ink">{event.message}</p>
-                  <p className="mt-1 text-sm text-ink/55">{event.createdAt.toLocaleString('en-US')}</p>
+              {updates.map((event) => (
+                <div key={`${event.label}-${event.date.toISOString()}`} className="rounded-lg bg-cream p-4">
+                  <p className="font-semibold text-ink">{event.label}</p>
+                  <p className="mt-1 text-sm text-ink/55">{event.date.toLocaleString('en-US')}</p>
                 </div>
               ))}
             </div>

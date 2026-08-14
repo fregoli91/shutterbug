@@ -1,6 +1,7 @@
 'use client';
 
 import { createContext, useContext, useEffect, useMemo, useState } from 'react';
+import { removePurchasedCartLines } from '@/lib/purchase-lifecycle';
 
 export type CartLine = {
   id: string;
@@ -14,6 +15,7 @@ type CartContextValue = {
   addItem: (id: string, quantity?: number) => void;
   updateQuantity: (id: string, quantity: number) => void;
   removeItem: (id: string) => void;
+  removePurchasedItems: (items: CartLine[]) => void;
   clearCart: () => void;
 };
 
@@ -90,6 +92,9 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
       },
       removeItem(id) {
         setItems((current) => current.filter((item) => item.id !== id));
+      },
+      removePurchasedItems(purchasedItems) {
+        setItems((current) => removePurchasedCartLines(current, purchasedItems));
       },
       clearCart() {
         setItems((current) => (current.length ? [] : current));

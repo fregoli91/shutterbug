@@ -205,6 +205,7 @@ model CustomerProductLike {
 model Order {
   id                String             @id @default(cuid())
   orderNumber       String             @unique
+  guestAccessToken  String?            @unique
   customerId        String?
   customer          Customer?          @relation(fields: [customerId], references: [id], onDelete: SetNull)
   customerEmail     String
@@ -237,6 +238,7 @@ model Order {
   deliveredAt       DateTime?
   cancelledAt       DateTime?
   refundedAt        DateTime?
+  paidAt            DateTime?
   shippingEmailSendingAt DateTime?
   shippingEmailSentAt DateTime?
   notes             String?

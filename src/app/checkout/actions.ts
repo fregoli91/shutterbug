@@ -11,6 +11,7 @@ import {
 } from '@/generated/prisma/client';
 import { validateCartLines, type CartLineInput } from '@/lib/cart-validation';
 import { getCustomerSession } from '@/lib/customer-auth';
+import { createGuestOrderAccessToken } from '@/lib/order-access';
 import { requirePrisma } from '@/lib/prisma';
 
 function field(formData: FormData, name: string) {
@@ -98,6 +99,7 @@ export async function createPendingOrderAction(formData: FormData) {
     data: {
       orderNumber: orderNumber(),
       customerId: customer?.id,
+      guestAccessToken: customer ? null : createGuestOrderAccessToken(),
       customerEmail: email,
       customerName: name,
       customerPhone: phone || null,
@@ -136,6 +138,7 @@ export async function createPendingOrderAction(formData: FormData) {
   try {
     session = await stripe.checkout.sessions.create({
       mode: 'payment',
+      payment_method_types: ['card'],
       client_reference_id: order.id,
       customer_email: email,
       line_items: validation.items.map((item) => {
@@ -158,7 +161,7 @@ export async function createPendingOrderAction(formData: FormData) {
           }
         };
       }),
-      success_url: `${siteUrl()}/checkout/success?session_id={CHECKOUT_SESSION_ID}`,
+      success_url: `${siteUrl()}/checkout/success?session_id={CHECKOUT_SESSION_ID}${order.guestAccessToken ? `&access=${encodeURIComponent(order.guestAccessToken)}` : ""}`,
       cancel_url: `${siteUrl()}/checkout/cancel?order_id=${order.id}`,
       metadata: {
         orderId: order.id,

@@ -2,8 +2,9 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { PaymentStatus } from '@/generated/prisma/client';
-import { ClearCartOnSuccess } from '@/components/cart/ClearCartOnSuccess';
+import { getCustomerSession } from '@/lib/customer-auth';
 import { formatCents } from '@/lib/money';
+import { guestOrderAccessMatches } from '@/lib/order-access';
 import { orderStatusClassName, orderStatusLabel } from '@/lib/order-status';
 import { getPrisma } from '@/lib/prisma';
 
@@ -12,9 +13,7 @@ type Props = {
   searchParams?: Promise<Record<string, string | string[] | undefined>>;
 };
 
-export const metadata = {
-  title: 'Order Summary'
-};
+export const metadata = { title: 'Order Summary' };
 
 function asString(value: string | string[] | undefined) {
   return Array.isArray(value) ? value[0] ?? '' : value ?? '';
@@ -23,23 +22,30 @@ function asString(value: string | string[] | undefined) {
 export default async function OrderSummaryPage({ params, searchParams }: Props) {
   const { id } = await params;
   const query = searchParams ? await searchParams : {};
+  const access = asString(query.access);
   const prisma = getPrisma();
   if (!prisma) notFound();
 
-  const order = await prisma.order.findFirst({
-    where: { OR: [{ id }, { orderNumber: id }] },
-    include: { items: true, history: { orderBy: { createdAt: 'desc' } } }
-  });
+  const [customer, order] = await Promise.all([
+    getCustomerSession(),
+    prisma.order.findFirst({
+      where: {
+        OR: [{ id }, { orderNumber: id }],
+        paymentStatus: { in: [PaymentStatus.PAID, PaymentStatus.REFUNDED] }
+      },
+      include: { items: true }
+    })
+  ]);
 
   if (!order) notFound();
+  const isCustomerOwner = Boolean(customer && order.customerId === customer.id);
+  const hasGuestAccess = guestOrderAccessMatches(order.guestAccessToken, access);
+  if (!isCustomerOwner && !hasGuestAccess) notFound();
 
-  const created = asString(query.created) === '1';
-  const paymentCollected = order.paymentStatus === PaymentStatus.PAID;
   const trackingLabel = [order.carrier, order.trackingNumber].filter(Boolean).join(' ');
 
   return (
     <section className="px-4 py-10 sm:px-6 lg:px-8">
-      {created ? <ClearCartOnSuccess /> : null}
       <div className="mx-auto max-w-6xl">
         <div className="grid gap-6 lg:grid-cols-[1fr_22rem]">
           <div className="rounded-lg border border-ink/10 bg-white p-6 shadow-sm">
@@ -49,31 +55,25 @@ export default async function OrderSummaryPage({ params, searchParams }: Props) 
               <span className={orderStatusClassName(order.status)}>{orderStatusLabel(order.status)}</span>
             </div>
             <p className="mt-4 max-w-2xl text-sm leading-6 text-ink/65">
-              {paymentCollected
-                ? 'Stripe has confirmed payment for this order. We will update this page as the order moves through fulfillment.'
-                : 'This order is waiting for Stripe payment confirmation. Inventory is not deducted until payment is confirmed by webhook.'}
+              Payment is confirmed. We will update this page as your order moves through fulfillment.
             </p>
 
             <div className="mt-6 grid gap-3">
               {order.items.map((item) => (
                 <div key={item.id} className="grid gap-3 rounded-lg bg-cream p-3 sm:grid-cols-[5rem_1fr_auto] sm:items-center">
                   <Image
-                    src={item.imageUrl ?? '/shutterbug-product-placeholder.png'}
+                    src={item.imageUrl || '/shutterbug-product-placeholder.png'}
                     alt={item.productTitle}
                     width={80}
                     height={80}
                     sizes="5rem"
-                    unoptimized={
-                      (item.imageUrl ?? '/shutterbug-product-placeholder.png').endsWith('.svg') ||
-                      (item.imageUrl ?? '').startsWith('http')
-                    }
+                    unoptimized={Boolean(item.imageUrl?.startsWith('http'))}
                     className="aspect-square rounded-lg bg-sand object-contain"
                   />
                   <div>
                     <p className="font-semibold text-ink">{item.productTitle}</p>
                     <p className="mt-1 text-sm text-ink/60">
-                      {item.productSku ? `${item.productSku} | ` : ''}
-                      Qty {item.quantity} | {item.conditionLabel}
+                      {item.productSku ? `${item.productSku} | ` : ''}Qty {item.quantity} | {item.conditionLabel}
                     </p>
                   </div>
                   <p className="font-bold text-ink">{formatCents(item.totalPriceCents, order.currency)}</p>
@@ -85,11 +85,9 @@ export default async function OrderSummaryPage({ params, searchParams }: Props) 
           <aside className="grid content-start gap-4">
             <div className="rounded-lg border border-ink/10 bg-white p-5 shadow-sm">
               <p className="font-serif text-xl font-bold text-ink">Customer</p>
-              <p className="mt-3 text-sm text-ink/70">{order.customerName || 'Name pending'}</p>
+              <p className="mt-3 text-sm text-ink/70">{order.customerName || 'Customer'}</p>
               <p className="text-sm text-ink/70">{order.customerEmail}</p>
-              {order.customerPhone ? <p className="text-sm text-ink/70">{order.customerPhone}</p> : null}
             </div>
-
             <div className="rounded-lg border border-ink/10 bg-white p-5 shadow-sm">
               <p className="font-serif text-xl font-bold text-ink">Totals</p>
               <div className="mt-4 grid gap-2 text-sm text-ink/70">
@@ -101,29 +99,21 @@ export default async function OrderSummaryPage({ params, searchParams }: Props) 
                 </div>
               </div>
             </div>
-
             <div className="rounded-lg border border-ink/10 bg-white p-5 shadow-sm">
               <p className="font-serif text-xl font-bold text-ink">Fulfillment</p>
               <div className="mt-3 grid gap-2 text-sm leading-6 text-ink/65">
-                <p>Status: {order.fulfillmentStatus.replace(/_/g, ' ')}</p>
+                <p>Status: {formatStatus(order.fulfillmentStatus)}</p>
                 <p>Carrier: {order.carrier || 'Not added yet'}</p>
                 <p>Tracking: {order.trackingNumber || 'Not added yet'}</p>
                 {order.shippedAt ? <p>Shipped: {order.shippedAt.toLocaleDateString('en-US')}</p> : null}
                 {order.deliveredAt ? <p>Delivered: {order.deliveredAt.toLocaleDateString('en-US')}</p> : null}
               </div>
               {order.trackingUrl ? (
-                <a
-                  href={order.trackingUrl}
-                  target="_blank"
-                  rel="noreferrer"
-                  className="mt-4 inline-flex text-sm font-semibold text-moss hover:text-ink"
-                >
+                <a href={order.trackingUrl} target="_blank" rel="noreferrer" className="mt-4 inline-flex text-sm font-semibold text-moss hover:text-ink">
                   Track shipment
                 </a>
               ) : null}
-              {!order.trackingUrl && trackingLabel ? (
-                <p className="mt-4 text-sm font-semibold text-moss">{trackingLabel}</p>
-              ) : null}
+              {!order.trackingUrl && trackingLabel ? <p className="mt-4 text-sm font-semibold text-moss">{trackingLabel}</p> : null}
               <Link href="/contact" className="mt-4 inline-flex text-sm font-semibold text-moss hover:text-ink">
                 Contact support
               </Link>
@@ -142,4 +132,8 @@ function PriceRow({ label, value, strong = false }: { label: string; value: stri
       <span>{value}</span>
     </div>
   );
+}
+
+function formatStatus(status: string) {
+  return status.replace(/_/g, ' ').toLowerCase().replace(/\b\w/g, (letter) => letter.toUpperCase());
 }
