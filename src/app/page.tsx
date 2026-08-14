@@ -147,7 +147,7 @@ function LoggedOutHome({
               </p>
             </div>
 
-            <div className="grid gap-3 sm:flex sm:justify-start lg:justify-end">
+            <div className="hidden gap-3 md:flex md:justify-start lg:justify-end">
               <Link
                 href="/shop"
                 className="min-h-12 rounded-full bg-forest px-7 py-3 text-center font-semibold text-white shadow-sm transition hover:bg-moss"
@@ -156,25 +156,35 @@ function LoggedOutHome({
               </Link>
               <Link
                 href="/categories/vintage-digital-cameras"
-                className="hidden rounded-full border border-ink/20 bg-white px-7 py-3 text-center font-semibold text-ink transition hover:border-moss hover:text-moss md:inline-flex"
+                className="inline-flex rounded-full border border-ink/20 bg-white px-7 py-3 text-center font-semibold text-ink transition hover:border-moss hover:text-moss"
               >
                 Vintage digital
               </Link>
-              <div className="flex flex-wrap justify-center gap-x-5 gap-y-1 text-sm font-semibold text-moss md:hidden">
-                <Link href="/categories/vintage-digital-cameras" className="min-h-9 py-2 hover:text-ink">
-                  Vintage digital
-                </Link>
-                <Link href="/categories/film-cameras" className="min-h-9 py-2 hover:text-ink">
-                  Film cameras
-                </Link>
-                <Link href="/brands/canon" className="min-h-9 py-2 hover:text-ink">
-                  Canon
-                </Link>
-              </div>
+
             </div>
           </div>
 
-          <div className="order-3 mt-5 grid grid-cols-2 gap-x-4 gap-y-3 border-y border-forest/15 bg-[#f7f5e9] px-3 py-3 text-xs text-ink/70 sm:hidden">
+          <div className="order-3 mt-4 grid gap-2 md:hidden">
+            <Link
+              href="/shop"
+              className="min-h-12 rounded-full bg-forest px-7 py-3 text-center font-semibold text-white shadow-sm transition hover:bg-moss"
+            >
+              Shop the sale
+            </Link>
+            <div className="flex flex-wrap justify-center gap-x-5 gap-y-1 text-sm font-semibold text-moss">
+              <Link href="/categories/vintage-digital-cameras" className="min-h-9 py-2 hover:text-ink">
+                Vintage digital
+              </Link>
+              <Link href="/categories/film-cameras" className="min-h-9 py-2 hover:text-ink">
+                Film cameras
+              </Link>
+              <Link href="/brands/canon" className="min-h-9 py-2 hover:text-ink">
+                Canon
+              </Link>
+            </div>
+          </div>
+
+          <div className="order-4 mt-5 grid grid-cols-2 gap-x-4 gap-y-3 border-y border-forest/15 bg-[#f7f5e9] px-3 py-3 text-xs text-ink/70 sm:hidden md:order-3">
             {trustBadges.map((badge) => (
               <div key={badge} className="flex min-h-8 items-center gap-2">
                 <TrustSignalIcon label={badge} />
@@ -182,7 +192,7 @@ function LoggedOutHome({
               </div>
             ))}
           </div>
-          <div className="order-3 mt-5 hidden grid-cols-4 gap-2 text-sm text-ink/70 sm:grid">
+          <div className="order-4 mt-5 hidden grid-cols-4 gap-2 text-sm text-ink/70 sm:grid md:order-3">
             {trustBadges.map((badge) => (
               <div key={badge} className="rounded-full border border-ink/10 bg-white px-3 py-2 text-center shadow-sm">
                 <span className="font-semibold text-moss">{badge}</span>
