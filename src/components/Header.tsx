@@ -3,7 +3,7 @@ import Image from 'next/image';
 import { AccountMenu } from '@/components/AccountMenu';
 import { categories, featuredCategorySlugs } from '@/lib/categories';
 import { CartLink } from '@/components/cart/CartLink';
-import { MobileMenu } from '@/components/MobileMenu';
+import { MobileHeader } from '@/components/MobileHeader';
 import { getCustomerSession } from '@/lib/customer-auth';
 
 const desktopCategories = featuredCategorySlugs
@@ -27,15 +27,6 @@ const searchSuggestions = [
   'Lenses',
   'Battery Chargers',
   'Parts Repair'
-];
-
-const mobileQuickLinks = [
-  { href: '/shop', label: 'Cameras' },
-  { href: '/categories/vintage-digital-cameras', label: 'Vintage Digital' },
-  { href: '/categories/film-cameras', label: 'Film' },
-  { href: '/categories/lenses', label: 'Lenses' },
-  { href: '/brands', label: 'Brands' },
-  { href: '/sell-your-camera', label: 'Sell' }
 ];
 
 export async function Header() {
@@ -76,54 +67,11 @@ export async function Header() {
         </div>
       </div>
 
-      <div className="lg:hidden">
-        <div className="pt-[env(safe-area-inset-top)]">
-          <div className="flex min-h-16 items-center justify-between gap-3 px-3 py-2 sm:px-5">
-            <Link href="/" className="flex min-w-0 shrink items-center" aria-label="Shutterbug Camera Shop home">
-              <Image
-                src="/shutterbug-header-logo-transparent.png"
-                alt="Shutterbug Camera Shop"
-                width={288}
-                height={64}
-                priority
-                sizes="(min-width: 390px) 10rem, 9.25rem"
-                className="h-auto w-[9.25rem] object-contain object-left min-[390px]:w-40"
-              />
-            </Link>
-            <div className="flex shrink-0 items-center gap-2">
-              <CartLink compact />
-              <MobileMenu
-                accountItems={customer ? accountItems : []}
-                signedIn={Boolean(customer)}
-                customerLabel={accountLabel}
-              />
-            </div>
-          </div>
-
-          <div className="px-3 pb-2 sm:px-5">
-            <SearchForm
-              id="mobile-header-search"
-              placeholder="Search cameras, brands & models"
-              variant="mobile"
-            />
-          </div>
-
-          <nav
-            aria-label="Popular shopping destinations"
-            className="flex gap-5 overflow-x-auto border-t border-forest/10 px-4 py-2 text-sm font-semibold text-ink/75 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden sm:px-6"
-          >
-            {mobileQuickLinks.map((item) => (
-              <Link
-                key={item.href}
-                href={item.href}
-                className="flex min-h-9 shrink-0 items-center border-b-2 border-transparent transition hover:border-moss hover:text-forest"
-              >
-                {item.label}
-              </Link>
-            ))}
-          </nav>
-        </div>
-      </div>
+      <MobileHeader
+        accountItems={customer ? accountItems : []}
+        signedIn={Boolean(customer)}
+        customerLabel={accountLabel}
+      />
 
       <div className="mx-auto hidden max-w-7xl items-center gap-5 px-8 py-3 lg:flex">
         <Link href="/" className="flex shrink-0 items-center" aria-label="Shutterbug Camera Shop home">

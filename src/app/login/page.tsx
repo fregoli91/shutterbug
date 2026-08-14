@@ -42,7 +42,7 @@ export default async function LoginPage({ searchParams }: Props) {
   const status = asString(params.status);
 
   return (
-    <section className="bg-cream px-4 py-10 sm:px-6 lg:px-8">
+    <section className="bg-cream px-4 py-5 sm:px-6 sm:py-8 lg:px-8 lg:py-10">
       <div className="mx-auto grid max-w-xl overflow-hidden rounded-lg border border-ink/10 bg-cream shadow-sm lg:max-w-7xl lg:rounded-[1.75rem] lg:shadow-soft lg:min-h-[44rem] lg:grid-cols-[1.04fr_0.96fr]">
         <div className="relative hidden min-h-full overflow-hidden bg-ink lg:block">
           <Image
@@ -56,7 +56,7 @@ export default async function LoginPage({ searchParams }: Props) {
           />
         </div>
 
-        <div className="flex items-center justify-center bg-cream px-5 py-8 sm:px-10 sm:py-10 lg:px-14">
+        <div className="flex items-center justify-center bg-cream px-5 py-6 sm:px-10 sm:py-8 lg:px-14 lg:py-10">
           <div className="w-full max-w-md text-center lg:text-left">
             <div className="flex items-center justify-center gap-3 lg:justify-start">
               <Image
@@ -65,7 +65,7 @@ export default async function LoginPage({ searchParams }: Props) {
                 width={80}
                 height={80}
                 sizes="5rem"
-                className="h-16 w-16 rounded-full object-cover shadow-sm sm:h-20 sm:w-20"
+                className="h-14 w-14 rounded-full object-cover shadow-sm sm:h-20 sm:w-20"
               />
               <Image
                 src="/shutterbug-header-logo-transparent.png"
@@ -73,13 +73,13 @@ export default async function LoginPage({ searchParams }: Props) {
                 width={288}
                 height={80}
                 sizes="16rem"
-                className="h-16 min-w-0 max-w-64 flex-1 object-contain object-center sm:h-20 lg:object-left"
+                className="h-14 min-w-0 max-w-60 flex-1 object-contain object-center sm:h-20 sm:max-w-64 lg:object-left"
               />
             </div>
 
-            <div className="mt-9">
-              <h1 className="font-serif text-4xl font-bold tracking-tight text-ink">Welcome back!</h1>
-              <p className="mt-3 text-base leading-7 text-ink/70">Log in to your account to continue.</p>
+            <div className="mt-5 sm:mt-8">
+              <h1 className="font-serif text-3xl font-bold tracking-tight text-ink sm:text-4xl">Welcome back!</h1>
+              <p className="mt-2 text-base leading-7 text-ink/70 sm:mt-3">Log in to your account to continue.</p>
             </div>
 
           {status === 'logged-out' ? (
@@ -92,7 +92,7 @@ export default async function LoginPage({ searchParams }: Props) {
           ) : null}
           {error ? <p className="mt-5 rounded-lg bg-sand p-3 text-sm font-semibold text-ink">{error}</p> : null}
 
-          <form action={loginAction} className="mt-7 grid gap-5">
+          <form action={loginAction} className="mt-5 grid gap-4 sm:mt-7 sm:gap-5">
             <input type="hidden" name="redirect" value={redirectTo} />
             <label className="relative block">
               <span className="sr-only">Email address</span>
@@ -142,7 +142,7 @@ export default async function LoginPage({ searchParams }: Props) {
             </button>
           </form>
 
-            <div className="my-8 flex items-center gap-4 text-sm font-medium text-ink/55">
+            <div className="my-5 flex items-center gap-4 sm:my-8 text-sm font-medium text-ink/55">
               <span className="h-px flex-1 bg-ink/12" />
               <span>OR</span>
               <span className="h-px flex-1 bg-ink/12" />
@@ -155,7 +155,7 @@ export default async function LoginPage({ searchParams }: Props) {
               Create your Shutterbug account
             </Link>
 
-            <p className="mt-7 text-center text-sm text-ink/65">
+            <p className="mt-5 text-center text-sm text-ink/65 sm:mt-7">
               Don&apos;t have an account?{' '}
               <Link href={`/signup?redirect=${encodeURIComponent(redirectTo)}`} className="font-bold text-forest hover:text-moss">
                 Sign up

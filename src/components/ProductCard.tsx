@@ -17,8 +17,8 @@ export function ProductCard({
   const productHref = `/shop/${product.slug}`;
 
   return (
-    <article className="group flex h-full flex-col overflow-hidden rounded-lg border border-ink/10 bg-white shadow-sm transition hover:-translate-y-1 hover:border-moss/35 hover:shadow-soft">
-      <div className="relative aspect-[4/3] bg-sand p-3 sm:p-6">
+    <article className="group flex h-full flex-col overflow-hidden rounded-lg border border-ink/10 bg-[#fffdf8] shadow-[0_3px_14px_rgba(35,43,32,0.07)] transition hover:-translate-y-1 hover:border-moss/35 hover:shadow-soft">
+      <div className="relative aspect-[4/3] bg-sand p-2.5 sm:p-6">
         <Link href={productHref} className="block h-full w-full">
           <Image
             src={product.heroImage}
@@ -30,14 +30,14 @@ export function ProductCard({
             className="h-full w-full object-contain"
           />
         </Link>
-        <div className="absolute right-2 top-2 z-20 sm:right-4 sm:top-4">
+        <div className="absolute right-2 top-2 z-20 flex h-11 w-11 items-center justify-center sm:right-4 sm:top-4">
           <ProductLikeButton
             productId={product.id}
             productSlug={product.slug}
             liked={liked}
             signedIn={signedIn}
             redirectTo={productHref}
-            className={`flex h-10 w-10 items-center justify-center rounded-full border shadow-sm transition sm:h-11 sm:w-11 ${
+            className={`flex h-11 w-11 shrink-0 items-center justify-center rounded-full border shadow-sm transition ${
               liked
                 ? 'border-forest bg-forest text-white hover:bg-moss'
                 : 'border-ink/10 bg-white text-ink hover:border-moss hover:text-moss'
@@ -50,20 +50,22 @@ export function ProductCard({
         <div className="flex flex-wrap gap-1.5 text-[0.68rem] font-semibold sm:gap-2 sm:text-xs">
           <span className="rounded-full bg-mint px-3 py-1 text-forest">{product.functionalStatus ?? 'Tested'}</span>
           <span className="rounded-full bg-sage px-3 py-1 text-ink/70">{product.condition}</span>
-          {product.includesBattery ? <span className="rounded-full bg-sage px-3 py-1 text-ink/70">Battery</span> : null}
+          {product.includesBattery ? (
+            <span className="hidden rounded-full bg-sage px-3 py-1 text-ink/70 sm:inline-flex">Battery</span>
+          ) : null}
           {product.includesCharger ? (
             <span className="hidden rounded-full bg-sage px-3 py-1 text-ink/70 sm:inline-flex">Charger</span>
           ) : null}
           {product.condition === 'For Parts' ? (
-            <span className="rounded-full bg-sand px-3 py-1 text-ink/70">Parts</span>
+            <span className="hidden rounded-full bg-sand px-3 py-1 text-ink/70 sm:inline-flex">Parts</span>
           ) : null}
         </div>
 
         <p className="mt-3 text-[0.68rem] font-bold uppercase tracking-[0.14em] text-moss sm:mt-4 sm:text-xs sm:tracking-[0.16em]">
           {product.brand}
         </p>
-        <Link href={productHref} className="mt-2 block">
-          <h3 className="line-clamp-2 min-h-10 text-sm font-semibold leading-5 text-ink transition group-hover:text-moss sm:min-h-12 sm:text-lg sm:leading-6">
+        <Link href={productHref} className="mt-1.5 block sm:mt-2">
+          <h3 className="line-clamp-2 min-h-10 text-[0.95rem] font-semibold leading-5 text-ink transition group-hover:text-moss sm:min-h-12 sm:text-lg sm:leading-6">
             {product.title}
           </h3>
         </Link>
@@ -82,12 +84,12 @@ export function ProductCard({
           Compare
         </label>
 
-        <div className="mt-auto grid gap-3 pt-4 sm:gap-4 sm:pt-5">
+        <div className="mt-auto grid gap-3 pt-3 sm:gap-4 sm:pt-5">
           <div>
             <p className="text-[0.68rem] uppercase tracking-[0.14em] text-ink/50 sm:text-xs sm:tracking-[0.16em]">
               Price
             </p>
-            <p className="text-lg font-bold text-ink sm:text-xl">{formatPrice(product.price)}</p>
+            <p className="text-xl font-bold leading-tight text-ink">{formatPrice(product.price)}</p>
           </div>
           <div className="grid gap-2 sm:grid-cols-2">
             {purchasable ? (
@@ -105,7 +107,7 @@ export function ProductCard({
             )}
             <Link
               href={productHref}
-              className="flex min-h-11 items-center justify-center rounded-full border border-ink/15 bg-white px-3 py-2.5 text-center text-sm font-semibold text-ink transition hover:border-moss hover:text-moss sm:px-4"
+              className="flex min-h-11 items-center justify-center rounded-full border border-ink/15 bg-[#fffdf8] px-3 py-2.5 text-center text-sm font-semibold text-ink transition hover:border-moss hover:text-moss sm:px-4"
             >
               Details
             </Link>

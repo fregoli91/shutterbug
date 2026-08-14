@@ -116,10 +116,10 @@ function LoggedOutHome({
   return (
     <>
       <section className="relative overflow-hidden bg-cream">
-        <div className="relative mx-auto max-w-7xl px-3 pb-8 pt-3 sm:px-6 sm:pb-10 sm:pt-5 lg:px-8">
+        <div className="relative mx-auto flex max-w-7xl flex-col px-4 pb-7 pt-4 sm:px-6 sm:pb-10 sm:pt-5 lg:px-8">
           <Link
             href="/shop?sort=featured"
-            className="block overflow-hidden rounded-lg border border-ink/10 bg-white shadow-soft transition hover:border-moss/30"
+            className="order-2 mt-5 block overflow-hidden rounded-lg border border-ink/10 bg-white shadow-soft transition hover:border-moss/30 md:order-1 md:mt-0"
           >
             <Image
               src="/shutterbug-summer-sale-banner.png"
@@ -127,61 +127,62 @@ function LoggedOutHome({
               width={2400}
               height={720}
               priority
-              sizes="100vw"
-              className="w-full bg-sand object-contain"
+              sizes="(min-width: 768px) 100vw, calc(100vw - 2rem)"
+              className="h-auto w-full bg-sand object-contain"
             />
           </Link>
 
-          <div className="mt-5 grid gap-5 lg:grid-cols-[1fr_auto] lg:items-end">
+          <div className="order-1 grid gap-5 md:order-2 md:mt-5 lg:grid-cols-[1fr_auto] lg:items-end">
             <div>
               <p className="text-xs font-bold uppercase tracking-[0.24em] text-moss sm:text-sm">Summer sale</p>
-              <h1 className="mt-3 max-w-3xl font-serif text-4xl font-bold tracking-tight text-ink sm:text-6xl">
+              <h1 className="mt-2 max-w-3xl font-serif text-[clamp(2.625rem,12vw,3.125rem)] font-bold leading-[0.98] tracking-tight text-ink md:mt-3 md:text-6xl md:leading-[1.05]">
                 Save on tested vintage cameras.
               </h1>
-              <p className="mt-4 max-w-2xl text-base leading-7 text-ink/72 sm:hidden">
-                Real photos, clear condition notes, and friendly support.
+              <p className="mt-3 max-w-2xl text-[1.05rem] leading-7 text-ink/72 md:hidden">
+                Real photos. Clear condition notes. Friendly support.
               </p>
-              <p className="mt-5 hidden max-w-3xl text-lg leading-8 text-ink/72 sm:block">
+              <p className="mt-5 hidden max-w-3xl text-lg leading-8 text-ink/72 md:block">
                 Shop carefully inspected digital and film cameras with real photos, clear condition notes, and honest
                 testing details.
               </p>
             </div>
 
-            <Link
-              href="/shop?sort=newest"
-              className="group relative block aspect-[8/5] overflow-hidden rounded-lg border border-ink/10 bg-sand shadow-sm lg:hidden"
-            >
-              <Image
-                src="/shutterbug-shelf-cameras-display.png"
-                alt="Shutterbug shelf display of cameras, lenses, bags, and accessories"
-                width={1600}
-                height={1000}
-                sizes="calc(100vw - 1.5rem)"
-                className="h-full w-full object-cover object-center"
-              />
-              <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-ink/85 via-ink/35 to-transparent p-4 text-white">
-                <p className="text-xs font-bold uppercase tracking-[0.22em] text-cream">Fresh finds</p>
-                <p className="mt-1 font-serif text-2xl font-bold">Browse the Shutterbug shelf</p>
-              </div>
-            </Link>
-
             <div className="grid gap-3 sm:flex sm:justify-start lg:justify-end">
               <Link
                 href="/shop"
-                className="rounded-full bg-forest px-7 py-3 text-center font-semibold text-white shadow-sm transition hover:bg-moss"
+                className="min-h-12 rounded-full bg-forest px-7 py-3 text-center font-semibold text-white shadow-sm transition hover:bg-moss"
               >
                 Shop the sale
               </Link>
               <Link
                 href="/categories/vintage-digital-cameras"
-                className="rounded-full border border-ink/20 bg-white px-7 py-3 text-center font-semibold text-ink transition hover:border-moss hover:text-moss"
+                className="hidden rounded-full border border-ink/20 bg-white px-7 py-3 text-center font-semibold text-ink transition hover:border-moss hover:text-moss md:inline-flex"
               >
                 Vintage digital
               </Link>
+              <div className="flex flex-wrap justify-center gap-x-5 gap-y-1 text-sm font-semibold text-moss md:hidden">
+                <Link href="/categories/vintage-digital-cameras" className="min-h-9 py-2 hover:text-ink">
+                  Vintage digital
+                </Link>
+                <Link href="/categories/film-cameras" className="min-h-9 py-2 hover:text-ink">
+                  Film cameras
+                </Link>
+                <Link href="/brands/canon" className="min-h-9 py-2 hover:text-ink">
+                  Canon
+                </Link>
+              </div>
             </div>
           </div>
 
-          <div className="mt-5 grid grid-cols-2 gap-2 text-xs text-ink/70 sm:grid-cols-4 sm:text-sm">
+          <div className="order-3 mt-5 grid grid-cols-2 gap-x-4 gap-y-3 border-y border-forest/15 bg-[#f7f5e9] px-3 py-3 text-xs text-ink/70 sm:hidden">
+            {trustBadges.map((badge) => (
+              <div key={badge} className="flex min-h-8 items-center gap-2">
+                <TrustSignalIcon label={badge} />
+                <span className="font-semibold text-ink/75">{badge}</span>
+              </div>
+            ))}
+          </div>
+          <div className="order-3 mt-5 hidden grid-cols-4 gap-2 text-sm text-ink/70 sm:grid">
             {trustBadges.map((badge) => (
               <div key={badge} className="rounded-full border border-ink/10 bg-white px-3 py-2 text-center shadow-sm">
                 <span className="font-semibold text-moss">{badge}</span>
@@ -191,7 +192,7 @@ function LoggedOutHome({
         </div>
       </section>
 
-      <section className="bg-cream px-4 pb-10 sm:px-6 lg:px-8">
+      <section className="bg-[#f4f4e9] px-4 py-10 sm:px-6 lg:bg-cream lg:px-8 lg:pb-10 lg:pt-0">
         <div className="mx-auto grid max-w-7xl gap-5 lg:grid-cols-[1.15fr_1fr] lg:items-stretch">
           <Link
             href="/shop?sort=newest"
@@ -217,15 +218,15 @@ function LoggedOutHome({
                 <p className="text-sm font-bold uppercase tracking-[0.2em] text-moss">Quick picks</p>
                 <h2 className="mt-1 font-serif text-2xl font-bold text-ink">Ready to browse</h2>
               </div>
-              <Link href="/shop" className="text-sm font-semibold text-moss hover:text-ink">
-                View all
+              <Link href="/shop" className="inline-flex min-h-10 items-center gap-1 text-sm font-semibold text-moss hover:text-ink">
+                View all <ArrowRightIcon />
               </Link>
             </div>
             {shelfProducts.map((product) => (
               <Link
                 key={product.id}
                 href={`/shop/${product.slug}`}
-                className="grid grid-cols-[4.5rem_1fr] gap-3 rounded-lg border border-ink/10 bg-white p-3 shadow-sm transition hover:border-moss/35"
+                className="grid grid-cols-[4.5rem_1fr] gap-3 rounded-lg border border-ink/10 bg-[#fffdf8] p-3 shadow-[0_3px_12px_rgba(35,43,32,0.06)] transition hover:border-moss/35"
               >
                 <Image
                   src={product.heroImage}
@@ -247,20 +248,27 @@ function LoggedOutHome({
         </div>
       </section>
 
-      <DirectStoreCallout />
+      <FeaturedProducts
+        eyebrow="Featured inventory"
+        title="Fresh camera finds"
+        products={featured}
+        intro="A few current finds from the Shutterbug shelf."
+        featureImage="/shutterbug-fresh-finds.png"
+        featureImageAlt="Shutterbug mascot showing a fresh crate of vintage camera finds"
+      />
 
-      <section className="bg-cream px-4 py-14 sm:px-6 lg:px-8">
+      <section className="bg-cream px-4 py-12 sm:px-6 sm:py-14 lg:px-8">
         <div className="mx-auto max-w-7xl">
           <div className="flex flex-col justify-between gap-4 sm:flex-row sm:items-end">
             <div>
               <p className="text-sm font-bold uppercase tracking-[0.24em] text-moss">Shop by category</p>
-              <h2 className="mt-3 font-serif text-4xl font-bold text-ink">Start with the gear you want.</h2>
+              <h2 className="mt-3 font-serif text-3xl font-bold text-ink sm:text-4xl">Start with the gear you want.</h2>
             </div>
             <Link href="/shop" className="font-semibold text-moss hover:text-ink">
               Shop all cameras &rarr;
             </Link>
           </div>
-          <div className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-5">
+          <div className="mt-6 grid gap-3 sm:mt-8 sm:grid-cols-2 sm:gap-4 lg:grid-cols-5">
             {offerCards.map((card) => (
               <Link
                 key={card.title}
@@ -286,23 +294,11 @@ function LoggedOutHome({
       </section>
 
       <PrinterCallout />
-
-      <TrustCards />
-
       <CategoryPills title="Popular brands" showPopularBrandsImage />
-
-      <SignupCallout />
-
-      <FeaturedProducts
-        eyebrow="Featured inventory"
-        title="Fresh camera finds"
-        products={featured}
-        intro="A few current finds from the Shutterbug shelf."
-        featureImage="/shutterbug-fresh-finds.png"
-        featureImageAlt="Shutterbug mascot showing a fresh crate of vintage camera finds"
-      />
-
       <TestingProcessCallout />
+      <TrustCards />
+      <SignupCallout />
+      <DirectStoreCallout />
       <JournalCallout />
     </>
   );
@@ -402,7 +398,7 @@ function LoggedInHome({
         likedProductIds={likedProductIds}
       />
 
-      <section className="bg-cream px-4 py-16 sm:px-6 lg:px-8">
+      <section className="bg-cream px-4 py-12 sm:px-6 sm:py-16 lg:px-8">
         <div className="mx-auto grid max-w-7xl gap-6 rounded-lg border border-ink/10 bg-white p-6 shadow-sm lg:grid-cols-[12rem_1fr_auto] lg:items-center lg:p-8">
           <Image
             src="/shutterbug-trade-in.png"
@@ -538,7 +534,7 @@ function CategoryPills({ title, showPopularBrandsImage = false }: { title: strin
 
 function CategoryGrid({ featuredCategories }: { featuredCategories: Category[] }) {
   return (
-    <section className="bg-cream px-4 py-16 sm:px-6 lg:px-8">
+    <section className="bg-cream px-4 py-12 sm:px-6 sm:py-16 lg:px-8">
       <div className="mx-auto max-w-7xl">
         <div className="grid gap-8 lg:grid-cols-[1fr_24rem] lg:items-end">
           <SectionHeading eyebrow="Start here" title="Shop by category">
@@ -572,7 +568,7 @@ function CategoryGrid({ featuredCategories }: { featuredCategories: Category[] }
 
 function SignupCallout() {
   return (
-    <section className="bg-cream px-4 py-16 sm:px-6 lg:px-8">
+    <section className="bg-cream px-4 py-12 sm:px-6 sm:py-16 lg:px-8">
       <div className="mx-auto max-w-7xl rounded-lg border border-ink/10 bg-white p-6 shadow-sm lg:p-8">
         <div>
           <p className="text-sm font-bold uppercase tracking-[0.24em] text-moss">Become a Shutterbug customer</p>
@@ -624,11 +620,11 @@ function PrinterCallout() {
   const printerBrands = ['Canon', 'Brother', 'HP', 'Lexmark'];
 
   return (
-    <section className="bg-cream px-4 py-14 sm:px-6 lg:px-8">
+    <section className="bg-cream px-4 py-12 sm:px-6 sm:py-14 lg:px-8">
       <div className="mx-auto grid max-w-7xl overflow-hidden rounded-lg border border-ink/10 bg-white shadow-sm lg:grid-cols-[minmax(0,1fr)_minmax(22rem,0.8fr)]">
-        <div className="p-6 sm:p-8 lg:p-10">
+        <div className="p-5 sm:p-8 lg:p-10">
           <p className="text-sm font-bold uppercase tracking-[0.24em] text-moss">More than cameras</p>
-          <h2 className="mt-3 max-w-3xl font-serif text-4xl font-bold text-ink">
+          <h2 className="mt-3 max-w-3xl font-serif text-3xl font-bold text-ink sm:text-4xl">
             Used printers, tested and packed with care.
           </h2>
           <Link
@@ -707,12 +703,12 @@ function FeaturedProducts({
   likedProductIds?: Set<string>;
 }) {
   return (
-    <section className="bg-cream px-4 py-16 sm:px-6 lg:px-8">
+    <section className="bg-cream px-4 py-12 sm:px-6 sm:py-16 lg:px-8">
       <div className="mx-auto max-w-7xl">
         <div className="flex flex-col justify-between gap-4 sm:flex-row sm:items-end">
           <div>
             <p className="text-sm font-bold uppercase tracking-[0.28em] text-moss">{eyebrow}</p>
-            <h2 className="mt-3 font-serif text-4xl font-bold text-ink">{title}</h2>
+            <h2 className="mt-3 font-serif text-3xl font-bold text-ink sm:text-4xl">{title}</h2>
             <p className="mt-3 max-w-2xl leading-7 text-ink/68">{intro}</p>
           </div>
           <Link href="/shop" className="font-semibold text-moss hover:text-ink">
@@ -726,10 +722,10 @@ function FeaturedProducts({
             width={1448}
             height={1086}
             sizes="100vw"
-            className="mt-8 h-auto w-full rounded-lg border border-ink/10 bg-sand object-contain object-center shadow-sm"
+            className="mt-6 aspect-[4/3] w-full rounded-lg border border-ink/10 bg-sand object-contain object-center shadow-sm sm:mt-8"
           />
         ) : null}
-        <div className="mt-10 grid grid-cols-2 gap-3 sm:gap-6 md:grid-cols-3 lg:grid-cols-4">
+        <div className="mt-6 grid grid-cols-2 gap-3 sm:mt-10 sm:gap-6 md:grid-cols-3 lg:grid-cols-4">
           {products.map((product) => (
             <ProductCard
               key={product.id}
@@ -746,7 +742,7 @@ function FeaturedProducts({
 
 function TrustCards() {
   return (
-    <section className="bg-cream px-4 py-14 sm:px-6 lg:px-8">
+    <section className="bg-cream px-4 py-12 sm:px-6 sm:py-14 lg:px-8">
       <div className="mx-auto grid max-w-7xl gap-6 lg:grid-cols-[1.4fr_0.6fr] lg:items-center">
         <Image
           src="/shutterbug-trust-banner.png"
@@ -824,11 +820,11 @@ function JournalCallout() {
 }
 function TestingProcessCallout() {
   return (
-    <section className="bg-mint px-4 py-16 sm:px-6 lg:px-8">
-      <div className="mx-auto grid max-w-7xl gap-8 rounded-lg border border-ink/10 bg-white p-6 shadow-sm lg:grid-cols-[minmax(0,1fr)_minmax(22rem,0.95fr)] lg:items-center lg:p-8">
+    <section className="bg-mint px-4 py-12 sm:px-6 sm:py-16 lg:px-8">
+      <div className="mx-auto grid max-w-7xl gap-5 rounded-lg border border-ink/10 bg-white p-5 shadow-sm sm:gap-8 sm:p-6 lg:grid-cols-[minmax(0,1fr)_minmax(22rem,0.95fr)] lg:items-center lg:p-8">
         <div>
           <p className="text-sm font-bold uppercase tracking-[0.24em] text-moss">Testing process preview</p>
-          <h2 className="mt-3 font-serif text-4xl font-bold text-ink">Know what works before it arrives.</h2>
+          <h2 className="mt-3 font-serif text-3xl font-bold text-ink sm:text-4xl">Know what works before it arrives.</h2>
           <Link
             href="/testing-process"
             className="group mt-6 block overflow-hidden rounded-lg border border-ink/10 bg-cream shadow-sm lg:hidden"
@@ -865,5 +861,51 @@ function TestingProcessCallout() {
         </Link>
       </div>
     </section>
+  );
+}
+
+
+function ArrowRightIcon() {
+  return (
+    <svg aria-hidden="true" viewBox="0 0 20 20" className="h-4 w-4 fill-none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M4 10h11" />
+      <path d="m11 6 4 4-4 4" />
+    </svg>
+  );
+}
+
+function TrustSignalIcon({ label }: { label: string }) {
+  if (label === 'Actual photos') {
+    return (
+      <svg aria-hidden="true" viewBox="0 0 24 24" className="h-5 w-5 shrink-0 fill-none text-moss" stroke="currentColor" strokeWidth="1.8">
+        <path d="M4 7h4l1.5-2h5L16 7h4v12H4z" />
+        <circle cx="12" cy="13" r="3.5" />
+      </svg>
+    );
+  }
+
+  if (label === 'Condition notes') {
+    return (
+      <svg aria-hidden="true" viewBox="0 0 24 24" className="h-5 w-5 shrink-0 fill-none text-moss" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round">
+        <path d="M6 4h12v16H6z" />
+        <path d="M9 9h6M9 13h6M9 17h4" />
+      </svg>
+    );
+  }
+
+  if (label === 'Secure checkout') {
+    return (
+      <svg aria-hidden="true" viewBox="0 0 24 24" className="h-5 w-5 shrink-0 fill-none text-moss" stroke="currentColor" strokeWidth="1.8">
+        <path d="M6 10h12v10H6z" />
+        <path d="M8.5 10V7.5a3.5 3.5 0 0 1 7 0V10" />
+      </svg>
+    );
+  }
+
+  return (
+    <svg aria-hidden="true" viewBox="0 0 24 24" className="h-5 w-5 shrink-0 fill-none text-moss" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+      <circle cx="12" cy="12" r="9" />
+      <path d="m8 12 2.5 2.5L16 9" />
+    </svg>
   );
 }

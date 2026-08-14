@@ -34,6 +34,8 @@ const discoverItems: MobileMenuItem[] = [
   { href: '/testing-process', label: 'How We Test Cameras' }
 ];
 
+const animationDuration = 250;
+
 export function MobileMenu({
   accountItems = [],
   signedIn = false,
@@ -43,18 +45,39 @@ export function MobileMenu({
   signedIn?: boolean;
   customerLabel?: string;
 }) {
+  const [mounted, setMounted] = useState(false);
   const [open, setOpen] = useState(false);
   const closeButtonRef = useRef<HTMLButtonElement>(null);
   const triggerRef = useRef<HTMLButtonElement>(null);
   const drawerRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
+    if (open || !mounted) return;
+    const timer = window.setTimeout(() => setMounted(false), animationDuration);
+    return () => window.clearTimeout(timer);
+  }, [mounted, open]);
+
+  useEffect(() => {
     if (!open) return;
 
     const previousOverflow = document.body.style.overflow;
+    const previousPaddingRight = document.body.style.paddingRight;
+    const scrollbarWidth = window.innerWidth - document.documentElement.clientWidth;
     const trigger = triggerRef.current;
+    const backgroundElements = Array.from(document.querySelectorAll<HTMLElement>('main, footer'));
+    const backgroundState = backgroundElements.map((element) => ({
+      element,
+      inert: element.inert,
+      ariaHidden: element.getAttribute('aria-hidden')
+    }));
+
     document.body.style.overflow = 'hidden';
-    const focusFrame = window.requestAnimationFrame(() => closeButtonRef.current?.focus());
+    if (scrollbarWidth > 0) document.body.style.paddingRight = `${scrollbarWidth}px`;
+    backgroundElements.forEach((element) => {
+      element.inert = true;
+      element.setAttribute('aria-hidden', 'true');
+    });
+    const focusTimer = window.setTimeout(() => closeButtonRef.current?.focus(), 0);
 
     function handleKeyDown(event: KeyboardEvent) {
       if (event.key === 'Escape') {
@@ -84,11 +107,22 @@ export function MobileMenu({
     document.addEventListener('keydown', handleKeyDown);
     return () => {
       document.body.style.overflow = previousOverflow;
+      document.body.style.paddingRight = previousPaddingRight;
       document.removeEventListener('keydown', handleKeyDown);
-      window.cancelAnimationFrame(focusFrame);
+      window.clearTimeout(focusTimer);
+      backgroundState.forEach(({ element, inert, ariaHidden }) => {
+        element.inert = inert;
+        if (ariaHidden === null) element.removeAttribute('aria-hidden');
+        else element.setAttribute('aria-hidden', ariaHidden);
+      });
       trigger?.focus();
     };
   }, [open]);
+
+  function openMenu() {
+    setMounted(true);
+    window.setTimeout(() => setOpen(true), 0);
+  }
 
   function closeMenu() {
     setOpen(false);
@@ -102,7 +136,7 @@ export function MobileMenu({
         aria-expanded={open}
         aria-controls="mobile-navigation-drawer"
         aria-label={open ? 'Close menu' : 'Open menu'}
-        onClick={() => setOpen((current) => !current)}
+        onClick={open ? closeMenu : openMenu}
         className="flex h-11 w-11 shrink-0 items-center justify-center rounded-lg border border-moss/30 bg-mint shadow-[inset_0_1px_0_rgba(255,255,255,0.75),0_2px_5px_rgba(35,43,32,0.12)] transition hover:border-moss/55 hover:bg-sage/45 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-moss"
       >
         <span className="sr-only">{open ? 'Close menu' : 'Open menu'}</span>
@@ -113,13 +147,13 @@ export function MobileMenu({
         </span>
       </button>
 
-      {open ? (
-        <div className="fixed inset-0 z-[70] lg:hidden">
+      {mounted ? (
+        <div className="fixed inset-0 z-[70] h-[100dvh] max-h-[100dvh] overflow-hidden lg:hidden">
           <button
             type="button"
             aria-label="Close navigation menu"
             onClick={closeMenu}
-            className="absolute inset-0 bg-ink/35 backdrop-blur-[1px]"
+            className={`absolute inset-0 bg-[#142014]/40 backdrop-blur-[1px] transition-opacity duration-[250ms] ease-out ${open ? 'opacity-100' : 'opacity-0'}`}
           />
           <div
             ref={drawerRef}
@@ -127,17 +161,17 @@ export function MobileMenu({
             role="dialog"
             aria-modal="true"
             aria-label="Shutterbug shop navigation"
-            className="absolute right-0 top-0 flex h-[100dvh] w-[min(23rem,92vw)] flex-col overflow-hidden border-l border-forest/15 bg-cream shadow-[-18px_0_60px_rgba(22,35,29,0.22)]"
+            className={`absolute right-0 top-0 flex h-[100dvh] max-h-[100dvh] w-[min(26.25rem,93vw)] flex-col overflow-hidden border-l border-forest/15 bg-cream shadow-[-16px_0_45px_rgba(22,35,29,0.2)] transition-transform duration-[250ms] ease-out ${open ? 'translate-x-0' : 'translate-x-full'}`}
           >
-            <div className="flex items-center justify-between border-b border-forest/15 px-5 pb-4 pt-[max(1rem,env(safe-area-inset-top))]">
+            <div className="sticky top-0 z-10 flex min-h-[76px] shrink-0 items-center justify-between border-b border-forest/15 bg-cream/95 px-4 pb-3 pt-[calc(env(safe-area-inset-top)+0.75rem)]">
               <Link href="/" onClick={closeMenu} aria-label="Shutterbug Camera Shop home">
                 <Image
                   src="/shutterbug-header-logo-transparent.png"
                   alt="Shutterbug Camera Shop"
                   width={216}
                   height={48}
-                  sizes="10rem"
-                  className="h-auto w-40 object-contain object-left"
+                  sizes="9rem"
+                  className="h-auto w-36 object-contain object-left"
                 />
               </Link>
               <button
@@ -145,68 +179,72 @@ export function MobileMenu({
                 type="button"
                 aria-label="Close menu"
                 onClick={closeMenu}
-                className="flex h-11 w-11 items-center justify-center rounded-lg border border-forest/15 bg-sand/70 text-2xl leading-none text-forest shadow-sm transition hover:bg-sand focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-moss"
+                className="flex h-11 w-11 items-center justify-center rounded-[10px] border border-moss/25 bg-mint/75 text-forest shadow-[inset_0_1px_0_rgba(255,255,255,0.8),0_2px_5px_rgba(35,43,32,0.1)] transition hover:border-moss/45 hover:bg-sage/40 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-moss"
               >
-                <span aria-hidden="true">X</span>
+                <CloseIcon />
               </button>
             </div>
 
-            <div className="min-h-0 flex-1 overflow-y-auto overscroll-contain px-5 py-5">
-              <MenuSection title="Shop" items={shopItems} onNavigate={closeMenu} />
-              <MenuSection title="Shop by brand" items={brandItems} onNavigate={closeMenu} compact />
-              <MenuSection title="Discover" items={discoverItems} onNavigate={closeMenu} />
-
-              <section className="border-t border-forest/15 py-5">
-                <p className="text-xs font-bold uppercase tracking-[0.18em] text-moss">Sell to us</p>
-                <Link
-                  href="/sell-your-camera"
-                  onClick={closeMenu}
-                  className="mt-2 flex min-h-11 items-center justify-between rounded-md px-2 py-2.5 font-semibold text-ink transition hover:bg-mint"
-                >
-                  Sell Your Camera <span aria-hidden="true">-&gt;</span>
-                </Link>
-              </section>
-
-              <section className="border-t border-forest/15 py-5">
-                <p className="text-xs font-bold uppercase tracking-[0.18em] text-moss">Account</p>
+            <div className="min-h-0 flex-1 overflow-y-auto overscroll-contain px-4 pb-[calc(env(safe-area-inset-bottom)+1.5rem)] pt-4">
+              <section className="pb-4">
+                <p className="text-[13px] font-bold uppercase tracking-[0.17em] text-moss">Account</p>
                 {signedIn ? (
                   <>
-                    <p className="mt-3 px-2 text-sm font-bold text-ink">{customerLabel ?? 'My Account'}</p>
+                    <p className="mt-2 px-2 text-sm font-bold text-ink">{customerLabel ?? 'My Account'}</p>
                     <nav className="mt-1 grid" aria-label="Customer account">
                       {accountItems.map((item) => (
                         <Link
                           key={item.href}
                           href={item.href}
                           onClick={closeMenu}
-                          className="flex min-h-11 items-center rounded-md px-2 py-2.5 text-sm font-semibold text-ink/78 transition hover:bg-mint hover:text-ink"
+                          className="flex min-h-11 items-center rounded-md px-2 py-2 text-sm font-semibold text-ink/78 transition hover:bg-mint hover:text-ink"
                         >
                           {item.label}
                         </Link>
                       ))}
                     </nav>
                     <form action="/account/logout" method="post" className="mt-1" onSubmit={closeMenu}>
-                      <button className="min-h-11 w-full rounded-md px-2 py-2.5 text-left text-sm font-semibold text-ink/78 transition hover:bg-mint hover:text-ink">Sign Out</button>
+                      <button className="min-h-11 w-full rounded-md px-2 py-2 text-left text-sm font-semibold text-ink/78 transition hover:bg-mint hover:text-ink">Sign Out</button>
                     </form>
                   </>
                 ) : (
-                  <div className="mt-3 grid grid-cols-2 gap-3">
-                    <Link href="/login" onClick={closeMenu} className="flex min-h-11 items-center justify-center rounded-lg border border-forest/20 bg-mint px-3 text-sm font-bold text-forest">Sign In</Link>
-                    <Link href="/signup" onClick={closeMenu} className="flex min-h-11 items-center justify-center rounded-lg bg-forest px-3 text-sm font-bold text-white">Create Account</Link>
+                  <div className="mt-2 grid grid-cols-2 gap-2.5">
+                    <Link href="/login" onClick={closeMenu} className="flex min-h-12 items-center justify-center rounded-lg border border-forest/20 bg-mint px-3 text-sm font-bold text-forest transition hover:bg-sage/35">Sign In</Link>
+                    <Link href="/signup" onClick={closeMenu} className="flex min-h-12 items-center justify-center rounded-lg bg-forest px-3 text-sm font-bold text-white shadow-sm transition hover:bg-moss">Create Account</Link>
                   </div>
                 )}
+              </section>
+
+              <MenuSection title="Shop" items={shopItems} onNavigate={closeMenu} />
+              <MenuSection title="Shop by brand" items={brandItems} onNavigate={closeMenu} compact />
+              <MenuSection title="Discover" items={discoverItems} onNavigate={closeMenu} />
+
+              <section className="border-t border-forest/15 py-4">
+                <p className="text-[13px] font-bold uppercase tracking-[0.17em] text-moss">Sell to us</p>
+                <Link
+                  href="/sell-your-camera"
+                  onClick={closeMenu}
+                  className="mt-2 flex min-h-[58px] items-center justify-between rounded-lg border border-moss/20 bg-mint/75 px-3 py-2.5 text-forest shadow-[inset_0_1px_0_rgba(255,255,255,0.75),0_2px_6px_rgba(35,43,32,0.08)] transition hover:border-moss/40 hover:bg-sage/35 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-moss"
+                >
+                  <span>
+                    <span className="block text-base font-bold">Sell Your Camera</span>
+                    <span className="mt-0.5 block text-sm text-ink/62">We buy used camera gear.</span>
+                  </span>
+                  <ArrowRightIcon />
+                </Link>
               </section>
 
               <Link
                 href="/contact"
                 onClick={closeMenu}
-                className="mb-[max(1rem,env(safe-area-inset-bottom))] flex items-center gap-3 rounded-lg border border-forest/15 bg-mint p-3"
+                className="flex min-h-[68px] items-center gap-3 rounded-lg border border-forest/15 bg-mint/65 px-3 py-2.5 transition hover:border-moss/35 hover:bg-sage/30 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-moss"
               >
                 <Image
                   src="/shutterbug-basic-character.png"
                   alt=""
-                  width={52}
-                  height={52}
-                  sizes="3.25rem"
+                  width={48}
+                  height={48}
+                  sizes="3rem"
                   className="h-12 w-12 rounded-full bg-sand object-cover"
                   aria-hidden="true"
                 />
@@ -235,21 +273,37 @@ function MenuSection({
   compact?: boolean;
 }) {
   return (
-    <section className="border-t border-forest/15 py-5 first:border-t-0 first:pt-0">
-      <p className="text-xs font-bold uppercase tracking-[0.18em] text-moss">{title}</p>
-      <nav className={compact ? 'mt-2 grid grid-cols-2 gap-x-4' : 'mt-2 grid'} aria-label={title}>
+    <section className="border-t border-forest/15 py-4 first:border-t-0 first:pt-0">
+      <p className="text-[13px] font-bold uppercase tracking-[0.17em] text-moss">{title}</p>
+      <nav className={compact ? 'mt-1.5 grid grid-cols-2 gap-x-3' : 'mt-1.5 grid'} aria-label={title}>
         {items.map((item, index) => (
           <Link
             key={item.href}
             href={item.href}
             onClick={onNavigate}
-            className="flex min-h-11 items-center justify-between rounded-md px-2 py-2.5 text-sm font-semibold text-ink/78 transition hover:bg-mint hover:text-ink"
+            className="flex min-h-[46px] items-center justify-between rounded-md px-2 py-1.5 text-[17px] font-semibold text-ink/78 transition hover:bg-mint hover:text-ink focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-moss"
           >
             {item.label}
-            {compact && index === items.length - 1 ? <span aria-hidden="true">-&gt;</span> : null}
+            {compact && index === items.length - 1 ? <ArrowRightIcon /> : null}
           </Link>
         ))}
       </nav>
     </section>
+  );
+}
+
+function CloseIcon() {
+  return (
+    <svg aria-hidden="true" viewBox="0 0 24 24" className="h-5 w-5" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
+      <path d="M6 6l12 12M18 6L6 18" />
+    </svg>
+  );
+}
+
+function ArrowRightIcon() {
+  return (
+    <svg aria-hidden="true" viewBox="0 0 24 24" className="h-4 w-4 shrink-0" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M5 12h14M13 6l6 6-6 6" />
+    </svg>
   );
 }
