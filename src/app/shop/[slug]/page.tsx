@@ -1,3 +1,4 @@
+import { safeJsonLd } from '@/lib/security';
 import { notFound, permanentRedirect } from 'next/navigation';
 import Link from 'next/link';
 import Image from 'next/image';
@@ -86,7 +87,7 @@ export default async function ProductPage({ params }: Props) {
   return (
     <>
       <section className="px-4 pb-28 pt-6 sm:px-6 sm:py-12 lg:px-8">
-        <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }} />
+        <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: safeJsonLd(structuredData) }} />
         <div className="mx-auto grid max-w-7xl gap-8 sm:gap-12 lg:grid-cols-[0.95fr_1.05fr]">
           <div>
             <div className="rounded-lg border border-ink/10 bg-white p-3 shadow-soft sm:p-6">

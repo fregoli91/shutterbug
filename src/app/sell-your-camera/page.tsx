@@ -1,3 +1,4 @@
+import { safeJsonLd } from '@/lib/security';
 import Image from 'next/image';
 import Link from 'next/link';
 import type { Metadata } from 'next';
@@ -55,7 +56,7 @@ export default function SellYourCameraPage() {
 
   return (
     <section className="px-4 py-14 sm:px-6 lg:px-8">
-      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }} />
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: safeJsonLd(structuredData) }} />
       <div className="mx-auto max-w-7xl">
         <div className="grid gap-10 lg:grid-cols-[1fr_28rem]">
           <div>

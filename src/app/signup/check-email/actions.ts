@@ -1,30 +1,31 @@
 'use server';
 
 import { redirect } from 'next/navigation';
-import { headers } from 'next/headers';
-import { createCustomerEmailVerificationToken, normalizeEmail } from '@/lib/customer-auth';
+import { createCustomerEmailVerificationToken, isValidEmailAddress, normalizeEmail } from '@/lib/customer-auth';
 import { getPublicSiteUrl, sendCustomerVerificationEmail } from '@/lib/email';
 import { getPrisma } from '@/lib/prisma';
-
-function cleanRedirect(value: FormDataEntryValue | null) {
-  const target = typeof value === 'string' ? value : '';
-  return target.startsWith('/') && !target.startsWith('//') ? target : '/account';
-}
-
-async function getRequestBaseUrl() {
-  const headerStore = await headers();
-  const host = headerStore.get('x-forwarded-host') || headerStore.get('host');
-  if (!host) return getPublicSiteUrl();
-  const protocol =
-    headerStore.get('x-forwarded-proto') || (host.startsWith('localhost') || host.startsWith('127.') ? 'http' : 'https');
-  return `${protocol}://${host}`;
-}
+import { consumeRateLimit } from '@/lib/rate-limit';
+import { requestClientIdentifier } from '@/lib/request-context';
+import { cleanInternalRedirect } from '@/lib/security';
 
 export async function resendVerificationAction(formData: FormData) {
   const email = normalizeEmail(String(formData.get('email') || ''));
-  const redirectTo = cleanRedirect(formData.get('redirect'));
+  const redirectTo = cleanInternalRedirect(formData.get('redirect'), '/account');
+  const rateLimit = consumeRateLimit({
+    scope: 'customer-verification-resend',
+    identifier: `${await requestClientIdentifier()}:${email || 'unknown'}`,
+    limit: 3,
+    windowMs: 60 * 60 * 1000
+  });
 
-  if (!email) redirect(`/signup?error=missing&redirect=${encodeURIComponent(redirectTo)}`);
+  if (!rateLimit.allowed) {
+    redirect(
+      `/signup/check-email?email=${encodeURIComponent(email)}&status=rate-limited&redirect=${encodeURIComponent(redirectTo)}`
+    );
+  }
+  if (!email || !isValidEmailAddress(email)) {
+    redirect(`/signup?error=email&redirect=${encodeURIComponent(redirectTo)}`);
+  }
 
   const prisma = getPrisma();
   if (!prisma) redirect(`/signup?error=config&redirect=${encodeURIComponent(redirectTo)}`);
@@ -39,7 +40,7 @@ export async function resendVerificationAction(formData: FormData) {
         email: customer.email,
         name: customer.name,
         token,
-        baseUrl: await getRequestBaseUrl()
+        baseUrl: getPublicSiteUrl()
       });
       status = result.sent ? 'resent' : 'dev-email';
     } catch {
@@ -47,5 +48,7 @@ export async function resendVerificationAction(formData: FormData) {
     }
   }
 
-  redirect(`/signup/check-email?email=${encodeURIComponent(email)}&status=${status}&redirect=${encodeURIComponent(redirectTo)}`);
+  redirect(
+    `/signup/check-email?email=${encodeURIComponent(email)}&status=${status}&redirect=${encodeURIComponent(redirectTo)}`
+  );
 }

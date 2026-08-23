@@ -1,3 +1,4 @@
+import { safeJsonLd } from '@/lib/security';
 import Link from 'next/link';
 import Image from 'next/image';
 import type { Metadata } from 'next';
@@ -43,7 +44,7 @@ export default function UsedCamerasMichiganPage() {
 
   return (
     <section className="bg-cream px-4 py-14 sm:px-6 lg:px-8">
-      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }} />
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: safeJsonLd(structuredData) }} />
       <div className="mx-auto max-w-7xl">
         <div className="grid gap-8 lg:grid-cols-[1fr_34rem] lg:items-center">
           <div>

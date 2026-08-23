@@ -16,6 +16,7 @@ import {
   TOP_LEVEL_CATEGORIES
 } from '@/lib/catalog';
 import { getPrisma } from '@/lib/prisma';
+import { safeProductImageUrl } from '@/lib/security';
 
 export type ProductStatus = 'draft' | 'active' | 'sold_out' | 'archived';
 export type ProductCondition =
@@ -309,8 +310,14 @@ export const formatToDb: Record<CameraFormat, DbCameraFormat> = {
 function dbProductToProduct(product: ProductWithImages): Product {
   const sortedImages = [...product.images].sort((a, b) => a.sortOrder - b.sortOrder);
   const relationHero = sortedImages.find((image) => image.role === ProductImageRole.HERO)?.url ?? sortedImages[0]?.url;
-  const hero = product.mainImageUrl || relationHero;
-  const gallery = Array.from(new Set([hero, ...product.imageUrls, ...sortedImages.map((image) => image.url)].filter(Boolean)));
+  const hero = safeProductImageUrl(product.mainImageUrl || relationHero) || '/shutterbug-product-placeholder.png';
+  const gallery = Array.from(
+    new Set(
+      [hero, ...product.imageUrls, ...sortedImages.map((image) => image.url)]
+        .map((image) => safeProductImageUrl(image))
+        .filter((image): image is string => Boolean(image))
+    )
+  );
   const publicStatus = product.quantity <= 0 && product.status === DbProductStatus.ACTIVE ? 'sold_out' : statusFromDb[product.status];
 
   return {
@@ -395,15 +402,16 @@ async function readDbProducts() {
       orderBy: [{ featured: 'desc' }, { createdAt: 'desc' }]
     });
     return dbProducts.map(dbProductToProduct);
-  } catch (error) {
-    console.warn('Falling back to static products because the product database could not be read.', error);
+  } catch {
+    console.error('Product database read failed.');
     return null;
   }
 }
 
 export async function getCatalogProducts() {
   const dbProducts = await readDbProducts();
-  return dbProducts && dbProducts.length ? dbProducts : publicProducts;
+  if (dbProducts) return dbProducts;
+  return process.env.NODE_ENV === 'production' ? [] : publicProducts;
 }
 
 export async function getActiveCatalogProducts() {
@@ -425,12 +433,13 @@ export async function getProductBySlug(slug: string) {
       ) {
         return dbProductToProduct(dbProduct);
       }
-    } catch (error) {
-      console.warn(`Falling back to static product lookup for ${slug}.`, error);
+    } catch {
+      console.error('Product database lookup failed.');
+      if (process.env.NODE_ENV === 'production') return undefined;
     }
   }
 
-  return getProduct(slug);
+  return process.env.NODE_ENV === 'production' ? undefined : getProduct(slug);
 }
 
 function productMatchesCategory(product: Product, categorySlug: string) {

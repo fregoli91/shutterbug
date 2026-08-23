@@ -1,26 +1,19 @@
 'use server';
 
 import { redirect } from 'next/navigation';
-import { headers } from 'next/headers';
 import { Prisma } from '@/generated/prisma/client';
-import { createCustomerAccount, createCustomerEmailVerificationToken, normalizeEmail } from '@/lib/customer-auth';
+import {
+  createCustomerAccount,
+  createCustomerEmailVerificationToken,
+  isValidEmailAddress,
+  normalizeEmail
+} from '@/lib/customer-auth';
 import { getPublicSiteUrl, sendCustomerVerificationEmail } from '@/lib/email';
 import { getPrisma } from '@/lib/prisma';
 import { validateCustomerPassword } from '@/lib/password-policy';
-
-function cleanRedirect(value: FormDataEntryValue | null) {
-  const target = typeof value === 'string' ? value : '';
-  return target.startsWith('/') && !target.startsWith('//') ? target : '/account';
-}
-
-async function getRequestBaseUrl() {
-  const headerStore = await headers();
-  const host = headerStore.get('x-forwarded-host') || headerStore.get('host');
-  if (!host) return getPublicSiteUrl();
-  const protocol =
-    headerStore.get('x-forwarded-proto') || (host.startsWith('localhost') || host.startsWith('127.') ? 'http' : 'https');
-  return `${protocol}://${host}`;
-}
+import { consumeRateLimit } from '@/lib/rate-limit';
+import { requestClientIdentifier } from '@/lib/request-context';
+import { cleanInternalRedirect } from '@/lib/security';
 
 function redirectToCheckEmail(email: string, status: string, redirectTo: string): never {
   redirect(
@@ -30,12 +23,20 @@ function redirectToCheckEmail(email: string, status: string, redirectTo: string)
 
 export async function signupAction(formData: FormData) {
   const email = normalizeEmail(String(formData.get('email') || ''));
-  const name = String(formData.get('name') || '');
+  const name = String(formData.get('name') || '').trim().slice(0, 120);
   const password = String(formData.get('password') || '');
   const confirmPassword = String(formData.get('confirmPassword') || '');
-  const redirectTo = cleanRedirect(formData.get('redirect'));
+  const redirectTo = cleanInternalRedirect(formData.get('redirect'), '/account');
+  const rateLimit = consumeRateLimit({
+    scope: 'customer-signup',
+    identifier: `${await requestClientIdentifier()}:${email || 'unknown'}`,
+    limit: 5,
+    windowMs: 60 * 60 * 1000
+  });
 
+  if (!rateLimit.allowed) redirect(`/signup?error=rate-limited&redirect=${encodeURIComponent(redirectTo)}`);
   if (!email || !password) redirect(`/signup?error=missing&redirect=${encodeURIComponent(redirectTo)}`);
+  if (!isValidEmailAddress(email)) redirect(`/signup?error=email&redirect=${encodeURIComponent(redirectTo)}`);
   if (password !== confirmPassword) redirect(`/signup?error=mismatch&redirect=${encodeURIComponent(redirectTo)}`);
 
   const passwordCheck = validateCustomerPassword({ password, email, name });
@@ -72,7 +73,7 @@ export async function signupAction(formData: FormData) {
       email: customer.email,
       name: customer.name,
       token,
-      baseUrl: await getRequestBaseUrl()
+      baseUrl: getPublicSiteUrl()
     });
     status = emailResult.sent ? 'sent' : 'dev-email';
   } catch {

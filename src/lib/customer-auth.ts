@@ -15,9 +15,9 @@ type SessionPayload = {
 };
 
 function getSecret() {
-  const secret = process.env.CUSTOMER_SESSION_SECRET || process.env.ADMIN_SESSION_SECRET || process.env.NEXTAUTH_SECRET;
+  const secret = process.env.CUSTOMER_SESSION_SECRET;
   if (!secret && process.env.NODE_ENV === 'production') {
-    throw new Error('CUSTOMER_SESSION_SECRET, ADMIN_SESSION_SECRET, or NEXTAUTH_SECRET is required in production.');
+    throw new Error('CUSTOMER_SESSION_SECRET is required in production.');
   }
   return secret || 'development-only-customer-secret';
 }
@@ -54,6 +54,10 @@ export function normalizeEmail(email: string) {
   return email.trim().toLowerCase();
 }
 
+export function isValidEmailAddress(email: string): boolean {
+  return email.length > 3 && email.length <= 254 && /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+}
+
 export async function hashPassword(password: string) {
   const salt = randomBytes(16).toString('hex');
   const derived = (await scrypt(password, salt, 64)) as Buffer;
@@ -77,6 +81,7 @@ export async function createCustomerSession(customer: SessionPayload) {
     httpOnly: true,
     sameSite: 'lax',
     secure: process.env.NODE_ENV === 'production',
+    priority: 'high',
     path: '/',
     maxAge: SESSION_TTL_SECONDS
   });
@@ -84,7 +89,13 @@ export async function createCustomerSession(customer: SessionPayload) {
 
 export async function clearCustomerSession() {
   const cookieStore = await cookies();
-  cookieStore.delete(COOKIE_NAME);
+  cookieStore.set(COOKIE_NAME, '', {
+    httpOnly: true,
+    sameSite: 'lax',
+    secure: process.env.NODE_ENV === 'production',
+    path: '/',
+    maxAge: 0
+  });
 }
 
 export async function readCustomerSessionToken() {
@@ -160,26 +171,35 @@ export async function createCustomerEmailVerificationToken(customerId: string) {
 
 export async function verifyCustomerEmailToken(token: string) {
   const prisma = requirePrisma();
+  if (!token || token.length > 128) return { status: 'invalid' as const };
   const tokenHash = hashVerificationToken(token);
-  const record = await prisma.customerEmailVerificationToken.findUnique({
-    where: { tokenHash },
-    include: { customer: true }
-  });
+  return prisma.$transaction(async (tx) => {
+    const record = await tx.customerEmailVerificationToken.findUnique({
+      where: { tokenHash },
+      include: { customer: true }
+    });
 
-  if (!record || record.usedAt) return { status: 'invalid' as const };
-  if (record.expiresAt.getTime() < Date.now()) return { status: 'expired' as const, email: record.customer.email };
+    if (!record || record.usedAt) return { status: 'invalid' as const };
+    if (record.expiresAt.getTime() < Date.now()) {
+      return { status: 'expired' as const, email: record.customer.email };
+    }
 
-  const verifiedAt = new Date();
-  const [, customer] = await prisma.$transaction([
-    prisma.customerEmailVerificationToken.updateMany({
-      where: { customerId: record.customerId, usedAt: null },
+    const verifiedAt = new Date();
+    const claim = await tx.customerEmailVerificationToken.updateMany({
+      where: { id: record.id, usedAt: null, expiresAt: { gt: verifiedAt } },
       data: { usedAt: verifiedAt }
-    }),
-    prisma.customer.update({
+    });
+    if (claim.count !== 1) return { status: 'invalid' as const };
+
+    const customer = await tx.customer.update({
       where: { id: record.customerId },
       data: { emailVerifiedAt: verifiedAt }
-    })
-  ]);
+    });
+    await tx.customerEmailVerificationToken.updateMany({
+      where: { customerId: record.customerId, usedAt: null },
+      data: { usedAt: verifiedAt }
+    });
 
-  return { status: 'verified' as const, customer };
+    return { status: 'verified' as const, customer };
+  });
 }

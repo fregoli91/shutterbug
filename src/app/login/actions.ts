@@ -1,26 +1,31 @@
 'use server';
 
 import { redirect } from 'next/navigation';
-import { createAdminSession, validateAdminCredentials } from '@/lib/admin-auth';
 import { createCustomerSession, normalizeEmail, verifyPassword } from '@/lib/customer-auth';
+import { consumeRateLimit } from '@/lib/rate-limit';
+import { requestClientIdentifier } from '@/lib/request-context';
+import { cleanInternalRedirect } from '@/lib/security';
 import { getPrisma } from '@/lib/prisma';
 
-function cleanRedirect(value: FormDataEntryValue | null) {
-  const target = typeof value === 'string' ? value : '';
-  return target.startsWith('/') && !target.startsWith('//') ? target : '/account';
-}
 
 export async function loginAction(formData: FormData) {
   const email = normalizeEmail(String(formData.get('email') || ''));
   const password = String(formData.get('password') || '');
-  const redirectTo = cleanRedirect(formData.get('redirect'));
+  const redirectTo = cleanInternalRedirect(formData.get('redirect'), '/account');
+
+  const rateLimit = consumeRateLimit({
+    scope: 'customer-login',
+    identifier: `${await requestClientIdentifier()}:${email}`,
+    limit: 10,
+    windowMs: 15 * 60 * 1000
+  });
+  if (!rateLimit.allowed) redirect(`/login?error=rate-limit&redirect=${encodeURIComponent(redirectTo)}`);
 
   if (!email || !password) redirect(`/login?error=missing&redirect=${encodeURIComponent(redirectTo)}`);
-
-  if (validateAdminCredentials(email, password)) {
-    await createAdminSession(email);
-    redirect('/admin');
+  if (email.length > 254 || password.length > 128) {
+    redirect(`/login?error=invalid&redirect=${encodeURIComponent(redirectTo)}`);
   }
+
 
   const prisma = getPrisma();
   if (!prisma) redirect(`/login?error=config&redirect=${encodeURIComponent(redirectTo)}`);

@@ -5,6 +5,7 @@ import { customerOrderPath } from '@/lib/order-access';
 import { customerPaymentStatusLabel, orderStatusLabel } from '@/lib/order-status';
 import { requirePrisma } from '@/lib/prisma';
 import { site } from '@/lib/seo';
+import { safeProductImageUrl, safeTrackingUrl } from '@/lib/security';
 
 type PaidOrder = Prisma.OrderGetPayload<{ include: { items: true } }>;
 type PrismaClientLike = ReturnType<typeof requirePrisma>;
@@ -37,7 +38,7 @@ function adminOrderUrl(order: PaidOrder) {
 }
 
 function trackingUrl(order: PaidOrder) {
-  return order.trackingUrl || orderUrl(order);
+  return safeTrackingUrl(order.trackingUrl) || orderUrl(order);
 }
 
 function formatAddressLines(address: unknown) {
@@ -69,8 +70,9 @@ function itemRowsText(order: PaidOrder) {
 function itemRowsHtml(order: PaidOrder) {
   return order.items
     .map((item) => {
-      const image = item.imageUrl
-        ? `<img src="${escapeHtml(item.imageUrl)}" alt="" width="56" height="56" style="display:block;width:56px;height:56px;object-fit:cover;border-radius:6px;background:#f6d8ad" />`
+      const safeImage = safeProductImageUrl(item.imageUrl);
+      const image = safeImage
+        ? `<img src="${escapeHtml(safeImage)}" alt="" width="56" height="56" style="display:block;width:56px;height:56px;object-fit:cover;border-radius:6px;background:#f6d8ad" />`
         : '';
 
       return `
@@ -184,7 +186,7 @@ Questions? Contact ${site.supportEmail}.`;
       ${address.map((line) => `<div>${escapeHtml(line)}</div>`).join('')}
     </div>
     <p style="margin:24px 0">
-      <a href="${orderUrl(order)}" style="display:inline-block;background:#24543a;color:white;text-decoration:none;border-radius:999px;padding:12px 20px;font-weight:700">View order</a>
+      <a href="${escapeHtml(orderUrl(order))}" style="display:inline-block;background:#24543a;color:white;text-decoration:none;border-radius:999px;padding:12px 20px;font-weight:700">View order</a>
     </p>
     <p style="font-size:14px;color:rgba(22,35,29,.72)">Questions? Reply to this email or contact ${escapeHtml(
       site.supportEmail
@@ -260,7 +262,7 @@ ${adminOrderUrl(order)}`;
     </table>
     <div style="margin:20px 0">${totalsHtml(order)}</div>
     <p style="margin:24px 0">
-      <a href="${adminOrderUrl(order)}" style="display:inline-block;background:#24543a;color:white;text-decoration:none;border-radius:999px;padding:12px 20px;font-weight:700">Open admin order</a>
+      <a href="${escapeHtml(adminOrderUrl(order))}" style="display:inline-block;background:#24543a;color:white;text-decoration:none;border-radius:999px;padding:12px 20px;font-weight:700">Open admin order</a>
     </p>
   `);
 
@@ -312,7 +314,7 @@ Questions? Contact ${site.supportEmail}.`;
       <tbody>${itemRowsHtml(order)}</tbody>
     </table>
     <p style="margin:24px 0">
-      <a href="${trackingUrl(order)}" style="display:inline-block;background:#24543a;color:white;text-decoration:none;border-radius:999px;padding:12px 20px;font-weight:700">${
+      <a href="${escapeHtml(trackingUrl(order))}" style="display:inline-block;background:#24543a;color:white;text-decoration:none;border-radius:999px;padding:12px 20px;font-weight:700">${
         trackingLabel ? 'Track shipment' : 'View order'
       }</a>
     </p>
@@ -385,7 +387,7 @@ export async function sendPaidOrderEmails(orderId: string) {
   if (!order.customerEmailSentAt && (await claimCustomerEmail(prisma, order.id))) {
     try {
       const email = buildCustomerPaidOrderEmail(order);
-      const result = await sendTransactionalEmail(email);
+      const result = await sendTransactionalEmail({ ...email, idempotencyKey: `order-${order.id}-paid-customer` });
       await prisma.order.update({
         where: { id: order.id },
         data: {
@@ -425,7 +427,7 @@ export async function sendPaidOrderEmails(orderId: string) {
 
   try {
     const email = buildAdminPaidOrderEmail(latestOrder);
-    const result = await sendTransactionalEmail(email);
+    const result = await sendTransactionalEmail({ ...email, idempotencyKey: `order-${latestOrder.id}-paid-admin` });
     await prisma.order.update({
       where: { id: latestOrder.id },
       data: {
@@ -475,7 +477,7 @@ export async function sendShippingConfirmationEmail(orderId: string) {
 
   try {
     const email = buildCustomerShippingEmail(order);
-    const result = await sendTransactionalEmail(email);
+    const result = await sendTransactionalEmail({ ...email, idempotencyKey: `order-${order.id}-shipped-customer` });
     await prisma.order.update({
       where: { id: order.id },
       data: {

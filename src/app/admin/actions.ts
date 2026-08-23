@@ -13,12 +13,14 @@ import {
   ProductStatus
 } from '@/generated/prisma/client';
 import { clearAdminSession, requireAdmin } from '@/lib/admin-auth';
+import { releaseOrderReservation } from '@/lib/inventory-reservations';
 import { sendShippingConfirmationEmail } from '@/lib/order-emails';
 import { requirePrisma } from '@/lib/prisma';
 import { getCameraProductTemplate } from '@/lib/product-templates';
+import { safeProductImageUrl, safeTrackingUrl } from '@/lib/security';
 
-function field(formData: FormData, name: string) {
-  return String(formData.get(name) ?? '').trim();
+function field(formData: FormData, name: string, maxLength = 10_000) {
+  return String(formData.get(name) ?? '').trim().slice(0, maxLength);
 }
 
 function optionalField(formData: FormData, name: string) {
@@ -29,7 +31,9 @@ function lines(formData: FormData, name: string) {
   return field(formData, name)
     .split(/\r?\n|,/)
     .map((item) => item.trim())
-    .filter(Boolean);
+    .filter(Boolean)
+    .slice(0, 100)
+    .map((item) => item.slice(0, 500));
 }
 
 function bool(formData: FormData, name: string) {
@@ -47,10 +51,10 @@ function slugify(value: string) {
 function parseProductForm(formData: FormData) {
   const title = field(formData, 'title');
   const model = field(formData, 'model');
-  const price = Number(field(formData, 'price') || '0');
-  const quantity = Number(field(formData, 'quantity') || '0');
-  const heroImage = field(formData, 'heroImage');
-  const galleryImages = lines(formData, 'galleryImages');
+  const price = Number(field(formData, 'price', 20) || '0');
+  const quantity = Number(field(formData, 'quantity', 10) || '0');
+  const heroImage = safeProductImageUrl(field(formData, 'heroImage', 2_048)) ?? '';
+  const galleryImages = lines(formData, 'galleryImages').map(safeProductImageUrl).filter((url): url is string => Boolean(url));
   const testedStatus = field(formData, 'testedStatus') || 'Tested';
   const conditionNotes = field(formData, 'conditionNotes');
   const selectedBrand = field(formData, 'brand');
@@ -81,8 +85,8 @@ function parseProductForm(formData: FormData) {
       testedStatus,
       conditionSummary: conditionNotes,
       conditionNotes,
-      priceCents: Math.round(price * 100),
-      quantity: Number.isFinite(quantity) ? quantity : 0,
+      priceCents: Number.isFinite(price) && price >= 0 && price <= 1_000_000 ? Math.round(price * 100) : 0,
+      quantity: Number.isSafeInteger(quantity) && quantity >= 0 && quantity <= 100_000 ? quantity : 0,
       status: field(formData, 'status') as ProductStatus,
       description: field(formData, 'description'),
       shortDescription: field(formData, 'shortDescription'),
@@ -283,13 +287,13 @@ export async function deleteProductAction(formData: FormData) {
   await requireAdmin();
   const prisma = requirePrisma();
   const id = field(formData, 'id');
-  await prisma.product.delete({ where: { id } });
+  await prisma.product.update({ where: { id }, data: { status: ProductStatus.ARCHIVED } });
 
   revalidatePath('/');
   revalidatePath('/shop');
   revalidatePath('/sitemap.xml');
   revalidatePath('/google-merchant-feed.xml');
-  redirect('/admin/products?deleted=1');
+  redirect('/admin/products?archived=1');
 }
 
 function adminOrderRedirect(id: string, params: Record<string, string>): never {
@@ -309,7 +313,7 @@ function fulfillmentFields(formData: FormData) {
   return {
     carrier: optionalField(formData, 'carrier'),
     trackingNumber: optionalField(formData, 'trackingNumber'),
-    trackingUrl: optionalField(formData, 'trackingUrl'),
+    trackingUrl: safeTrackingUrl(optionalField(formData, 'trackingUrl')),
     adminNotes: optionalField(formData, 'adminNotes')
   };
 }
@@ -460,49 +464,28 @@ export async function markOrderCancelledAction(formData: FormData) {
     adminOrderRedirect(id, { error: 'cancel-paid-order' });
   }
 
-  await prisma.order.update({
-    where: { id },
-    data: {
-      status: OrderStatus.CANCELLED,
-      paymentStatus: PaymentStatus.CANCELED,
-      fulfillmentStatus: FulfillmentStatus.CANCELED,
-      cancelledAt: order.cancelledAt ?? new Date(),
-      history: {
-        create: { message: 'Marked cancelled.' }
+  await prisma.$transaction(async (tx) => {
+    await releaseOrderReservation(tx, id, 'Admin cancelled pending order.');
+    await tx.order.update({
+      where: { id },
+      data: {
+        status: OrderStatus.CANCELLED,
+        paymentStatus: PaymentStatus.CANCELED,
+        fulfillmentStatus: FulfillmentStatus.CANCELED,
+        cancelledAt: order.cancelledAt ?? new Date(),
+        history: { create: { message: 'Marked cancelled and released reserved inventory.' } }
       }
-    }
+    });
   });
 
   revalidateOrderPaths(id);
   adminOrderRedirect(id, { cancelled: '1' });
 }
-
 export async function markOrderRefundedAction(formData: FormData) {
   await requireAdmin();
-  const prisma = requirePrisma();
   const id = field(formData, 'id');
-  const order = await prisma.order.findUnique({
-    where: { id },
-    select: { paymentStatus: true, status: true, refundedAt: true }
-  });
 
-  if (!order || order.paymentStatus !== PaymentStatus.PAID || order.status === OrderStatus.PENDING_PAYMENT) {
-    adminOrderRedirect(id, { error: 'invalid-transition' });
-  }
-
-  await prisma.order.update({
-    where: { id },
-    data: {
-      status: OrderStatus.REFUNDED,
-      paymentStatus: PaymentStatus.REFUNDED,
-      fulfillmentStatus: FulfillmentStatus.CANCELED,
-      refundedAt: order.refundedAt ?? new Date(),
-      history: {
-        create: { message: 'Marked refunded in Shutterbug admin. Process any money movement in Stripe separately if needed.' }
-      }
-    }
-  });
-
-  revalidateOrderPaths(id);
-  adminOrderRedirect(id, { refunded: '1' });
+  // A database-only status change would falsely claim money was returned.
+  // Refunds stay disabled until a separately approved Stripe refund workflow is implemented.
+  adminOrderRedirect(id, { error: 'refund-not-configured' });
 }

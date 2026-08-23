@@ -1,3 +1,4 @@
+import { safeTrackingUrl } from '@/lib/security';
 import { notFound } from 'next/navigation';
 import Link from 'next/link';
 import Image from 'next/image';
@@ -114,9 +115,9 @@ export default async function AccountOrderDetailPage({ params }: Props) {
               {order.shippedAt ? <p>Shipped: {order.shippedAt.toLocaleDateString('en-US')}</p> : null}
               {order.deliveredAt ? <p>Delivered: {order.deliveredAt.toLocaleDateString('en-US')}</p> : null}
             </div>
-            {order.trackingUrl ? (
+            {safeTrackingUrl(order.trackingUrl) ? (
               <a
-                href={order.trackingUrl}
+                href={safeTrackingUrl(order.trackingUrl) ?? undefined}
                 target="_blank"
                 rel="noreferrer"
                 className="mt-4 inline-flex text-sm font-semibold text-moss hover:text-ink"

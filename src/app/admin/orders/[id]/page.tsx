@@ -1,3 +1,4 @@
+import { safeTrackingUrl } from '@/lib/security';
 import Image from 'next/image';
 import { notFound } from 'next/navigation';
 import {
@@ -129,7 +130,7 @@ export default async function AdminOrderDetailPage({ params, searchParams }: Pro
               <input type="hidden" name="id" value={order.id} />
               <Field label="Carrier" name="carrier" defaultValue={order.carrier ?? ''} placeholder="USPS, UPS, FedEx" />
               <Field label="Tracking number" name="trackingNumber" defaultValue={order.trackingNumber ?? ''} />
-              <Field label="Tracking URL" name="trackingUrl" defaultValue={order.trackingUrl ?? ''} type="url" />
+              <Field label="Tracking URL" name="trackingUrl" defaultValue={safeTrackingUrl(order.trackingUrl) ?? ''} type="url" />
               <label className="grid gap-2 text-sm font-semibold text-ink">
                 Admin notes
                 <textarea
@@ -214,8 +215,8 @@ export default async function AdminOrderDetailPage({ params, searchParams }: Pro
             <div className="mt-3 grid gap-2 text-sm text-ink/70">
               <p><span className="font-semibold text-ink">Carrier:</span> {order.carrier || 'Not set'}</p>
               <p><span className="font-semibold text-ink">Tracking:</span> {order.trackingNumber || 'Not set'}</p>
-              {order.trackingUrl ? (
-                <a href={order.trackingUrl} target="_blank" rel="noreferrer" className="font-semibold text-moss hover:text-ink">
+              {safeTrackingUrl(order.trackingUrl) ? (
+                <a href={safeTrackingUrl(order.trackingUrl) ?? undefined} target="_blank" rel="noreferrer" className="font-semibold text-moss hover:text-ink">
                   Open tracking link
                 </a>
               ) : null}

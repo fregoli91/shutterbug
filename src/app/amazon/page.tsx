@@ -1,3 +1,4 @@
+import { safeJsonLd } from '@/lib/security';
 import Image from 'next/image';
 import Link from 'next/link';
 import type { Metadata } from 'next';
@@ -36,7 +37,7 @@ export default function AmazonPage() {
 
   return (
     <main className="px-4 py-12 sm:px-6 sm:py-16 lg:px-8">
-      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }} />
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: safeJsonLd(structuredData) }} />
       <div className="mx-auto max-w-6xl">
         <header className="max-w-3xl">
           <p className="text-sm font-bold uppercase tracking-[0.24em] text-moss">Another way to shop Shutterbug</p>

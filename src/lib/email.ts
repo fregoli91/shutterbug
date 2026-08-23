@@ -1,3 +1,4 @@
+import { createHash } from 'node:crypto';
 import { site } from '@/lib/seo';
 
 type SendEmailOptions = {
@@ -5,6 +6,7 @@ type SendEmailOptions = {
   subject: string;
   html: string;
   text: string;
+  idempotencyKey?: string;
 };
 
 export type EmailSendResult = {
@@ -13,7 +15,20 @@ export type EmailSendResult = {
 };
 
 export function getPublicSiteUrl() {
-  return process.env.NEXT_PUBLIC_SITE_URL || site.domain;
+  const configured = cleanEnvValue(process.env.NEXT_PUBLIC_SITE_URL) || site.domain;
+  let url: URL;
+  try {
+    url = new URL(configured);
+  } catch {
+    throw new Error('NEXT_PUBLIC_SITE_URL must be a valid absolute URL.');
+  }
+  if (process.env.NODE_ENV === 'production' && url.protocol !== 'https:') {
+    throw new Error('NEXT_PUBLIC_SITE_URL must use HTTPS in production.');
+  }
+  if (url.protocol !== 'https:' && url.protocol !== 'http:') {
+    throw new Error('NEXT_PUBLIC_SITE_URL must use HTTP or HTTPS.');
+  }
+  return url.origin;
 }
 
 function escapeHtml(value: string) {
@@ -35,7 +50,8 @@ export async function sendTransactionalEmail({
   to,
   subject,
   html,
-  text
+  text,
+  idempotencyKey
 }: SendEmailOptions): Promise<EmailSendResult> {
   const resendApiKey = cleanEnvValue(process.env.RESEND_API_KEY);
   const from = cleanEnvValue(process.env.EMAIL_FROM) || `Shutterbug Camera Shop <${site.supportEmail}>`;
@@ -44,7 +60,7 @@ export async function sendTransactionalEmail({
     if (process.env.NODE_ENV === 'production') {
       throw new Error('RESEND_API_KEY is not configured.');
     }
-    console.info(`[Shutterbug email fallback] To: ${to}\nSubject: ${subject}\n\n${text}`);
+    console.info('[Shutterbug email fallback] Transactional email suppressed because Resend is not configured.');
     return { sent: false, provider: 'console' };
   }
 
@@ -52,7 +68,8 @@ export async function sendTransactionalEmail({
     method: 'POST',
     headers: {
       Authorization: `Bearer ${resendApiKey}`,
-      'Content-Type': 'application/json'
+      'Content-Type': 'application/json',
+      ...(idempotencyKey ? { 'Idempotency-Key': idempotencyKey } : {})
     },
     body: JSON.stringify({
       from,
@@ -64,8 +81,7 @@ export async function sendTransactionalEmail({
   });
 
   if (!response.ok) {
-    const errorBody = await response.text().catch(() => '');
-    throw new Error(`Resend email failed with status ${response.status}${errorBody ? `: ${errorBody}` : ''}`);
+    throw new Error(`Resend email failed with status ${response.status}.`);
   }
 
   return { sent: true, provider: 'resend' };
@@ -113,6 +129,7 @@ This link expires in 24 hours. If you did not create a Shutterbug account, you c
     to: email,
     subject: 'Verify your Shutterbug account',
     html,
-    text
+    text,
+    idempotencyKey: `verify-${createHash('sha256').update(token).digest('hex')}`
   });
 }

@@ -1,3 +1,4 @@
+import { safeTrackingUrl } from '@/lib/security';
 import Link from 'next/link';
 import Image from 'next/image';
 import { PaymentStatus } from '@/generated/prisma/client';
@@ -86,8 +87,8 @@ export default async function AccountOrdersPage() {
                   {[order.carrier, order.trackingNumber].filter(Boolean).join(' ') || 'Not added yet'}
                 </p>
                 <p>Shipping status: {customerFulfillmentStatusLabel(order.fulfillmentStatus)}</p>
-                {order.trackingUrl ? (
-                  <a href={order.trackingUrl} target="_blank" rel="noreferrer" className="font-semibold text-moss hover:text-ink">
+                {safeTrackingUrl(order.trackingUrl) ? (
+                  <a href={safeTrackingUrl(order.trackingUrl) ?? undefined} target="_blank" rel="noreferrer" className="font-semibold text-moss hover:text-ink">
                     Track shipment
                   </a>
                 ) : null}

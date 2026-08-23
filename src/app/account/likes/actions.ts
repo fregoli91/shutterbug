@@ -4,11 +4,7 @@ import { revalidatePath } from 'next/cache';
 import { redirect } from 'next/navigation';
 import { getCustomerSession } from '@/lib/customer-auth';
 import { requirePrisma } from '@/lib/prisma';
-
-function cleanRedirect(value: FormDataEntryValue | null) {
-  const target = typeof value === 'string' ? value : '';
-  return target.startsWith('/') && !target.startsWith('//') ? target : '/account/likes';
-}
+import { cleanInternalRedirect } from '@/lib/security';
 
 function revalidateLikeSurfaces(productSlug: string, redirectTo: string) {
   revalidatePath('/account');
@@ -19,9 +15,9 @@ function revalidateLikeSurfaces(productSlug: string, redirectTo: string) {
 }
 
 export async function toggleProductLikeAction(formData: FormData) {
-  const productId = String(formData.get('productId') ?? '');
-  const productSlug = String(formData.get('productSlug') ?? '');
-  const redirectTo = cleanRedirect(formData.get('redirectTo'));
+  const productId = String(formData.get('productId') ?? '').trim().slice(0, 64);
+  const productSlug = String(formData.get('productSlug') ?? '').trim().slice(0, 200);
+  const redirectTo = cleanInternalRedirect(formData.get('redirectTo'), '/account/likes');
 
   if (!productId) redirect(redirectTo);
 
@@ -57,9 +53,9 @@ export async function toggleProductLikeAction(formData: FormData) {
 }
 
 export async function removeProductLikeAction(formData: FormData) {
-  const productId = String(formData.get('productId') ?? '');
-  const productSlug = String(formData.get('productSlug') ?? '');
-  const redirectTo = cleanRedirect(formData.get('redirectTo'));
+  const productId = String(formData.get('productId') ?? '').trim().slice(0, 64);
+  const productSlug = String(formData.get('productSlug') ?? '').trim().slice(0, 200);
+  const redirectTo = cleanInternalRedirect(formData.get('redirectTo'), '/account/likes');
 
   const customer = await getCustomerSession();
   if (!customer) redirect(`/login?redirect=${encodeURIComponent(redirectTo)}`);

@@ -1,3 +1,4 @@
+import { safeJsonLd } from '@/lib/security';
 import Link from 'next/link';
 import Image from 'next/image';
 import type { Metadata } from 'next';
@@ -351,7 +352,7 @@ export default async function ShopPage({ searchParams }: Props) {
 
   return (
     <section className="px-4 py-8 sm:px-6 sm:py-12 lg:px-8">
-      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }} />
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: safeJsonLd(structuredData) }} />
       <div className="mx-auto max-w-7xl">
         <div className="grid gap-6 lg:grid-cols-[1fr_32rem] lg:items-center">
           <div className="max-w-3xl">

@@ -6,9 +6,9 @@ const COOKIE_NAME = 'shutterbug_admin';
 const SESSION_TTL_SECONDS = 60 * 60 * 12;
 
 function getSecret() {
-  const secret = process.env.ADMIN_SESSION_SECRET || process.env.NEXTAUTH_SECRET;
+  const secret = process.env.ADMIN_SESSION_SECRET;
   if (!secret && process.env.NODE_ENV === 'production') {
-    throw new Error('ADMIN_SESSION_SECRET or NEXTAUTH_SECRET is required in production.');
+    throw new Error('ADMIN_SESSION_SECRET is required in production.');
   }
   return secret || 'development-only-admin-secret';
 }
@@ -25,9 +25,12 @@ function safeEqual(a: string, b: string) {
 
 export function validateAdminCredentials(username: string, password: string) {
   const submittedUsername = username.trim().toLowerCase();
-  const expectedUsername = (process.env.ADMIN_EMAIL || process.env.ADMIN_USERNAME || 'admin').trim().toLowerCase();
+  const configuredUsername = process.env.ADMIN_EMAIL || process.env.ADMIN_USERNAME;
+  const expectedUsername = (configuredUsername || (process.env.NODE_ENV === 'production' ? '' : 'admin'))
+    .trim()
+    .toLowerCase();
   const expectedPassword = process.env.ADMIN_PASSWORD;
-  if (!expectedPassword) return false;
+  if (!expectedUsername || !expectedPassword || password.length > 256 || submittedUsername.length > 254) return false;
   return safeEqual(submittedUsername, expectedUsername) && safeEqual(password, expectedPassword);
 }
 
@@ -40,6 +43,7 @@ export async function createAdminSession(username: string) {
     httpOnly: true,
     sameSite: 'lax',
     secure: process.env.NODE_ENV === 'production',
+    priority: 'high',
     path: '/',
     maxAge: SESSION_TTL_SECONDS
   });
@@ -47,7 +51,13 @@ export async function createAdminSession(username: string) {
 
 export async function clearAdminSession() {
   const cookieStore = await cookies();
-  cookieStore.delete(COOKIE_NAME);
+  cookieStore.set(COOKIE_NAME, '', {
+    httpOnly: true,
+    sameSite: 'lax',
+    secure: process.env.NODE_ENV === 'production',
+    path: '/',
+    maxAge: 0
+  });
 }
 
 export async function getAdminSession() {

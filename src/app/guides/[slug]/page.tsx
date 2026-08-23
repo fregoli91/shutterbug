@@ -1,3 +1,4 @@
+import { safeJsonLd } from '@/lib/security';
 import Image from 'next/image';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
@@ -61,7 +62,7 @@ export default async function GuidePage({ params }: Props) {
 
   return (
     <article className="px-4 py-10 sm:px-6 sm:py-14 lg:px-8">
-      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }} />
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: safeJsonLd(structuredData) }} />
       <div className="mx-auto max-w-5xl">
         <nav className="flex flex-wrap items-center gap-2 text-sm text-ink/60" aria-label="Breadcrumb">
           <Link href="/" className="hover:text-moss">Home</Link>

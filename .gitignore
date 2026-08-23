@@ -7,3 +7,5 @@ src/generated/prisma
 .DS_Store
 
 *.log
+.vercel
+.env*

@@ -1,3 +1,4 @@
+import { safeJsonLd } from '@/lib/security';
 import Image from 'next/image';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
@@ -99,7 +100,7 @@ export default async function BlogArticlePage({ params }: Props) {
 
   return (
     <article className="pb-16 sm:pb-20">
-      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }} />
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: safeJsonLd(structuredData) }} />
       <header className="px-4 pb-8 pt-9 sm:px-6 sm:pb-10 sm:pt-12 lg:px-8">
         <div className="mx-auto max-w-5xl">
           <nav className="flex flex-wrap items-center gap-2 text-sm text-ink/60" aria-label="Breadcrumb">
