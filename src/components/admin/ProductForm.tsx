@@ -172,6 +172,8 @@ export function ProductForm({ action, product, submitLabel }: Props) {
         <Field label="Product title" name="title" defaultValue={product?.title} required />
         <Field label="Slug" name="slug" defaultValue={product?.slug} />
         <Field label="SKU" name="sku" defaultValue={product?.sku} />
+        <Field label="GTIN / UPC / EAN (only if assigned)" name="gtin" defaultValue={product?.gtin} />
+        <Field label="Manufacturer part number (MPN)" name="mpn" defaultValue={product?.mpn} />
         <Select label="Brand" name="brand" options={CAMERA_BRANDS} defaultValue={selectedBrand} />
         <Field label="Custom brand / other" name="customBrand" defaultValue={customBrand} />
         <Field label="Manufacturer" name="manufacturer" defaultValue={product?.manufacturer || product?.brand} />

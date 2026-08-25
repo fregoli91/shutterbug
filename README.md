@@ -182,6 +182,12 @@ Use the staging checklist runner before launch:
 docs/STAGING_TEST_RUNNER.md
 ```
 
+Configure Google Merchant Center and validate product readiness with:
+
+```txt
+docs/GOOGLE_MERCHANT_CENTER_SETUP.md
+```
+
 ## Build
 
 ```bash

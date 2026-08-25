@@ -69,6 +69,8 @@ function parseProductForm(formData: FormData) {
   return {
     data: {
       sku: field(formData, 'sku') || null,
+      gtin: optionalField(formData, 'gtin'),
+      mpn: optionalField(formData, 'mpn'),
       slug,
       title,
       brand,

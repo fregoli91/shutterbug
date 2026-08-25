@@ -184,6 +184,8 @@ export function buildProductJsonLd(product: Product, category?: Category): JsonL
     manufacturer: product.manufacturer || product.brand,
     model: product.model,
     sku: product.sku,
+    ...(product.gtin ? { gtin: product.gtin } : {}),
+    ...(product.mpn ? { mpn: product.mpn } : {}),
     description: product.seoDescription || product.shortDescription,
     image: gallery,
     category: category?.name ?? product.categorySlug,
@@ -199,6 +201,11 @@ export function buildProductJsonLd(product: Product, category?: Category): JsonL
       seller: { '@id': `${site.domain}/#organization` },
       shippingDetails: {
         '@type': 'OfferShippingDetails',
+        shippingRate: {
+          '@type': 'MonetaryAmount',
+          value: 0,
+          currency: 'USD'
+        },
         shippingDestination: {
           '@type': 'DefinedRegion',
           addressCountry: 'US'

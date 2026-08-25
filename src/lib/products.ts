@@ -33,6 +33,8 @@ export type Product = {
   id: string;
   slug: string;
   sku: string;
+  gtin?: string;
+  mpn?: string;
   title: string;
   brand: string;
   manufacturer?: string;
@@ -324,6 +326,8 @@ function dbProductToProduct(product: ProductWithImages): Product {
     id: product.id,
     slug: product.slug,
     sku: product.sku ?? product.id,
+    gtin: product.gtin || undefined,
+    mpn: product.mpn || undefined,
     title: product.title,
     brand: product.brand,
     manufacturer: product.manufacturer || product.brand,

@@ -47,6 +47,12 @@ function productItemXml(product: Product) {
   const category = getCategory(product.categorySlug);
   const price = (product.priceCents ? product.priceCents / 100 : product.price).toFixed(2);
   const additionalImages = additionalImageLinks(product);
+  const identifiers = [
+    product.gtin ? `      <g:gtin>${escapeXml(product.gtin)}</g:gtin>` : '',
+    product.mpn ? `      <g:mpn>${escapeXml(product.mpn)}</g:mpn>` : ''
+  ]
+    .filter(Boolean)
+    .join('\n');
 
   return `
     <item>
@@ -60,14 +66,15 @@ ${additionalImages}
       <g:price>${escapeXml(`${price} USD`)}</g:price>
       <g:condition>${escapeXml(merchantCondition(product))}</g:condition>
       <g:brand>${escapeXml(product.brand)}</g:brand>
-      <g:identifier_exists>no</g:identifier_exists>
+${identifiers}
+      <g:identifier_exists>${product.gtin || product.mpn ? 'yes' : 'no'}</g:identifier_exists>
       <g:product_type>${escapeXml(productTypePath(product, category))}</g:product_type>
       <g:google_product_category>${escapeXml(googleProductCategory(product))}</g:google_product_category>
       <g:shipping>
         <g:country>US</g:country>
         <g:service>Standard</g:service>
+        <g:price>0.00 USD</g:price>
       </g:shipping>
-      <g:return_policy_label>standard</g:return_policy_label>
     </item>`;
 }
 

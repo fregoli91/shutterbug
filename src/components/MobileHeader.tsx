@@ -166,23 +166,23 @@ export function MobileHeader({
         }`}
       >
         <div className="overflow-hidden">
-          <div className="relative border-t border-forest/10">
+          <div className="relative border-y border-forest bg-forest shadow-[inset_0_1px_0_rgba(255,255,255,0.08)]">
             <nav
               aria-label="Popular shopping destinations"
-              className="flex h-12 gap-4 overflow-x-auto px-4 text-[0.82rem] font-semibold text-ink/72 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden sm:px-6"
+              className="flex h-12 gap-4 overflow-x-auto px-4 text-[0.82rem] font-semibold text-cream/90 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden sm:px-6"
             >
               {quickLinks.map((item) => (
                 <Link
                   key={item.href}
                   href={item.href}
-                  className="flex min-h-11 shrink-0 items-center whitespace-nowrap border-b-2 border-transparent transition hover:border-moss hover:text-forest"
+                  className="flex min-h-11 shrink-0 items-center whitespace-nowrap border-b-2 border-transparent transition hover:border-sage hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-sage"
                 >
                   {item.label}
                 </Link>
               ))}
             </nav>
-            <span className="pointer-events-none absolute inset-y-0 left-0 w-4 bg-gradient-to-r from-cream to-transparent" />
-            <span className="pointer-events-none absolute inset-y-0 right-0 w-7 bg-gradient-to-l from-cream to-transparent" />
+            <span className="pointer-events-none absolute inset-y-0 left-0 w-4 bg-gradient-to-r from-forest to-transparent" />
+            <span className="pointer-events-none absolute inset-y-0 right-0 w-7 bg-gradient-to-l from-forest to-transparent" />
           </div>
         </div>
       </div>

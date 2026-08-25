@@ -76,6 +76,8 @@ enum OrderStatus {
 model Product {
   id                String           @id @default(cuid())
   sku               String?          @unique
+  gtin              String?
+  mpn               String?
   slug              String           @unique
   title             String
   brand             String
