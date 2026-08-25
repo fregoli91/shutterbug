@@ -165,11 +165,11 @@ export function MobileHeader({
           showCategoryRow ? 'grid-rows-[1fr] opacity-100' : 'grid-rows-[0fr] opacity-0'
         }`}
       >
-        <div className="overflow-hidden">
-          <div className="relative border-y border-forest bg-forest shadow-[inset_0_1px_0_rgba(255,255,255,0.08)]">
+        <div className="min-w-0 overflow-hidden">
+          <div className="relative min-w-0 border-y border-forest bg-forest shadow-[inset_0_1px_0_rgba(255,255,255,0.08)]">
             <nav
               aria-label="Popular shopping destinations"
-              className="flex h-12 gap-4 overflow-x-auto px-4 text-[0.82rem] font-semibold text-cream/90 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden sm:px-6"
+              className="flex h-12 w-full min-w-0 touch-pan-x gap-4 overflow-x-auto overscroll-x-contain px-4 text-[0.82rem] font-semibold text-cream/90 [-webkit-overflow-scrolling:touch] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden sm:px-6"
             >
               {quickLinks.map((item) => (
                 <Link
