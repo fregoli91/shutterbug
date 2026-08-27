@@ -208,7 +208,7 @@ export function HomePromotionalCarousel({ promotions }: HomePromotionalCarouselP
                         fill
                         loading={index === 0 ? 'eager' : 'lazy'}
                         sizes="(min-width: 1280px) 1280px, (min-width: 640px) calc(100vw - 3rem), calc(100vw - 2rem)"
-                        className="object-contain"
+                        className={promotion.id === 'canon-powershot' ? 'object-contain sm:object-cover' : 'object-contain'}
                       />
                     </>
                   )}

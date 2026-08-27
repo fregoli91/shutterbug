@@ -36,14 +36,14 @@ export default function ShippingPage() {
     <section className="px-4 py-14 sm:px-6 lg:px-8">
       <div className="mx-auto max-w-7xl">
         <div className="grid gap-8 lg:grid-cols-[1fr_30rem] lg:items-center">
-          <div>
+          <div className="text-center">
             <p className="text-sm font-bold uppercase tracking-[0.28em] text-moss">Shipping</p>
             <h1 className="mt-3 font-serif text-5xl font-bold text-ink">Packed with care, shipped with tracking.</h1>
-            <p className="mt-5 max-w-3xl text-lg leading-8 text-ink/72">
+            <p className="mx-auto mt-5 max-w-3xl text-lg leading-8 text-ink/72">
               Used and vintage cameras deserve careful handling. Shutterbug reviews each paid order before fulfillment
               and keeps tracking connected to your account when available.
             </p>
-            <div className="mt-7 flex flex-col gap-3 sm:flex-row">
+            <div className="mt-7 flex flex-col justify-center gap-3 sm:flex-row">
               <Link href="/account/track" className="inline-flex min-h-11 items-center justify-center rounded-full bg-forest px-6 text-sm font-semibold text-white transition hover:bg-moss">
                 Track an order
               </Link>
@@ -64,7 +64,7 @@ export default function ShippingPage() {
 
         <div className="mt-10 grid gap-5 md:grid-cols-2 lg:grid-cols-4">
           {shippingNotes.map((note) => (
-            <article key={note.title} className="rounded-lg border border-ink/10 bg-white p-6 shadow-sm">
+            <article key={note.title} className="rounded-lg border border-ink/10 bg-white p-6 text-center shadow-sm">
               <p className="font-serif text-2xl font-bold text-ink">{note.title}</p>
               <p className="mt-3 text-sm leading-6 text-ink/68">{note.copy}</p>
             </article>
@@ -72,16 +72,16 @@ export default function ShippingPage() {
         </div>
 
         <div className="mt-8 grid gap-6 rounded-lg border border-ink/10 bg-cream p-6 shadow-soft lg:grid-cols-[1fr_24rem] lg:items-center">
-          <div>
+          <div className="text-center">
             <p className="text-sm font-bold uppercase tracking-[0.22em] text-moss">Packing standards</p>
             <h2 className="mt-3 font-serif text-3xl font-bold text-ink">Real gear, handled like real gear.</h2>
-            <ul className="mt-5 grid list-disc gap-3 pl-5 text-sm leading-6 text-ink/70">
+            <ul className="mx-auto mt-5 grid max-w-2xl list-disc gap-3 pl-5 text-left text-sm leading-6 text-ink/70">
               {packingPromises.map((promise) => (
                 <li key={promise}>{promise}</li>
               ))}
             </ul>
           </div>
-          <div className="rounded-lg border border-ink/10 bg-white p-5 text-sm leading-6 text-ink/68">
+          <div className="rounded-lg border border-ink/10 bg-white p-5 text-center text-sm leading-6 text-ink/68">
             <p className="font-semibold text-ink">Before checkout</p>
             <p className="mt-2">
               Review the product page for included accessories, flaws, parts/repair notes, and item-specific shipping

@@ -32,7 +32,7 @@ export default function TestingProcessPage() {
     <section className="px-4 py-14 sm:px-6 lg:px-8">
       <div className="mx-auto max-w-7xl">
         <div className="grid gap-8 lg:grid-cols-[1fr_28rem] lg:items-center">
-          <div className="max-w-4xl">
+          <div className="mx-auto max-w-4xl text-center">
             <p className="text-sm font-bold uppercase tracking-[0.28em] text-moss">Trust page</p>
             <h1 className="mt-3 font-serif text-5xl font-bold text-ink">How Shutterbug tests used cameras</h1>
             <p className="mt-5 text-lg leading-8 text-ink/70">
@@ -49,7 +49,7 @@ export default function TestingProcessPage() {
               sizes="(min-width: 1024px) 28rem, 100vw"
               className="aspect-[16/9] w-full bg-sand object-cover object-center"
             />
-            <div className="p-6">
+            <div className="p-6 text-center">
               <p className="font-serif text-2xl font-bold text-ink">The promise</p>
               <p className="mt-3 text-sm leading-7 text-ink/68">
               Tested gear is described as tested. Parts/repair gear is marked clearly. Flaws are part of the listing,
@@ -61,7 +61,7 @@ export default function TestingProcessPage() {
 
         <div className="mt-12 grid gap-4 md:grid-cols-2 lg:grid-cols-3">
           {digitalTests.map((test) => (
-            <div key={test} className="rounded-lg border border-ink/10 bg-white p-5 text-ink/75 shadow-sm">
+            <div key={test} className="rounded-lg border border-ink/10 bg-white p-5 text-center text-ink/75 shadow-sm">
               <span className="font-semibold text-moss">Checked:</span> {test}
             </div>
           ))}
@@ -77,7 +77,7 @@ export default function TestingProcessPage() {
               sizes="(min-width: 1024px) 50vw, 100vw"
               className="mb-6 aspect-[4/3] w-full rounded-lg bg-cream object-contain object-center"
             />
-            <p className="font-serif text-3xl font-bold text-ink">Condition grading</p>
+            <p className="text-center font-serif text-3xl font-bold text-ink">Condition grading</p>
             <div className="mt-6 grid gap-4">
               {conditionRules.map(([grade, copy]) => (
                 <div key={grade} className="rounded-lg bg-mint p-4">
@@ -96,7 +96,7 @@ export default function TestingProcessPage() {
               sizes="(min-width: 1024px) 50vw, 100vw"
               className="mb-6 aspect-[3/2] w-full rounded-lg bg-cream object-contain object-center"
             />
-            <p className="font-serif text-3xl font-bold text-ink">Parts / Repair Items</p>
+            <p className="text-center font-serif text-3xl font-bold text-ink">Parts / Repair Items</p>
             <p className="mt-4 leading-7 text-ink/70">
               Parts/repair cameras are not treated the same as ready-to-shoot cameras. These items are sold as-is and
               may have partial power, missing accessories, lens or screen issues, damaged parts, or untested functions.

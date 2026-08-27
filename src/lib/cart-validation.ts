@@ -42,11 +42,11 @@ type ProductReader = Pick<Prisma.TransactionClient, 'product'>;
 export class CartInputError extends Error {}
 
 export function normalizeCartLines(items: CartLineInput[]): NormalizedCartLine[] {
-  if (!Array.isArray(items) || items.length > 50) throw new CartInputError('Invalid cart lines.');
+  if (!Array.isArray(items) || items.length > 50) throw new CartInputError('Invalid bag lines.');
 
   const lines = new Map<string, number>();
   for (const item of items) {
-    if (!item || typeof item !== 'object') throw new CartInputError('Invalid cart item.');
+    if (!item || typeof item !== 'object') throw new CartInputError('Invalid bag item.');
     const id = typeof item.id === 'string' ? item.id.trim() : '';
     const quantity = item.quantity;
     if (!/^[A-Za-z0-9_-]{1,64}$/.test(id)) throw new CartInputError('Invalid product identifier.');

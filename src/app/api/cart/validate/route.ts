@@ -19,7 +19,7 @@ export async function POST(request: Request) {
 
   const contentLength = Number(request.headers.get('content-length') || 0);
   if (!Number.isFinite(contentLength) || contentLength > MAX_BODY_BYTES) {
-    return NextResponse.json({ error: 'Cart payload is too large.' }, { status: 413 });
+    return NextResponse.json({ error: 'Bag payload is too large.' }, { status: 413 });
   }
 
   const rateLimit = consumeRateLimit({
@@ -30,7 +30,7 @@ export async function POST(request: Request) {
   });
   if (!rateLimit.allowed) {
     return NextResponse.json(
-      { error: 'Too many cart requests. Please try again shortly.' },
+      { error: 'Too many bag requests. Please try again shortly.' },
       { status: 429, headers: { 'Retry-After': String(rateLimit.retryAfterSeconds) } }
     );
   }
@@ -39,11 +39,11 @@ export async function POST(request: Request) {
   try {
     body = (await request.json()) as CartValidationRequest;
   } catch {
-    return NextResponse.json({ error: 'Invalid cart payload.' }, { status: 400 });
+    return NextResponse.json({ error: 'Invalid bag payload.' }, { status: 400 });
   }
 
   if (!body || !Array.isArray(body.items) || body.items.length > MAX_CART_LINES) {
-    return NextResponse.json({ error: 'Invalid cart payload.' }, { status: 400 });
+    return NextResponse.json({ error: 'Invalid bag payload.' }, { status: 400 });
   }
 
   try {
@@ -52,7 +52,7 @@ export async function POST(request: Request) {
       headers: { 'Cache-Control': 'private, no-store, max-age=0' }
     });
   } catch {
-    console.error('Cart validation failed.');
-    return NextResponse.json({ error: 'Cart validation is temporarily unavailable.' }, { status: 503 });
+    console.error('Bag validation failed.');
+    return NextResponse.json({ error: 'Bag validation is temporarily unavailable.' }, { status: 503 });
   }
 }

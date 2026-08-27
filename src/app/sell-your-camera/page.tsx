@@ -59,16 +59,16 @@ export default function SellYourCameraPage() {
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: safeJsonLd(structuredData) }} />
       <div className="mx-auto max-w-7xl">
         <div className="grid gap-10 lg:grid-cols-[1fr_28rem]">
-          <div>
+          <div className="text-center">
             <p className="text-sm font-bold uppercase tracking-[0.28em] text-moss">Trade-in and buyback</p>
             <h1 className="mt-3 font-serif text-5xl font-bold text-ink">Sell your vintage camera to Shutterbug</h1>
-            <p className="mt-5 max-w-3xl text-lg leading-8 text-ink/70">
+            <p className="mx-auto mt-5 max-w-3xl text-lg leading-8 text-ink/70">
               We buy vintage digital cameras, film cameras, lenses, batteries, chargers, and camera gear. The best
               offers go to gear with clear photos, working batteries/chargers, and honest condition notes.
             </p>
             <div className="mt-10 grid gap-5 md:grid-cols-2">
               {steps.map(([title, copy]) => (
-                <div key={title} className="rounded-lg border border-ink/10 bg-white p-6 shadow-sm">
+                <div key={title} className="rounded-lg border border-ink/10 bg-white p-6 text-center shadow-sm">
                   <p className="font-serif text-2xl font-bold text-ink">{title}</p>
                   <p className="mt-3 text-sm leading-7 text-ink/68">{copy}</p>
                 </div>
@@ -123,9 +123,9 @@ export default function SellYourCameraPage() {
           </div>
         </div>
 
-        <div className="mt-14 rounded-lg border border-ink/10 bg-mint p-8">
+        <div className="mt-14 rounded-lg border border-ink/10 bg-mint p-8 text-center">
           <p className="text-sm font-bold uppercase tracking-[0.24em] text-moss">Brands and gear we buy</p>
-          <div className="mt-5 flex flex-wrap gap-2">
+          <div className="mt-5 flex flex-wrap justify-center gap-2">
             {wanted.map((item) => (
               <span key={item} className="rounded-full bg-white px-4 py-2 text-sm font-semibold text-ink/70 shadow-sm">
                 {item}
@@ -133,13 +133,13 @@ export default function SellYourCameraPage() {
             ))}
           </div>
         </div>
-        <div className="mt-8 border-t border-ink/10 pt-8">
+        <div className="mt-8 border-t border-ink/10 pt-8 text-center">
           <p className="font-serif text-2xl font-bold text-ink">Research before you sell</p>
-          <p className="mt-3 max-w-3xl text-sm leading-7 text-ink/70">
+          <p className="mx-auto mt-3 max-w-3xl text-sm leading-7 text-ink/70">
             Not sure what kind of camera you have? These pages can help you identify the format and understand the
             details that matter when describing older gear.
           </p>
-          <nav aria-label="Camera selling research" className="mt-5 flex flex-wrap gap-3">
+          <nav aria-label="Camera selling research" className="mt-5 flex flex-wrap justify-center gap-3">
             <Link href="/guides/how-to-buy-a-used-camera" className="font-semibold text-moss underline-offset-4 hover:underline">
               Used camera inspection guide
             </Link>

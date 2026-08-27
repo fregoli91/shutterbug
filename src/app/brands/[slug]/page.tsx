@@ -76,7 +76,7 @@ export default async function BrandPage({ params }: Props) {
     <section className="bg-cream px-4 py-14 sm:px-6 lg:px-8">
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: safeJsonLd(structuredData) }} />
       <div className="mx-auto max-w-7xl">
-        <header className="max-w-4xl">
+        <header className="mx-auto max-w-4xl text-center">
           <p className="text-sm font-bold uppercase tracking-[0.28em] text-moss">Used camera brand guide</p>
           <h1 className="mt-3 font-serif text-4xl font-bold tracking-tight text-ink sm:text-6xl">{heading}</h1>
           <p className="mt-5 text-lg leading-8 text-ink/70">{intro}</p>
@@ -96,15 +96,15 @@ export default async function BrandPage({ params }: Props) {
 
         {profile ? (
           <div className="mt-8 grid gap-6 lg:grid-cols-2">
-            <section className="rounded-lg border border-ink/10 bg-white p-6 shadow-sm">
+            <section className="rounded-lg border border-ink/10 bg-white p-6 text-center shadow-sm">
               <h2 className="font-serif text-2xl font-bold text-ink">What {brand.name} is known for</h2>
-              <ul className="mt-4 grid list-disc gap-3 pl-5 text-sm leading-6 text-ink/70">
+              <ul className="mt-4 grid list-disc gap-3 pl-5 text-left text-sm leading-6 text-ink/70">
                 {profile.knownFor.map((item) => <li key={item}>{item}</li>)}
               </ul>
             </section>
-            <section className="rounded-lg border border-ink/10 bg-mint p-6">
+            <section className="rounded-lg border border-ink/10 bg-mint p-6 text-center">
               <h2 className="font-serif text-2xl font-bold text-ink">Used {brand.name} buying notes</h2>
-              <ul className="mt-4 grid list-disc gap-3 pl-5 text-sm leading-6 text-ink/70">
+              <ul className="mt-4 grid list-disc gap-3 pl-5 text-left text-sm leading-6 text-ink/70">
                 {profile.buyingAdvice.map((item) => <li key={item}>{item}</li>)}
               </ul>
             </section>
@@ -112,7 +112,7 @@ export default async function BrandPage({ params }: Props) {
         ) : null}
 
         {profile ? (
-          <nav className="mt-6 flex flex-wrap gap-2" aria-label={`Explore ${brand.name}`}>
+          <nav className="mt-6 flex flex-wrap justify-center gap-2" aria-label={`Explore ${brand.name}`}>
             {profile.links.map((link) => (
               <Link key={link.href} href={link.href} className="rounded-full border border-ink/10 bg-white px-4 py-2 text-sm font-semibold text-ink/70 shadow-sm transition hover:border-moss/40 hover:text-moss">
                 {link.label}
@@ -121,7 +121,7 @@ export default async function BrandPage({ params }: Props) {
           </nav>
         ) : null}
 
-        <div className="mt-8 flex flex-col gap-5 rounded-lg border border-ink/10 bg-white p-5 shadow-sm sm:flex-row sm:items-center sm:justify-between">
+        <div className="mt-8 flex flex-col items-center gap-5 rounded-lg border border-ink/10 bg-white p-5 text-center shadow-sm">
           <div className="max-w-3xl">
             <p className="font-serif text-2xl font-bold text-ink">
               {brand.products.length ? 'Current Shutterbug listings' : 'Looking for this brand?'}
@@ -132,7 +132,7 @@ export default async function BrandPage({ params }: Props) {
                 : 'Used inventory changes as individual cameras arrive. Send us the model name and we can help with a restock question or a camera you want to sell.'}
             </p>
           </div>
-          <div className="flex shrink-0 flex-col gap-2 sm:min-w-48">
+          <div className="flex w-full max-w-xl flex-col gap-2 sm:flex-row">
             {brand.products.length ? (
               <a href="#current-listings" className="inline-flex min-h-11 items-center justify-center rounded-full bg-forest px-5 text-sm font-semibold text-white transition hover:bg-moss">
                 Browse current listings
@@ -155,9 +155,9 @@ export default async function BrandPage({ params }: Props) {
             ))}
           </div>
         ) : (
-          <div className="mt-12 rounded-lg border border-ink/10 bg-white p-8 shadow-sm">
+          <div className="mt-12 rounded-lg border border-ink/10 bg-white p-8 text-center shadow-sm">
             <p className="font-serif text-2xl font-bold text-ink">No active {brand.name} listings yet</p>
-            <p className="mt-3 max-w-3xl leading-7 text-ink/68">
+            <p className="mx-auto mt-3 max-w-3xl leading-7 text-ink/68">
               This guide remains useful while one-off inventory changes. Browse the related camera types above or contact Shutterbug about a specific {brand.name} model.
             </p>
             <Link href="/shop" className="mt-5 inline-flex min-h-11 items-center justify-center rounded-full border border-ink/15 bg-cream px-5 text-sm font-semibold text-ink transition hover:border-moss hover:text-moss">

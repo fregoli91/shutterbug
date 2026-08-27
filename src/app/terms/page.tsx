@@ -30,17 +30,17 @@ export default function TermsPage() {
   return (
     <section className="px-4 py-14 sm:px-6 lg:px-8">
       <div className="mx-auto max-w-5xl">
-        <p className="text-sm font-bold uppercase tracking-[0.28em] text-moss">Terms</p>
-        <h1 className="mt-3 font-serif text-5xl font-bold text-ink">Terms of service</h1>
-        <p className="mt-4 text-sm font-semibold text-ink/60">Last updated July 7, 2026</p>
-        <p className="mt-5 max-w-3xl text-lg leading-8 text-ink/72">
+        <p className="text-center text-sm font-bold uppercase tracking-[0.28em] text-moss">Terms</p>
+        <h1 className="mt-3 text-center font-serif text-5xl font-bold text-ink">Terms of service</h1>
+        <p className="mt-4 text-center text-sm font-semibold text-ink/60">Last updated July 7, 2026</p>
+        <p className="mx-auto mt-5 max-w-3xl text-center text-lg leading-8 text-ink/72">
           These terms explain the practical rules for using Shutterbug Camera Shop, buying used camera gear, and keeping
           account and order activity connected.
         </p>
 
         <div className="mt-8 grid gap-5 md:grid-cols-2">
           {termCards.map((card) => (
-            <article key={card.title} className="rounded-lg border border-ink/10 bg-white p-6 shadow-sm">
+            <article key={card.title} className="rounded-lg border border-ink/10 bg-white p-6 text-center shadow-sm">
               <p className="font-serif text-2xl font-bold text-ink">{card.title}</p>
               <p className="mt-3 text-sm leading-6 text-ink/68">{card.copy}</p>
             </article>
@@ -50,7 +50,7 @@ export default function TermsPage() {
         <div className="mt-8 grid gap-6 rounded-lg border border-ink/10 bg-cream p-6 shadow-soft">
           <TermsBlock title="Inventory and availability">
             <p>
-              Many Shutterbug items are quantity-one cameras or accessories. Adding an item to a cart does not guarantee
+              Many Shutterbug items are quantity-one cameras or accessories. Adding an item to your bag does not guarantee
               purchase until checkout is completed and payment is confirmed. If inventory changes unexpectedly,
               Shutterbug may cancel, refund, or contact the customer about next steps.
             </p>

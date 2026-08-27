@@ -54,18 +54,18 @@ export function CartPageClient() {
         const payload = (await response.json()) as CartValidationResponse | { error?: string };
 
         if (!response.ok) {
-          throw new Error('Cart could not be validated.');
+          throw new Error('Bag could not be validated.');
         }
 
         if (!isCartValidationResponse(payload)) {
-          throw new Error('Cart could not be validated.');
+          throw new Error('Bag could not be validated.');
         }
 
         if (!canceled) setValidation(payload);
       } catch {
         if (!canceled) {
           setValidation(null);
-          setError('Cart could not be validated against current inventory. Please refresh and try again.');
+          setError('Bag could not be validated against current inventory. Please refresh and try again.');
         }
       } finally {
         if (!canceled) setLoading(false);
@@ -82,7 +82,7 @@ export function CartPageClient() {
   if (!hydrated) {
     return (
       <div className="rounded-lg border border-ink/10 bg-cream p-8 text-center shadow-sm">
-        <h1 className="font-serif text-3xl font-bold text-ink">Loading your cart</h1>
+        <h1 className="font-serif text-3xl font-bold text-ink">Loading your bag</h1>
         <p className="mt-3 text-sm leading-6 text-ink/65">Checking the camera gear saved on this device.</p>
       </div>
     );
@@ -91,7 +91,7 @@ export function CartPageClient() {
   if (items.length === 0) {
     return (
       <div className="rounded-lg border border-ink/10 bg-cream p-8 text-center shadow-sm">
-        <h1 className="font-serif text-3xl font-bold text-ink">Your cart is empty</h1>
+        <h1 className="font-serif text-3xl font-bold text-ink">Your bag is empty</h1>
         <p className="mt-3 text-sm leading-6 text-ink/65">Browse tested used cameras and add one when it feels right.</p>
         <Link href="/shop" className="mt-6 inline-flex min-h-12 items-center rounded-full bg-forest px-6 text-sm font-semibold text-white">
           Shop cameras
@@ -176,7 +176,7 @@ export function CartPageClient() {
 
       <aside className="grid content-start gap-4 rounded-lg border border-ink/10 bg-cream p-5 shadow-sm">
         <div>
-          <p className="text-sm font-bold uppercase tracking-[0.18em] text-moss">Cart summary</p>
+          <p className="text-sm font-bold uppercase tracking-[0.18em] text-moss">Bag summary</p>
           <p className="mt-3 flex items-center justify-between text-sm text-ink/70">
             Validated subtotal{' '}
             <span className="font-bold text-ink">{loading ? 'Checking...' : formatCents(subtotalCents)}</span>
@@ -221,7 +221,7 @@ export function CartPageClient() {
           </p>
         )}
         <button type="button" onClick={clearCart} className="text-sm font-semibold text-moss">
-          Clear cart
+          Clear bag
         </button>
         <div className="grid gap-2 border-t border-ink/10 pt-4 text-sm text-ink/65">
           <p>

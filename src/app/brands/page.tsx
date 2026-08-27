@@ -40,7 +40,7 @@ export default async function BrandsPage() {
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: safeJsonLd(structuredData) }} />
       <div className="mx-auto max-w-7xl">
         <div className="grid gap-8">
-          <div className="max-w-3xl">
+          <div className="mx-auto max-w-3xl text-center">
             <p className="text-sm font-bold uppercase tracking-[0.28em] text-moss">Shop by brand</p>
             <h1 className="mt-3 font-serif text-5xl font-bold tracking-tight text-ink sm:text-6xl">
               Used cameras by brand.
@@ -59,9 +59,9 @@ export default async function BrandsPage() {
               sizes="(min-width: 1280px) 80rem, 100vw"
               className="aspect-[16/9] w-full bg-sand object-cover object-center"
             />
-            <div className="p-5 sm:p-6">
+            <div className="p-5 text-center sm:p-6">
               <p className="font-serif text-2xl font-bold text-ink">Camera-first browsing</p>
-              <p className="mt-3 max-w-3xl text-sm leading-6 text-ink/68">
+              <p className="mx-auto mt-3 max-w-3xl text-sm leading-6 text-ink/68">
                 Brand pages stay useful even when a one-off item sells out, so shoppers can find similar gear or ask
                 Shutterbug to source a specific model.
               </p>
@@ -74,10 +74,10 @@ export default async function BrandsPage() {
             <Link
               key={brand.slug}
               href={`/brands/${brand.slug}`}
-              className="rounded-lg border border-ink/10 bg-white p-5 shadow-sm transition hover:-translate-y-1 hover:border-moss/35 hover:shadow-soft"
+              className="rounded-lg border border-ink/10 bg-white p-5 text-center shadow-sm transition hover:-translate-y-1 hover:border-moss/35 hover:shadow-soft"
             >
-              <div className="flex items-start justify-between gap-4">
-                <div>
+              <div className="flex flex-col items-center gap-4">
+                <div className="max-w-sm">
                   <p className="font-serif text-2xl font-bold text-ink">{brand.name}</p>
                   <p className="mt-2 line-clamp-3 text-sm leading-6 text-ink/66">{brand.description}</p>
                 </div>

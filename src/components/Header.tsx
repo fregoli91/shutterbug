@@ -81,8 +81,8 @@ export async function Header() {
             width={288}
             height={64}
             priority
-            sizes="18rem"
-            className="h-16 w-72 object-contain object-left"
+            sizes="15rem"
+            className="h-14 w-60 object-contain object-left"
           />
         </Link>
 

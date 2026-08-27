@@ -39,7 +39,7 @@ export default function AmazonPage() {
     <main className="px-4 py-12 sm:px-6 sm:py-16 lg:px-8">
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: safeJsonLd(structuredData) }} />
       <div className="mx-auto max-w-6xl">
-        <header className="max-w-3xl">
+        <header className="mx-auto max-w-3xl text-center">
           <p className="text-sm font-bold uppercase tracking-[0.24em] text-moss">Another way to shop Shutterbug</p>
           <h1 className="mt-3 font-serif text-4xl font-bold text-ink sm:text-6xl">Shop Shutterbug on Amazon.</h1>
           <p className="mt-5 text-lg leading-8 text-ink/70">
@@ -59,7 +59,7 @@ export default function AmazonPage() {
         />
 
         <div className="mt-8 grid gap-6 md:grid-cols-2">
-          <section className="rounded-lg border border-ink/10 bg-white p-6 shadow-sm">
+          <section className="rounded-lg border border-ink/10 bg-white p-6 text-center shadow-sm">
             <h2 className="font-serif text-2xl font-bold text-ink">Visit our Amazon storefront</h2>
             <p className="mt-3 text-sm leading-7 text-ink/68">
               Use the verified storefront link below to view Shutterbug listings available through Amazon.
@@ -71,7 +71,7 @@ export default function AmazonPage() {
               </a>
             ) : null}
           </section>
-          <section className="rounded-lg border border-ink/10 bg-mint p-6">
+          <section className="rounded-lg border border-ink/10 bg-mint p-6 text-center">
             <h2 className="font-serif text-2xl font-bold text-ink">Shop directly with Shutterbug</h2>
             <p className="mt-3 text-sm leading-7 text-ink/68">
               Browse current used cameras, printers, lenses, and accessories with exact-item availability and clear

@@ -30,17 +30,17 @@ export default function PrivacyPage() {
   return (
     <section className="px-4 py-14 sm:px-6 lg:px-8">
       <div className="mx-auto max-w-5xl">
-        <p className="text-sm font-bold uppercase tracking-[0.28em] text-moss">Privacy</p>
-        <h1 className="mt-3 font-serif text-5xl font-bold text-ink">Privacy policy</h1>
-        <p className="mt-4 text-sm font-semibold text-ink/60">Last updated July 7, 2026</p>
-        <p className="mt-5 max-w-3xl text-lg leading-8 text-ink/72">
+        <p className="text-center text-sm font-bold uppercase tracking-[0.28em] text-moss">Privacy</p>
+        <h1 className="mt-3 text-center font-serif text-5xl font-bold text-ink">Privacy policy</h1>
+        <p className="mt-4 text-center text-sm font-semibold text-ink/60">Last updated July 7, 2026</p>
+        <p className="mx-auto mt-5 max-w-3xl text-center text-lg leading-8 text-ink/72">
           Shutterbug Camera Shop uses customer information to operate the store, process orders, support customers, and
           keep account features connected. This page summarizes the practical privacy approach for the site.
         </p>
 
         <div className="mt-8 grid gap-5 md:grid-cols-2">
           {dataSections.map((section) => (
-            <article key={section.title} className="rounded-lg border border-ink/10 bg-white p-6 shadow-sm">
+            <article key={section.title} className="rounded-lg border border-ink/10 bg-white p-6 text-center shadow-sm">
               <p className="font-serif text-2xl font-bold text-ink">{section.title}</p>
               <p className="mt-3 text-sm leading-6 text-ink/68">{section.copy}</p>
             </article>
@@ -80,7 +80,7 @@ export default function PrivacyPage() {
           </PolicyBlock>
         </div>
 
-        <div className="mt-8 flex flex-wrap gap-3">
+        <div className="mt-8 flex flex-wrap justify-center gap-3">
           <Link href="/account/settings" className="inline-flex min-h-11 items-center rounded-full bg-forest px-5 text-sm font-semibold text-white transition hover:bg-moss">
             Account settings
           </Link>

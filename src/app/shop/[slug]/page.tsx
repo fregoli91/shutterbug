@@ -61,7 +61,7 @@ export default async function ProductPage({ params }: Props) {
   );
   const galleryImages = Array.from(new Set([product.heroImage, ...product.gallery]));
   const purchasable = isPurchasable(product);
-  const primaryActionLabel = purchasable ? 'Add to cart' : product.status === 'active' ? 'Contact to buy' : 'Ask about restock';
+  const primaryActionLabel = purchasable ? 'Add to bag' : product.status === 'active' ? 'Contact to buy' : 'Ask about restock';
   const primaryActionHref = purchasable ? '/cart' : '/contact';
   const researchLinks = [
     { label: `More ${product.brand} cameras`, href: `/brands/${getBrandSlug(product.brand)}` },

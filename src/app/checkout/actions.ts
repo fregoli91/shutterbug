@@ -115,7 +115,7 @@ export async function createPendingOrderAction(formData: FormData) {
         await releaseExpiredReservations(tx);
         const validation = await validateCartLines(cartItems, { client: tx });
         if (!validation.items.length || validation.hasBlockingIssue) {
-          throw new InventoryReservationError('Cart is not purchasable.');
+          throw new InventoryReservationError('Bag is not purchasable.');
         }
 
         await reserveValidatedItems(tx, validation.items);

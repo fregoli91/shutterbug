@@ -15,9 +15,9 @@ type Props = {
 };
 
 const errorMessages: Record<string, string> = {
-  empty: 'Your cart is empty. Add a camera before checkout.',
+  empty: 'Your bag is empty. Add a camera before checkout.',
   missing: 'Enter your contact and shipping details.',
-  inventory: 'One or more cart items is no longer available in that quantity.',
+  inventory: 'One or more bag items is no longer available in that quantity.',
   config: 'Checkout needs a configured database before orders can be created.',
   stripe: 'Stripe Checkout is not configured yet. Please contact Shutterbug support.'
 };
@@ -51,14 +51,14 @@ export function CheckoutFormClient({ defaultName = '', defaultEmail = '', error 
         const payload = (await response.json()) as CartValidationResponse | { error?: string };
 
         if (!response.ok || !isCartValidationResponse(payload)) {
-          throw new Error('Cart validation failed.');
+          throw new Error('Bag validation failed.');
         }
 
         if (!canceled) setValidation(payload);
       } catch {
         if (!canceled) {
           setValidation(null);
-          setValidationError('Cart could not be validated. Please return to the cart and try again.');
+          setValidationError('Bag could not be validated. Please return to your bag and try again.');
         }
       } finally {
         if (!canceled) setLoading(false);
@@ -79,7 +79,7 @@ export function CheckoutFormClient({ defaultName = '', defaultEmail = '', error 
     return (
       <div className="rounded-lg border border-ink/10 bg-white p-8 text-center shadow-sm">
         <p className="font-serif text-3xl font-bold text-ink">Loading checkout</p>
-        <p className="mt-3 text-sm leading-6 text-ink/65">Checking the cart saved on this device.</p>
+        <p className="mt-3 text-sm leading-6 text-ink/65">Checking the bag saved on this device.</p>
       </div>
     );
   }
@@ -87,7 +87,7 @@ export function CheckoutFormClient({ defaultName = '', defaultEmail = '', error 
   if (!items.length) {
     return (
       <div className="rounded-lg border border-ink/10 bg-white p-8 text-center shadow-sm">
-        <p className="font-serif text-3xl font-bold text-ink">Your cart is empty</p>
+        <p className="font-serif text-3xl font-bold text-ink">Your bag is empty</p>
         <p className="mt-3 text-sm leading-6 text-ink/65">Add a tested camera before starting checkout.</p>
         <Link href="/shop" className="mt-6 inline-flex min-h-12 items-center rounded-full bg-forest px-6 text-sm font-semibold text-white">
           Shop cameras
@@ -106,7 +106,7 @@ export function CheckoutFormClient({ defaultName = '', defaultEmail = '', error 
         <p className="text-sm font-bold uppercase tracking-[0.2em] text-moss">Shipping contact</p>
         <h2 className="mt-3 font-serif text-3xl font-bold text-ink">Where should this order go?</h2>
         <p className="mt-3 text-sm leading-6 text-ink/65">
-          We will validate the cart, create a pending order, then send you to Stripe for secure payment.
+          We will validate the bag, create a pending order, then send you to Stripe for secure payment.
         </p>
 
         {error && errorMessages[error] ? (
@@ -159,7 +159,7 @@ export function CheckoutFormClient({ defaultName = '', defaultEmail = '', error 
               </div>
             </div>
           ))}
-          {!validation && loading ? <p className="rounded-lg bg-cream p-3 text-sm text-ink/65">Validating cart...</p> : null}
+          {!validation && loading ? <p className="rounded-lg bg-cream p-3 text-sm text-ink/65">Validating bag...</p> : null}
         </div>
 
         <div className="border-t border-ink/10 pt-4">

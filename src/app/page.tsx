@@ -71,7 +71,7 @@ const accountBenefits = [
 const quickLinks = [
   ['Shop all cameras', '/shop'],
   ['Liked products', '/account/likes'],
-  ['View cart', '/cart'],
+  ['View bag', '/cart'],
   ['My orders', '/account/orders'],
   ['Sell your camera', '/sell-your-camera']
 ];
@@ -137,14 +137,14 @@ function LoggedOutHome({
               sizes="(min-width: 1024px) 58vw, 100vw"
               className="h-full w-full object-cover object-center transition duration-500 group-hover:scale-[1.02]"
             />
-            <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-ink/85 via-ink/35 to-transparent p-5 text-white">
+            <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-ink/85 via-ink/35 to-transparent p-5 text-center text-white">
               <p className="text-xs font-bold uppercase tracking-[0.22em] text-cream">Fresh finds</p>
               <h2 className="mt-2 font-serif text-3xl font-bold">Browse the Shutterbug shelf</h2>
             </div>
           </Link>
 
           <div className="grid content-start gap-3">
-            <div className="flex items-end justify-between gap-4">
+            <div className="flex flex-col items-center gap-2 text-center">
               <div>
                 <p className="text-xs font-bold uppercase tracking-[0.2em] text-moss sm:text-sm">Just added</p>
                 <h2 className="mt-1 font-serif text-2xl font-bold text-ink">Fresh Camera Finds</h2>
@@ -200,10 +200,10 @@ function LoggedOutHome({
 
       <section className="bg-cream px-4 py-12 sm:px-6 sm:py-14 lg:px-8">
         <div className="mx-auto max-w-7xl">
-          <div className="flex flex-col justify-between gap-4 sm:flex-row sm:items-end">
+          <div className="flex flex-col items-center gap-4 text-center">
             <div>
-              <p className="text-sm font-bold uppercase tracking-[0.24em] text-moss">Shop by category</p>
-              <h2 className="mt-3 font-serif text-3xl font-bold text-ink sm:text-4xl">Start with the gear you want.</h2>
+              <p className="text-center text-sm font-bold uppercase tracking-[0.24em] text-moss">Shop by category</p>
+              <h2 className="mt-3 text-center font-serif text-3xl font-bold text-ink sm:text-4xl">Start with the gear you want.</h2>
             </div>
             <Link href="/shop" className="font-semibold text-moss hover:text-ink">
               Shop all cameras &rarr;
@@ -224,7 +224,7 @@ function LoggedOutHome({
                   sizes="(min-width: 1024px) 20vw, (min-width: 640px) 50vw, 100vw"
                   className="aspect-[4/3] w-full bg-sand object-cover object-center transition duration-500 group-hover:scale-[1.03]"
                 />
-                <div className="p-4">
+                <div className="p-4 text-center">
                   <p className="font-serif text-xl font-bold text-ink">{card.title}</p>
                   <p className="mt-2 line-clamp-2 text-sm leading-6 text-ink/65">{card.copy}</p>
                 </div>
@@ -234,6 +234,7 @@ function LoggedOutHome({
         </div>
       </section>
 
+      <SummerTradeInBanner />
       <PrinterCallout />
       <CategoryPills title="Popular brands" showPopularBrandsImage />
       <TestingProcessCallout />
@@ -273,8 +274,8 @@ function HomepageShopIntro({ headingLevel = 'h2' }: { headingLevel?: 'h1' | 'h2'
 
   return (
     <section className="bg-cream px-4 py-5 sm:px-6 sm:py-7 lg:px-8">
-      <div className="mx-auto flex max-w-7xl flex-col gap-4 border-y border-forest/15 py-5 sm:flex-row sm:items-end sm:justify-between sm:gap-8 sm:py-6">
-        <div className="max-w-2xl">
+      <div className="mx-auto flex max-w-7xl flex-col items-center gap-4 border-y border-forest/15 py-5 text-center sm:gap-5 sm:py-6">
+        <div className="mx-auto max-w-2xl">
           <p className="text-[0.68rem] font-bold uppercase tracking-[0.2em] text-moss">Shutterbug Camera Shop</p>
           <Heading className="mt-1.5 font-serif text-2xl font-bold leading-tight text-ink sm:text-3xl">
             Tested cameras, ready for their next story.
@@ -286,7 +287,7 @@ function HomepageShopIntro({ headingLevel = 'h2' }: { headingLevel?: 'h1' | 'h2'
 
         <nav
           aria-label="Popular camera collections"
-          className="flex flex-wrap items-center gap-x-4 gap-y-1 text-sm font-semibold text-moss"
+          className="flex flex-wrap items-center justify-center gap-x-4 gap-y-1 text-sm font-semibold text-moss"
         >
           <Link href="/shop" className="inline-flex min-h-10 items-center gap-1 py-2 transition hover:text-ink">
             Shop all <ArrowRightIcon />
@@ -334,15 +335,15 @@ function LoggedInHome({
       <section className="bg-cream px-4 pb-10 pt-8 sm:px-6 sm:pb-14 lg:px-8 lg:pt-12">
         <div className="mx-auto grid max-w-7xl gap-8 lg:grid-cols-[1fr_24rem] lg:items-start">
           <div>
-            <p className="text-sm font-bold uppercase tracking-[0.28em] text-moss">Welcome back</p>
-            <h1 className="mt-4 font-serif text-5xl font-bold tracking-tight text-ink sm:text-7xl">
+            <p className="text-center text-sm font-bold uppercase tracking-[0.28em] text-moss">Welcome back</p>
+            <h1 className="mt-4 text-center font-serif text-5xl font-bold tracking-tight text-ink sm:text-7xl">
               Find your next camera.
             </h1>
-            <p className="mt-5 max-w-2xl text-lg leading-8 text-ink/72">
+            <p className="mx-auto mt-5 max-w-2xl text-center text-lg leading-8 text-ink/72">
               Browse new arrivals, tested vintage digitals, film cameras, and camera gear picked for Shutterbug
               customers.
             </p>
-            <div className="mt-8 flex flex-col gap-3 sm:flex-row">
+            <div className="mt-8 flex flex-col justify-center gap-3 sm:flex-row">
               <Link
                 href="/shop?sort=newest"
                 className="rounded-full bg-forest px-7 py-3 text-center font-semibold text-white shadow-sm transition hover:bg-moss"
@@ -358,8 +359,8 @@ function LoggedInHome({
             </div>
           </div>
 
-          <div className="rounded-lg border border-ink/10 bg-white p-5 shadow-sm">
-            <div className="flex items-center gap-4">
+          <div className="rounded-lg border border-ink/10 bg-white p-5 text-center shadow-sm">
+            <div className="flex items-center justify-center gap-4">
               <Image
                 src="/shutterbug-basic-character.png"
                 alt=""
@@ -420,9 +421,9 @@ function LoggedInHome({
             className="aspect-square w-full max-w-44 rounded-lg bg-sand object-cover object-center"
           />
           <div>
-            <p className="text-sm font-bold uppercase tracking-[0.24em] text-moss">Trade in</p>
-            <h2 className="mt-2 font-serif text-3xl font-bold text-ink">Have a camera you are ready to move on from?</h2>
-            <p className="mt-3 max-w-3xl leading-7 text-ink/68">
+            <p className="text-center text-sm font-bold uppercase tracking-[0.24em] text-moss">Trade in</p>
+            <h2 className="mt-2 text-center font-serif text-3xl font-bold text-ink">Have a camera you are ready to move on from?</h2>
+            <p className="mx-auto mt-3 max-w-3xl text-center leading-7 text-ink/68">
               Send us the model, photos, and condition details. We will review it for a buyout or trade-in path.
             </p>
           </div>
@@ -437,6 +438,7 @@ function LoggedInHome({
 
       <FreshCameraFindsBanner />
       <CategoryGrid featuredCategories={featuredCategories} />
+      <SummerTradeInBanner />
       <PrinterCallout />
       <TrustCards />
       <JournalCallout />
@@ -493,13 +495,13 @@ function DirectStoreCallout() {
         ) : (
           <div className="overflow-hidden rounded-lg border border-ink/10 bg-cream shadow-sm lg:order-2">{banner}</div>
         )}
-        <div className="lg:order-1">
+        <div className="text-center lg:order-1">
           <p className="font-serif text-2xl font-bold text-ink">Shop Shutterbug direct or at Amazon.com</p>
-          <p className="mt-2 max-w-3xl text-sm leading-6 text-ink/68">
+          <p className="mx-auto mt-2 max-w-3xl text-sm leading-6 text-ink/68">
             Buy direct from Shutterbug Camera Shop here, with select camera listings also available through our
             Amazon.com store for shoppers who prefer that checkout experience.
           </p>
-          <div className="mt-5 flex flex-col gap-3 sm:flex-row">
+          <div className="mt-5 flex flex-col justify-center gap-3 sm:flex-row">
             <Link
               href="/shop"
               className="inline-flex min-h-11 items-center justify-center rounded-full border border-ink/15 bg-cream px-5 text-sm font-semibold text-ink transition hover:border-moss hover:text-moss"
@@ -534,7 +536,7 @@ function CategoryPills({ title, showPopularBrandsImage = false }: { title: strin
   return (
     <section className="bg-cream px-4 py-14 sm:px-6 lg:px-8">
       <div className="mx-auto max-w-7xl">
-        <p className="text-sm font-bold uppercase tracking-[0.24em] text-moss">{title}</p>
+        <p className="text-center text-sm font-bold uppercase tracking-[0.24em] text-moss">{title}</p>
         {showPopularBrandsImage ? (
           <Link
             href="/brands"
@@ -550,7 +552,7 @@ function CategoryPills({ title, showPopularBrandsImage = false }: { title: strin
             />
           </Link>
         ) : null}
-        <div className="mt-5 flex flex-wrap gap-2">
+        <div className="mt-5 flex flex-wrap justify-center gap-2">
           {brandLinks.map(([label, href]) => (
             <Link
               key={href}
@@ -588,7 +590,7 @@ function CategoryGrid({ featuredCategories }: { featuredCategories: Category[] }
             <Link
               key={category.slug}
               href={`/categories/${category.slug}`}
-              className="rounded-lg border border-ink/10 bg-white p-6 shadow-sm transition hover:-translate-y-1 hover:border-moss/30 hover:shadow-soft"
+              className="rounded-lg border border-ink/10 bg-white p-6 text-center shadow-sm transition hover:-translate-y-1 hover:border-moss/30 hover:shadow-soft"
             >
               <p className="font-serif text-2xl font-bold text-ink">{category.name}</p>
               <p className="mt-3 text-sm leading-6 text-ink/65">{category.description}</p>
@@ -603,9 +605,9 @@ function CategoryGrid({ featuredCategories }: { featuredCategories: Category[] }
 function SignupCallout() {
   return (
     <section className="bg-cream px-4 py-12 sm:px-6 sm:py-16 lg:px-8">
-      <div className="mx-auto max-w-7xl rounded-lg border border-ink/10 bg-white p-6 shadow-sm lg:p-8">
+      <div className="mx-auto max-w-7xl rounded-lg border border-ink/10 bg-white p-6 text-center shadow-sm lg:p-8">
         <div>
-          <p className="text-sm font-bold uppercase tracking-[0.24em] text-moss">Become a Shutterbug customer</p>
+          <p className="text-center text-sm font-bold uppercase tracking-[0.24em] text-moss">Become a Shutterbug customer</p>
           <h2 className="mt-3 font-serif text-4xl font-bold text-ink">Find a vintage camera worth keeping.</h2>
           <Image
             src="/shutterbug-customer-account-hero.png"
@@ -615,12 +617,12 @@ function SignupCallout() {
             sizes="(min-width: 1280px) 72rem, 100vw"
             className="mt-6 aspect-[4/3] w-full rounded-lg bg-sand object-cover object-center sm:aspect-[16/9]"
           />
-          <p className="mt-6 max-w-3xl leading-7 text-ink/70">
+          <p className="mx-auto mt-6 max-w-3xl leading-7 text-ink/70">
             Create your account to shop tested digital and film cameras, track your orders, and keep every Shutterbug
             purchase connected in one place.
           </p>
           <p className="mt-5 text-sm font-bold uppercase tracking-[0.18em] text-moss">Why create an account?</p>
-          <div className="mt-5 flex flex-wrap gap-2">
+          <div className="mt-5 flex flex-wrap justify-center gap-2">
             {accountBenefits.map((benefit) => (
               <span
                 key={benefit}
@@ -630,7 +632,7 @@ function SignupCallout() {
               </span>
             ))}
           </div>
-          <div className="mt-7 flex flex-col gap-3 sm:flex-row">
+          <div className="mt-7 flex flex-col justify-center gap-3 sm:flex-row">
             <Link
               href="/signup"
               className="inline-flex min-h-11 items-center justify-center rounded-full bg-forest px-6 text-sm font-semibold text-white transition hover:bg-moss"
@@ -650,15 +652,35 @@ function SignupCallout() {
   );
 }
 
+function SummerTradeInBanner() {
+  return (
+    <section className="bg-cream px-4 py-8 sm:px-6 sm:py-10 lg:px-8">
+      <Link
+        href="/sell-your-camera"
+        aria-label="Start a summer camera trade-in and get 10 percent extra store credit"
+        className="group mx-auto block max-w-7xl overflow-hidden rounded-lg border border-ink/10 bg-white shadow-sm transition hover:-translate-y-0.5 hover:border-moss/30 hover:shadow-soft focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-moss focus-visible:ring-offset-2 focus-visible:ring-offset-cream"
+      >
+        <Image
+          src="/shutterbug-summer-trade-in-bonus.png"
+          alt="Shutterbug Camera Shop summer trade-in bonus offering 10 percent extra store credit"
+          width={2172}
+          height={724}
+          sizes="(min-width: 1280px) 1280px, 100vw"
+          className="h-auto w-full bg-cream object-contain"
+        />
+      </Link>
+    </section>
+  );
+}
 function PrinterCallout() {
   const printerBrands = ['Canon', 'Brother', 'HP', 'Lexmark'];
 
   return (
     <section className="bg-cream px-4 py-12 sm:px-6 sm:py-14 lg:px-8">
       <div className="mx-auto grid max-w-7xl overflow-hidden rounded-lg border border-ink/10 bg-white shadow-sm lg:grid-cols-[minmax(0,1fr)_minmax(22rem,0.8fr)]">
-        <div className="p-5 sm:p-8 lg:p-10">
-          <p className="text-sm font-bold uppercase tracking-[0.24em] text-moss">More than cameras</p>
-          <h2 className="mt-3 max-w-3xl font-serif text-3xl font-bold text-ink sm:text-4xl">
+        <div className="p-5 text-center sm:p-8 lg:p-10">
+          <p className="text-center text-sm font-bold uppercase tracking-[0.24em] text-moss">More than cameras</p>
+          <h2 className="mx-auto mt-3 max-w-3xl text-center font-serif text-3xl font-bold text-ink sm:text-4xl">
             Used printers, tested and packed with care.
           </h2>
           <Link
@@ -675,11 +697,11 @@ function PrinterCallout() {
               className="h-auto w-full bg-sand object-contain object-center"
             />
           </Link>
-          <p className="mt-4 max-w-3xl leading-7 text-ink/70">
+          <p className="mx-auto mt-4 max-w-3xl leading-7 text-ink/70">
             Printers are one of our strongest categories. Browse used Canon, Brother, HP, and Lexmark printers with
             clear condition notes, included accessories, and honest testing details.
           </p>
-          <div className="mt-6 flex flex-wrap gap-2">
+          <div className="mt-6 flex flex-wrap justify-center gap-2">
             {printerBrands.map((brand) => (
               <Link
                 key={brand}
@@ -739,11 +761,11 @@ function FeaturedProducts({
   return (
     <section className="bg-cream px-4 py-12 sm:px-6 sm:py-16 lg:px-8">
       <div className="mx-auto max-w-7xl">
-        <div className="flex flex-col justify-between gap-4 sm:flex-row sm:items-end">
+        <div className="flex flex-col items-center gap-4 text-center">
           <div>
-            <p className="text-sm font-bold uppercase tracking-[0.28em] text-moss">{eyebrow}</p>
-            <h2 className="mt-3 font-serif text-3xl font-bold text-ink sm:text-4xl">{title}</h2>
-            <p className="mt-3 max-w-2xl leading-7 text-ink/68">{intro}</p>
+            <p className="text-center text-sm font-bold uppercase tracking-[0.28em] text-moss">{eyebrow}</p>
+            <h2 className="mt-3 text-center font-serif text-3xl font-bold text-ink sm:text-4xl">{title}</h2>
+            <p className="mx-auto mt-3 max-w-2xl leading-7 text-ink/68">{intro}</p>
           </div>
           <Link href="/shop" className="font-semibold text-moss hover:text-ink">
             View all products &rarr;
@@ -786,9 +808,9 @@ function TrustCards() {
           sizes="(min-width: 1024px) 58vw, 100vw"
           className="aspect-[4/3] w-full rounded-lg border border-ink/10 bg-cream object-contain object-center shadow-sm sm:aspect-[16/9]"
         />
-        <div className="rounded-lg border border-ink/10 bg-white p-6 shadow-sm">
-          <p className="text-sm font-bold uppercase tracking-[0.24em] text-moss">Buyer confidence</p>
-          <h2 className="mt-3 font-serif text-3xl font-bold text-ink">Trusted cameras, honest service.</h2>
+        <div className="rounded-lg border border-ink/10 bg-white p-6 text-center shadow-sm">
+          <p className="text-center text-sm font-bold uppercase tracking-[0.24em] text-moss">Buyer confidence</p>
+          <h2 className="mt-3 text-center font-serif text-3xl font-bold text-ink">Trusted cameras, honest service.</h2>
           <div className="mt-5 grid gap-2">
             {['Secure shopping', 'Tested cameras', 'Honest service', 'Careful handling'].map((item) => (
               <span key={item} className="rounded-full bg-cream px-4 py-2 text-sm font-semibold text-ink/72">
@@ -826,14 +848,14 @@ function JournalCallout() {
           />
         </Link>
         <div>
-          <p className="text-sm font-bold uppercase tracking-[0.24em] text-moss">From the Shutterbug Journal</p>
-          <h2 className="mt-3 font-serif text-3xl font-bold text-ink sm:text-4xl">
+          <p className="text-center text-sm font-bold uppercase tracking-[0.24em] text-moss">From the Shutterbug Journal</p>
+          <h2 className="mt-3 text-center font-serif text-3xl font-bold text-ink sm:text-4xl">
             Camera stories and practical buying guides.
           </h2>
-          <p className="mt-4 max-w-2xl leading-7 text-ink/70">
+          <p className="mx-auto mt-4 max-w-2xl leading-7 text-ink/70">
             Explore vintage camera history, model guides, testing notes, and straightforward advice for choosing older gear.
           </p>
-          <div className="mt-6 flex flex-col gap-3 sm:flex-row">
+          <div className="mt-6 flex flex-col justify-center gap-3 sm:flex-row">
             <Link
               href="/blog"
               className="inline-flex min-h-11 items-center justify-center rounded-full bg-forest px-6 text-sm font-semibold text-white transition hover:bg-moss"
@@ -857,8 +879,8 @@ function TestingProcessCallout() {
     <section className="bg-mint px-4 py-12 sm:px-6 sm:py-16 lg:px-8">
       <div className="mx-auto grid max-w-7xl gap-5 rounded-lg border border-ink/10 bg-white p-5 shadow-sm sm:gap-8 sm:p-6 lg:grid-cols-[minmax(0,1fr)_minmax(22rem,0.95fr)] lg:items-center lg:p-8">
         <div>
-          <p className="text-sm font-bold uppercase tracking-[0.24em] text-moss">Testing process preview</p>
-          <h2 className="mt-3 font-serif text-3xl font-bold text-ink sm:text-4xl">Know what works before it arrives.</h2>
+          <p className="text-center text-sm font-bold uppercase tracking-[0.24em] text-moss">Testing process preview</p>
+          <h2 className="mt-3 text-center font-serif text-3xl font-bold text-ink sm:text-4xl">Know what works before it arrives.</h2>
           <Link
             href="/testing-process"
             className="group mt-6 block overflow-hidden rounded-lg border border-ink/10 bg-cream shadow-sm lg:hidden"
@@ -872,7 +894,7 @@ function TestingProcessCallout() {
               className="h-auto w-full bg-cream object-contain"
             />
           </Link>
-          <p className="mt-4 max-w-3xl leading-7 text-ink/70">See how each camera is checked before it is listed.</p>
+          <p className="mx-auto mt-4 max-w-3xl leading-7 text-ink/70">See how each camera is checked before it is listed.</p>
           <Link
             href="/testing-process"
             className="mt-6 inline-flex min-h-11 items-center justify-center rounded-full bg-forest px-7 text-center font-semibold text-white transition hover:bg-moss"

@@ -35,7 +35,7 @@ export function AddToCartButton({
     );
   }
 
-  const label = status === 'validating' ? 'Checking...' : status === 'added' ? 'Added to cart' : 'Add to cart';
+  const label = status === 'validating' ? 'Checking...' : status === 'added' ? 'Added to bag' : 'Add to bag';
 
   return (
     <div className="grid gap-2">

@@ -11,12 +11,12 @@ export default function AboutPage() {
     <section className="px-4 py-14 sm:px-6 lg:px-8">
       <div className="mx-auto max-w-7xl">
         <div className="grid gap-8 lg:grid-cols-[1fr_30rem] lg:items-center">
-          <div>
+          <div className="text-center">
             <p className="text-sm font-bold uppercase tracking-[0.28em] text-moss">About</p>
             <h1 className="mt-3 font-serif text-5xl font-bold text-ink">
               Helping camera buyers since 2012
             </h1>
-            <div className="mt-8 grid gap-6 text-lg leading-8 text-ink/72">
+            <div className="mx-auto mt-8 grid max-w-3xl gap-6 text-lg leading-8 text-ink/72">
               <p>
                 Shutterbug Camera Shop started in 2012 with a simple goal: make buying used cameras feel clear,
                 focused, and trustworthy.
@@ -40,7 +40,7 @@ export default function AboutPage() {
 
         <div className="mt-10 grid gap-5 md:grid-cols-3">
           {['Camera-first inventory', 'Transparent condition notes', 'Friendly support'].map((item) => (
-            <div key={item} className="rounded-lg border border-ink/10 bg-white p-6 shadow-sm">
+            <div key={item} className="rounded-lg border border-ink/10 bg-white p-6 text-center shadow-sm">
               <p className="font-serif text-2xl font-bold text-ink">{item}</p>
             </div>
           ))}

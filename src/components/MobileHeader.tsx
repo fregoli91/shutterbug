@@ -97,9 +97,9 @@ export function MobileHeader({
             width={288}
             height={64}
             priority
-            sizes={compact ? '8.5rem' : '(min-width: 390px) 10rem, 9.25rem'}
+            sizes={compact ? '7.5rem' : '(min-width: 390px) 9rem, 8rem'}
             className={`h-auto object-contain object-left transition-[width] duration-200 ease-out ${
-              compact ? 'w-[8.5rem]' : 'w-[9.25rem] min-[390px]:w-40'
+              compact ? 'w-[7.5rem]' : 'w-32 min-[390px]:w-36'
             }`}
           />
         </Link>

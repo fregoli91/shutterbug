@@ -11,10 +11,10 @@ export default function ContactPage() {
     <section className="px-4 py-14 sm:px-6 lg:px-8">
       <div className="mx-auto max-w-7xl">
         <div className="grid gap-8 lg:grid-cols-[1fr_28rem] lg:items-center">
-          <div>
+          <div className="text-center">
             <p className="text-sm font-bold uppercase tracking-[0.28em] text-moss">Customer service</p>
             <h1 className="mt-3 font-serif text-5xl font-bold text-ink">Questions before you buy? Ask Shutterbug.</h1>
-            <p className="mt-5 max-w-3xl text-lg leading-8 text-ink/70">
+            <p className="mx-auto mt-5 max-w-3xl text-lg leading-8 text-ink/70">
               Reach out about orders, tested functions, included accessories, restock requests, or camera trade-ins.
             </p>
           </div>
@@ -28,7 +28,7 @@ export default function ContactPage() {
           />
         </div>
         <div className="mt-8 grid gap-6 md:grid-cols-3">
-          <div className="rounded-lg border border-ink/10 bg-white p-8 shadow-soft">
+          <div className="rounded-lg border border-ink/10 bg-white p-8 text-center shadow-soft">
             <p className="font-serif text-3xl font-bold text-ink">Email support</p>
             <p className="mt-4 text-lg leading-8 text-ink/72">
               Email us at{' '}
@@ -38,7 +38,7 @@ export default function ContactPage() {
               .
             </p>
           </div>
-          <div className="rounded-lg border border-ink/10 bg-white p-8 shadow-sm">
+          <div className="rounded-lg border border-ink/10 bg-white p-8 text-center shadow-sm">
             <p className="font-serif text-3xl font-bold text-ink">Call customer service</p>
             <p className="mt-4 text-lg leading-8 text-ink/72">
               Call{' '}
@@ -48,9 +48,9 @@ export default function ContactPage() {
               .
             </p>
           </div>
-          <div className="rounded-lg border border-ink/10 bg-white p-8 shadow-sm">
+          <div className="rounded-lg border border-ink/10 bg-white p-8 text-center shadow-sm">
             <p className="font-serif text-3xl font-bold text-ink">Helpful details</p>
-            <ul className="mt-4 grid list-disc gap-2 pl-5 text-sm leading-6 text-ink/70">
+            <ul className="mt-4 grid list-disc gap-2 pl-5 text-left text-sm leading-6 text-ink/70">
               <li>Camera model or SKU if you are asking about a listing.</li>
               <li>Photos and accessory notes if you want to sell gear.</li>
               <li>Any condition, testing, shipping, or return questions.</li>
@@ -59,12 +59,12 @@ export default function ContactPage() {
         </div>
 
         <div className="mt-8 grid gap-6 rounded-lg border border-ink/10 bg-cream p-6 shadow-soft lg:grid-cols-[1fr_1fr]">
-          <div>
+          <div className="text-center">
             <p className="text-sm font-bold uppercase tracking-[0.22em] text-moss">Support topics</p>
             <h2 className="mt-3 font-serif text-3xl font-bold text-ink">We can help before and after checkout.</h2>
             <div className="mt-5 grid gap-3 sm:grid-cols-2">
               {['Order status', 'Condition questions', 'Included accessories', 'Returns', 'Shipping', 'Trade-ins'].map((topic) => (
-                <p key={topic} className="rounded-lg border border-ink/10 bg-white px-4 py-3 text-sm font-semibold text-ink">
+                <p key={topic} className="rounded-lg border border-ink/10 bg-white px-4 py-3 text-center text-sm font-semibold text-ink">
                   {topic}
                 </p>
               ))}

@@ -59,16 +59,16 @@ export default function BuyerGuaranteePage() {
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: safeJsonLd(structuredData) }} />
       <div className="mx-auto max-w-7xl">
         <div className="grid gap-8 lg:grid-cols-[1fr_34rem] lg:items-center">
-          <div>
+          <div className="text-center">
             <p className="text-sm font-bold uppercase tracking-[0.28em] text-moss">Buyer confidence</p>
             <h1 className="mt-3 font-serif text-5xl font-bold tracking-tight text-ink sm:text-6xl">
               Trusted cameras, honest service.
             </h1>
-            <p className="mt-5 max-w-3xl text-lg leading-8 text-ink/72">
+            <p className="mx-auto mt-5 max-w-3xl text-lg leading-8 text-ink/72">
               Used cameras can be wonderful, but the listing has to tell the truth. Shutterbug focuses on practical
               testing, clear condition notes, real availability, and friendly help before and after checkout.
             </p>
-            <div className="mt-7 flex flex-col gap-3 sm:flex-row">
+            <div className="mt-7 flex flex-col justify-center gap-3 sm:flex-row">
               <Link
                 href="/shop"
                 className="inline-flex min-h-11 items-center justify-center rounded-full bg-forest px-6 text-sm font-semibold text-white transition hover:bg-moss"
@@ -95,14 +95,14 @@ export default function BuyerGuaranteePage() {
 
         <div className="mt-10 grid gap-5 md:grid-cols-2 lg:grid-cols-4">
           {promises.map((promise) => (
-            <article key={promise.title} className="rounded-lg border border-ink/10 bg-white p-6 shadow-sm">
+            <article key={promise.title} className="rounded-lg border border-ink/10 bg-white p-6 text-center shadow-sm">
               <p className="font-serif text-2xl font-bold text-ink">{promise.title}</p>
               <p className="mt-3 text-sm leading-6 text-ink/68">{promise.copy}</p>
             </article>
           ))}
         </div>
 
-        <div className="mt-10 grid gap-6 rounded-lg border border-ink/10 bg-white p-6 shadow-sm lg:grid-cols-3 lg:p-8">
+        <div className="mt-10 grid gap-6 rounded-lg border border-ink/10 bg-white p-6 text-center shadow-sm lg:grid-cols-3 lg:p-8">
           <div>
             <p className="text-sm font-bold uppercase tracking-[0.2em] text-moss">Before checkout</p>
             <h2 className="mt-3 font-serif text-3xl font-bold text-ink">Every listing should answer the basics.</h2>
@@ -117,7 +117,7 @@ export default function BuyerGuaranteePage() {
           </ul>
         </div>
 
-        <div className="mt-8 flex flex-col gap-3 rounded-lg border border-ink/10 bg-mint p-6 sm:flex-row sm:items-center sm:justify-between">
+        <div className="mt-8 flex flex-col items-center gap-3 rounded-lg border border-ink/10 bg-mint p-6 text-center">
           <div>
             <p className="font-serif text-2xl font-bold text-ink">Need help choosing?</p>
             <p className="mt-2 text-sm leading-6 text-ink/68">
