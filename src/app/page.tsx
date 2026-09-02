@@ -235,12 +235,12 @@ function LoggedOutHome({
       </section>
 
       <SummerTradeInBanner />
+      <DirectStoreCallout />
       <PrinterCallout />
       <CategoryPills title="Popular brands" showPopularBrandsImage />
       <TestingProcessCallout />
       <TrustCards />
       <SignupCallout />
-      <DirectStoreCallout />
       <JournalCallout />
     </>
   );
