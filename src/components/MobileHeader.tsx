@@ -14,11 +14,16 @@ type MobileHeaderItem = {
 
 const quickLinks: MobileHeaderItem[] = [
   { href: '/shop', label: 'Cameras' },
+  { href: '/shop?sort=newest', label: 'New Arrivals' },
   { href: '/categories/vintage-digital-cameras', label: 'Vintage Digital' },
   { href: '/categories/film-cameras', label: 'Film' },
   { href: '/categories/lenses', label: 'Lenses' },
-  { href: '/brands', label: 'Brands' },
-  { href: '/sell-your-camera', label: 'Sell' }
+  { href: '/brands/canon', label: 'Canon' },
+  { href: '/brands/nikon', label: 'Nikon' },
+  { href: '/brands/olympus', label: 'Olympus' },
+  { href: '/brands', label: 'All Brands' },
+  { href: '/blog', label: 'Journal' },
+  { href: '/sell-your-camera', label: 'Sell or Trade' }
 ];
 
 const searchSuggestions = [
@@ -169,17 +174,20 @@ export function MobileHeader({
           <div className="relative min-w-0 border-y border-forest bg-forest shadow-[inset_0_1px_0_rgba(255,255,255,0.08)]">
             <nav
               aria-label="Popular shopping destinations"
-              className="flex h-12 w-full min-w-0 touch-pan-x gap-4 overflow-x-auto overscroll-x-contain px-4 text-[0.82rem] font-semibold text-cream/90 [-webkit-overflow-scrolling:touch] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden sm:px-6"
+              className="h-12 w-full min-w-0 touch-pan-x overflow-x-scroll overscroll-x-contain text-[0.82rem] font-semibold text-cream/90 [-webkit-overflow-scrolling:touch] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+              style={{ touchAction: 'pan-x' }}
             >
-              {quickLinks.map((item) => (
-                <Link
-                  key={item.href}
-                  href={item.href}
-                  className="flex min-h-11 shrink-0 items-center whitespace-nowrap border-b-2 border-transparent transition hover:border-sage hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-sage"
-                >
-                  {item.label}
-                </Link>
-              ))}
+              <div className="flex h-full w-max min-w-full gap-5 px-4 sm:px-6">
+                {quickLinks.map((item) => (
+                  <Link
+                    key={item.href}
+                    href={item.href}
+                    className="flex min-h-11 shrink-0 items-center whitespace-nowrap border-b-2 border-transparent transition hover:border-sage hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-sage"
+                  >
+                    {item.label}
+                  </Link>
+                ))}
+              </div>
             </nav>
             <span className="pointer-events-none absolute inset-y-0 left-0 w-4 bg-gradient-to-r from-forest to-transparent" />
             <span className="pointer-events-none absolute inset-y-0 right-0 w-7 bg-gradient-to-l from-forest to-transparent" />

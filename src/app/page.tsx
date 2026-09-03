@@ -234,7 +234,6 @@ function LoggedOutHome({
         </div>
       </section>
 
-      <SummerTradeInBanner />
       <DirectStoreCallout />
       <PrinterCallout />
       <CategoryPills title="Popular brands" showPopularBrandsImage />
@@ -438,7 +437,6 @@ function LoggedInHome({
 
       <FreshCameraFindsBanner />
       <CategoryGrid featuredCategories={featuredCategories} />
-      <SummerTradeInBanner />
       <PrinterCallout />
       <TrustCards />
       <JournalCallout />
@@ -652,26 +650,6 @@ function SignupCallout() {
   );
 }
 
-function SummerTradeInBanner() {
-  return (
-    <section className="bg-cream px-4 py-8 sm:px-6 sm:py-10 lg:px-8">
-      <Link
-        href="/sell-your-camera"
-        aria-label="Start a summer camera trade-in and get 10 percent extra store credit"
-        className="group mx-auto block max-w-7xl overflow-hidden rounded-lg border border-ink/10 bg-white shadow-sm transition hover:-translate-y-0.5 hover:border-moss/30 hover:shadow-soft focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-moss focus-visible:ring-offset-2 focus-visible:ring-offset-cream"
-      >
-        <Image
-          src="/shutterbug-summer-trade-in-bonus.png"
-          alt="Shutterbug Camera Shop summer trade-in bonus offering 10 percent extra store credit"
-          width={2172}
-          height={724}
-          sizes="(min-width: 1280px) 1280px, 100vw"
-          className="h-auto w-full bg-cream object-contain"
-        />
-      </Link>
-    </section>
-  );
-}
 function PrinterCallout() {
   const printerBrands = ['Canon', 'Brother', 'HP', 'Lexmark'];
 

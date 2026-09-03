@@ -62,6 +62,17 @@ export const homePromotions: HomePromotion[] = [
     alt: 'Shutterbug camera trade-in program with cameras ready for a new owner',
     objectPosition: '72% center',
     embeddedCopy: true
+  },
+  {
+    id: 'summer-trade-in-bonus',
+    eyebrow: 'Summer trade-in bonus',
+    title: 'Get 10% extra store credit.',
+    description: 'Trade in eligible camera gear this summer and receive an extra store-credit bonus.',
+    desktopImage: '/shutterbug-summer-trade-in-bonus.png',
+    href: '/sell-your-camera',
+    ctaLabel: 'Start your trade-in',
+    alt: 'Shutterbug summer trade-in bonus offering 10 percent extra store credit',
+    embeddedCopy: true
   }
 ];
 
