@@ -26,7 +26,7 @@ export default async function CheckoutPage({ searchParams }: Props) {
             <p className="text-sm font-bold uppercase tracking-[0.22em] text-moss">Checkout</p>
             <h1 className="mt-3 font-serif text-4xl font-bold text-ink">Create a pending Shutterbug order</h1>
             <p className="mt-3 max-w-2xl text-sm leading-6 text-ink/65">
-              Confirm contact and shipping details, then create an order record for the next payment step.
+              Confirm your contact and shipping details, then continue to secure payment.
             </p>
           </div>
           <Image

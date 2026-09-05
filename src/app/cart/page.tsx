@@ -12,9 +12,9 @@ export default function CartPage() {
         <div className="mb-8 grid gap-5 lg:grid-cols-[1fr_24rem] lg:items-center">
           <div>
             <p className="text-sm font-bold uppercase tracking-[0.22em] text-moss">Bag</p>
-            <h1 className="mt-3 font-serif text-4xl font-bold text-ink">Review your camera gear</h1>
+            <h1 className="mt-3 font-serif text-4xl font-bold text-ink">Your bag</h1>
             <p className="mt-3 max-w-2xl text-sm leading-6 text-ink/65">
-              Real tested inventory, current pricing, and quantity checks before the payment step is enabled.
+              Review your items before checkout. We will confirm availability before payment.
             </p>
           </div>
           <Image

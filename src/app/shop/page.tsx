@@ -4,8 +4,13 @@ import Image from 'next/image';
 import type { Metadata } from 'next';
 import { ProductLikeButton } from '@/components/ProductLikeButton';
 import { ProductCard } from '@/components/ProductCard';
+import { ShopSort } from '@/components/ShopSort';
+import { ShopFilterDrawer } from '@/components/ShopFilterDrawer';
+import { EmptyShelf } from '@/components/EmptyShelf';
+import { compareNewest } from '@/lib/storefront-sort';
+import { LayoutGrid, List, X } from 'lucide-react';
 import { AddToCartButton } from '@/components/cart/AddToCartButton';
-import { INCLUDE_FILTER_OPTIONS, POPULAR_CAMERA_BRANDS } from '@/lib/catalog';
+import { INCLUDE_FILTER_OPTIONS } from '@/lib/catalog';
 import { categories } from '@/lib/categories';
 import {
   conditions,
@@ -21,7 +26,7 @@ import { getCustomerSession } from '@/lib/customer-auth';
 import { site } from '@/lib/seo';
 import { buildBreadcrumbJsonLd, buildCollectionPageJsonLd, jsonLdGraph } from '@/lib/seo-utils';
 
-type SearchParams = Record<string, string | string[] | undefined>;
+import { shopHref, type SearchParams } from '@/lib/shop-query';
 type Props = {
   searchParams?: Promise<SearchParams>;
 };
@@ -48,7 +53,7 @@ export async function generateMetadata({ searchParams }: Props): Promise<Metadat
   };
 }
 const availabilityOptions = [
-  { value: 'active', label: 'Active' },
+  { value: 'active', label: 'In stock' },
   { value: 'sold_out', label: 'Sold out' }
 ];
 
@@ -87,52 +92,6 @@ function isTested(product: Product) {
     status === 'Fully Functional' ||
     (product.tested.length > 0 && product.tested[0] !== 'Testing pending')
   );
-}
-
-function toUrlSearchParams(params: SearchParams) {
-  const next = new URLSearchParams();
-  Object.entries(params).forEach(([name, value]) => {
-    if (!value) return;
-    if (Array.isArray(value)) {
-      value.forEach((item) => {
-        if (item) next.append(name, item);
-      });
-      return;
-    }
-    next.set(name, value);
-  });
-  return next;
-}
-
-function shopHref(
-  params: SearchParams,
-  {
-    set,
-    remove
-  }: {
-    set?: Record<string, string | string[] | undefined>;
-    remove?: { name: string; value?: string };
-  }
-) {
-  const next = toUrlSearchParams(params);
-  if (remove) {
-    const values = next.getAll(remove.name).filter((value) => remove.value === undefined || value !== remove.value);
-    next.delete(remove.name);
-    values.forEach((value) => next.append(remove.name, value));
-  }
-  Object.entries(set ?? {}).forEach(([name, value]) => {
-    next.delete(name);
-    if (!value) return;
-    if (Array.isArray(value)) {
-      value.forEach((item) => {
-        if (item) next.append(name, item);
-      });
-      return;
-    }
-    next.set(name, value);
-  });
-  const query = next.toString();
-  return query ? `/shop?${query}` : '/shop';
 }
 
 function HiddenFilterFields({
@@ -198,7 +157,7 @@ function HiddenFilterFields({
 export default async function ShopPage({ searchParams }: Props) {
   const params = searchParams ? await searchParams : {};
   const query = asString(params.q).trim();
-  const sort = asString(params.sort) || 'featured';
+  const sort = asString(params.sort) || 'newest';
   const view = asString(params.view) === 'list' ? 'list' : 'grid';
   const selectedBrands = asArray(params.brand);
   const selectedCategories = asArray(params.category);
@@ -304,7 +263,7 @@ export default async function ShopPage({ searchParams }: Props) {
   });
 
   const visibleProducts = [...filteredProducts].sort((a, b) => {
-    if (sort === 'newest') return Number(Boolean(b.newArrival)) - Number(Boolean(a.newArrival));
+    if (sort === 'newest') return compareNewest(a, b);
     if (sort === 'stock') {
       const rank = { active: 0, sold_out: 1, draft: 2, archived: 3 };
       return rank[a.status] - rank[b.status];
@@ -357,10 +316,9 @@ export default async function ShopPage({ searchParams }: Props) {
         <div className="grid gap-6 lg:grid-cols-[1fr_32rem] lg:items-center">
           <div className="max-w-3xl">
             <p className="text-sm font-bold uppercase tracking-[0.28em] text-moss">Shop cameras</p>
-            <h1 className="mt-3 font-serif text-4xl font-bold text-ink sm:text-5xl">Shop Shutterbug Inventory</h1>
+            <h1 className="mt-3 font-serif text-3xl font-bold text-ink sm:text-4xl">Cameras & gear</h1>
             <p className="mt-4 text-base leading-7 text-ink/70 sm:mt-5 sm:text-lg sm:leading-8">
-              Search tested vintage digital cameras, film cameras, lenses, accessories, parts/repair gear, and used
-              camera equipment by brand, category, condition, format, and included accessories.
+              Vintage digital, film, lenses and more. Find your next camera with clear condition notes and real product photos.
             </p>
           </div>
 
@@ -374,7 +332,7 @@ export default async function ShopPage({ searchParams }: Props) {
               className="aspect-[16/9] w-full rounded-lg border border-ink/10 bg-sand object-cover object-center shadow-sm"
             />
 
-            <form action="/shop" className="rounded-lg border border-ink/10 bg-white p-4 shadow-sm">
+            <form action="/shop" className="border-t border-ink/10 pt-4">
               <label htmlFor="shop-search" className="text-sm font-semibold text-ink">
                 Search inventory
               </label>
@@ -384,7 +342,7 @@ export default async function ShopPage({ searchParams }: Props) {
                   name="q"
                   type="search"
                   defaultValue={query}
-                  placeholder="Canon, Coolpix, Lumix, lens, charger..."
+                  placeholder="Search cameras, brands & models"
                   className="min-w-0 flex-1 bg-transparent px-4 text-base text-ink outline-none placeholder:text-ink/40 sm:text-sm"
                 />
                 <button type="submit" className="bg-forest px-5 text-sm font-semibold text-white transition hover:bg-moss">
@@ -395,10 +353,10 @@ export default async function ShopPage({ searchParams }: Props) {
           </div>
         </div>
 
-        <div className="mt-6 grid gap-4 rounded-lg border border-ink/10 bg-white px-4 py-4 shadow-sm sm:mt-8 sm:flex sm:flex-wrap sm:items-center sm:justify-between sm:px-5">
+        <div className="mt-6 grid gap-4 border-y border-ink/10 py-4 sm:mt-8 sm:flex sm:flex-wrap sm:items-center sm:justify-between">
           <div>
             <p className="text-sm font-semibold text-ink">
-              {visibleProducts.length} item{visibleProducts.length === 1 ? '' : 's'} found
+              {visibleProducts.length ? `${visibleProducts.length} item${visibleProducts.length === 1 ? '' : 's'} found` : 'Explore the collection'}
             </p>
             <p className="mt-1 text-sm text-ink/60">
               {query ? (
@@ -406,11 +364,33 @@ export default async function ShopPage({ searchParams }: Props) {
                   Search results for <span className="font-semibold text-ink">&ldquo;{query}&rdquo;</span>
                 </>
               ) : (
-                'Browse used camera inventory, sold-out model pages, and clearly marked parts/repair gear.'
+                'Explore cameras and gear with clear condition notes.'
               )}
             </p>
           </div>
-          <form action="/shop" className="flex flex-wrap items-center gap-2 sm:gap-3">
+          <div className="flex items-center gap-3">
+            <ShopFilterDrawer count={activeFilterCount}>
+            <FilterForm
+              query={query}
+              sort={sort}
+              options={filterOptions}
+              selectedBrands={selectedBrands}
+              selectedCategories={selectedCategories}
+              selectedCameraTypes={selectedCameraTypes}
+              selectedProductTypes={selectedProductTypes}
+              selectedConditions={selectedConditions}
+              selectedFunctionalStatuses={selectedFunctionalStatuses}
+              selectedAvailability={selectedAvailability}
+              selectedIncludes={selectedIncludes}
+              selectedLensMounts={selectedLensMounts}
+              selectedFilmFormats={selectedFilmFormats}
+              selectedStorageTypes={selectedStorageTypes}
+              minPrice={minPrice}
+              maxPrice={maxPrice}
+              view={view}
+            />
+            </ShopFilterDrawer>
+          <ShopSort value={sort}>
             <HiddenFilterFields
               query={query}
               selectedBrands={selectedBrands}
@@ -428,30 +408,11 @@ export default async function ShopPage({ searchParams }: Props) {
               maxPrice={maxPrice}
               view={view}
             />
-            <label htmlFor="sort" className="text-sm font-semibold text-ink/70">
-              Sort
-            </label>
-            <select
-              id="sort"
-              name="sort"
-              defaultValue={sort}
-              className="min-h-11 rounded-lg border border-ink/15 bg-cream px-3 py-2 text-sm text-ink outline-none focus:border-moss"
-            >
-              <option value="featured">Featured</option>
-              <option value="newest">Newest</option>
-              <option value="stock">In stock first</option>
-              <option value="price-asc">Price: low to high</option>
-              <option value="price-desc">Price: high to low</option>
-              <option value="condition">Best condition</option>
-              <option value="brand">Brand A-Z</option>
-            </select>
-            <button type="submit" className="min-h-11 rounded-full bg-forest px-4 py-2 text-sm font-semibold text-white">
-              Apply
-            </button>
-          </form>
+          </ShopSort>
+          </div>
         </div>
 
-        <div className="mt-4 grid gap-3 rounded-lg border border-ink/10 bg-white p-4 shadow-sm lg:flex lg:items-center lg:justify-between">
+        <div className="mt-4 grid gap-3 border-t border-ink/10 pt-4 lg:flex lg:items-center lg:justify-between">
           <ActiveFilterChips
             params={params}
             query={query}
@@ -473,28 +434,30 @@ export default async function ShopPage({ searchParams }: Props) {
             <span>View</span>
             <Link
               href={shopHref(params, { set: { view: undefined } })}
+              aria-label="Grid view" aria-current={view === 'grid' ? 'true' : undefined} title="Grid view"
               className={`rounded-full px-3 py-2 ${view === 'grid' ? 'bg-forest text-white' : 'bg-cream text-ink hover:text-moss'}`}
             >
-              Grid
+              <LayoutGrid className="h-5 w-5" aria-hidden="true" />
             </Link>
             <Link
               href={shopHref(params, { set: { view: 'list' } })}
+              aria-label="List view" aria-current={view === 'list' ? 'true' : undefined} title="List view"
               className={`rounded-full px-3 py-2 ${view === 'list' ? 'bg-forest text-white' : 'bg-cream text-ink hover:text-moss'}`}
             >
-              List
+              <List className="h-5 w-5" aria-hidden="true" />
             </Link>
           </div>
         </div>
 
         {!hasActiveFilters ? (
-          <div className="mt-4 rounded-lg border border-ink/10 bg-mint p-4 shadow-sm">
+          <div className="mt-4 border-b border-ink/10 pb-4">
             <p className="text-sm font-bold uppercase tracking-[0.18em] text-moss">Popular searches</p>
-            <div className="mt-3 flex flex-wrap gap-2">
+            <div className="mt-2 flex gap-4 overflow-x-auto pb-2">
               {popularSearches.map(([label, href]) => (
                 <Link
                   key={href}
                   href={href}
-                  className="rounded-full bg-white px-4 py-2 text-sm font-semibold text-ink/72 shadow-sm transition hover:text-moss"
+                  className="shrink-0 whitespace-nowrap py-2 text-sm font-semibold text-moss transition hover:underline"
                 >
                   {label}
                 </Link>
@@ -503,44 +466,9 @@ export default async function ShopPage({ searchParams }: Props) {
           </div>
         ) : null}
 
-        <details className="mt-4 overflow-hidden rounded-lg border border-ink/10 bg-white shadow-sm lg:hidden">
-          <summary className="flex min-h-12 cursor-pointer list-none items-center justify-between gap-3 px-4 py-3 text-sm font-bold uppercase tracking-[0.14em] text-moss [&::-webkit-details-marker]:hidden">
-            <span>Filters</span>
-            <span className="rounded-full bg-mint px-3 py-1 text-xs tracking-normal text-forest">
-              {activeFilterCount ? `${activeFilterCount} active` : 'Refine'}
-            </span>
-          </summary>
-          <div className="max-h-[72svh] overflow-y-auto border-t border-ink/10 p-4">
-            {hasActiveFilters ? (
-              <Link href="/shop" className="inline-flex min-h-10 items-center text-sm font-semibold text-forest hover:text-moss">
-                Clear all filters
-              </Link>
-            ) : null}
-            <FilterForm
-              query={query}
-              sort={sort}
-              options={filterOptions}
-              selectedBrands={selectedBrands}
-              selectedCategories={selectedCategories}
-              selectedCameraTypes={selectedCameraTypes}
-              selectedProductTypes={selectedProductTypes}
-              selectedConditions={selectedConditions}
-              selectedFunctionalStatuses={selectedFunctionalStatuses}
-              selectedAvailability={selectedAvailability}
-              selectedIncludes={selectedIncludes}
-              selectedLensMounts={selectedLensMounts}
-              selectedFilmFormats={selectedFilmFormats}
-              selectedStorageTypes={selectedStorageTypes}
-              minPrice={minPrice}
-              maxPrice={maxPrice}
-              view={view}
-            />
-          </div>
-        </details>
-
         <div className="mt-8 grid gap-8 lg:grid-cols-[18rem_1fr]">
           <aside className="hidden lg:block">
-            <div className="sticky top-44 rounded-lg border border-ink/10 bg-white p-5 shadow-sm">
+            <div className="sticky top-44 max-h-[calc(100dvh-12rem)] overflow-y-auto border-r border-ink/10 pr-5">
               <div className="flex items-center justify-between gap-3">
                 <p className="text-sm font-bold uppercase tracking-[0.18em] text-moss">Filters</p>
                 {hasActiveFilters ? (
@@ -596,7 +524,7 @@ export default async function ShopPage({ searchParams }: Props) {
               </div>
             )
           ) : (
-            <NoResults />
+            <EmptyShelf filtered={hasActiveFilters} title={hasActiveFilters ? "No cameras match those filters." : "Nothing on the shelf right now."} description={hasActiveFilters ? "Try a broader search or clear your filters to explore the full collection." : "Our inventory changes as cameras arrive. Check back soon or explore our buying guides while you browse."} />
           )}
         </div>
       </div>
@@ -682,7 +610,7 @@ function ActiveFilterChips({
   ];
 
   if (!chips.length) {
-    return <p className="text-sm text-ink/65">Use search or filters to narrow by brand, condition, format, and included accessories.</p>;
+    return null;
   }
 
   return (
@@ -693,9 +621,9 @@ function ActiveFilterChips({
           <Link
             key={`${chip.label}-${chip.href}`}
             href={chip.href}
-            className="rounded-full border border-ink/10 bg-cream px-3 py-1.5 text-sm font-semibold text-ink/72 transition hover:border-moss/35 hover:text-moss"
+            aria-label={`Remove ${chip.label} filter`} className="inline-flex min-h-11 items-center gap-2 rounded-md border border-ink/10 bg-cream px-3 py-1.5 text-sm font-semibold text-ink/72 transition hover:border-moss/35 hover:text-moss"
           >
-            {chip.label} x
+            {chip.label} <X aria-hidden="true" className="h-3.5 w-3.5" />
           </Link>
         ))}
         <Link href="/shop" className="rounded-full bg-forest px-3 py-1.5 text-sm font-semibold text-white">
@@ -725,7 +653,7 @@ function ProductListResult({
   ].filter(Boolean).slice(0, 5);
 
   return (
-    <article className="grid gap-4 rounded-lg border border-ink/10 bg-white p-4 shadow-sm transition hover:border-moss/35 hover:shadow-soft md:grid-cols-[11rem_1fr_12rem]">
+    <article className="grid gap-4 border-t border-ink/10 pt-4 transition hover:border-moss/35 hover:shadow-soft md:grid-cols-[11rem_1fr_12rem]">
       <div className="relative rounded-lg bg-sand p-3">
         <Link href={productHref} className="block">
           <Image
@@ -774,10 +702,7 @@ function ProductListResult({
             </li>
           ))}
         </ul>
-        <label className="mt-4 inline-flex min-h-10 items-center gap-2 text-sm font-semibold text-ink/65">
-          <input type="checkbox" className="h-4 w-4 rounded border-ink/20 accent-[#24543a]" />
-          Compare
-        </label>
+
       </div>
       <div className="grid content-start gap-3 md:justify-items-end">
         <p className="text-2xl font-bold text-ink">{formatPrice(product.price)}</p>
@@ -792,7 +717,7 @@ function ProductListResult({
             href="/contact"
             className="inline-flex min-h-11 w-full items-center justify-center rounded-full border border-ink/15 bg-cream px-5 py-3 text-sm font-semibold text-ink transition hover:border-moss hover:text-moss"
           >
-            Request alert
+            Ask about this item
           </Link>
         )}
         <Link
@@ -803,32 +728,6 @@ function ProductListResult({
         </Link>
       </div>
     </article>
-  );
-}
-
-function NoResults() {
-  return (
-    <div className="rounded-lg border border-ink/10 bg-white p-8 text-ink/70">
-      <p className="font-serif text-2xl font-bold text-ink">No matching items yet</p>
-      <p className="mt-3 leading-7">
-        Try a broader brand, category, or product type. You can also contact Shutterbug and we can help source a camera,
-        lens, charger, or repair item.
-      </p>
-      <div className="mt-5 flex flex-wrap gap-2">
-        {popularSearches.map(([label, href]) => (
-          <Link
-            key={href}
-            href={href}
-            className="rounded-full border border-ink/10 bg-cream px-4 py-2 text-sm font-semibold text-ink/72 transition hover:text-moss"
-          >
-            Try {label}
-          </Link>
-        ))}
-        <Link href="/contact" className="rounded-full bg-forest px-4 py-2 text-sm font-semibold text-white">
-          Ask Shutterbug
-        </Link>
-      </div>
-    </div>
   );
 }
 
@@ -869,177 +768,75 @@ function FilterForm({
   maxPrice: string;
   view: string;
 }) {
-  const popularBrands = options.brands.filter((brand) => POPULAR_CAMERA_BRANDS.includes(brand));
-  const moreBrands = options.brands.filter((brand) => !POPULAR_CAMERA_BRANDS.includes(brand));
-  const selectedMoreBrands = selectedBrands.filter((brand) => moreBrands.includes(brand));
+  const advancedActive = selectedCameraTypes.length + selectedProductTypes.length +
+    selectedFunctionalStatuses.length + selectedIncludes.length + selectedLensMounts.length +
+    selectedFilmFormats.length + selectedStorageTypes.length;
 
   return (
-    <form action="/shop" className="mt-5 grid gap-6">
+    <form action="/shop" className="mt-4 grid gap-5">
       <input type="hidden" name="q" value={query} />
       <input type="hidden" name="sort" value={sort} />
       {view === 'list' ? <input type="hidden" name="view" value="list" /> : null}
-
-      <FilterGroup title="Popular brands">
-        {popularBrands.map((brand) => (
-          <Checkbox key={brand} name="brand" value={brand} label={brand} checked={selectedBrands.includes(brand)} />
-        ))}
-        <details className="rounded-lg border border-ink/10 bg-cream/50" open={selectedMoreBrands.length > 0}>
-          <summary className="cursor-pointer list-none px-3 py-2 text-sm font-semibold text-forest [&::-webkit-details-marker]:hidden">
-            More brands
-          </summary>
-          <div className="grid max-h-64 gap-1 overflow-y-auto border-t border-ink/10 p-2">
-            {moreBrands.map((brand) => (
-              <Checkbox key={brand} name="brand" value={brand} label={brand} checked={selectedBrands.includes(brand)} />
-            ))}
-          </div>
-        </details>
-      </FilterGroup>
-
       <FilterGroup title="Category">
         {options.categories.map((category) => (
-          <Checkbox
-            key={category}
-            name="category"
-            value={category}
-            label={labelForSlug(category)}
-            checked={selectedCategories.includes(category)}
-          />
+          <Checkbox key={category} name="category" value={category} label={labelForSlug(category)} checked={selectedCategories.includes(category)} />
         ))}
       </FilterGroup>
-
-      <FilterGroup title="Gear type">
-        {options.cameraTypes.map((type) => (
-          <Checkbox key={type} name="type" value={type} label={type} checked={selectedCameraTypes.includes(type)} />
+      <FilterGroup title="Brand">
+        {options.brands.map((brand) => (
+          <Checkbox key={brand} name="brand" value={brand} label={brand} checked={selectedBrands.includes(brand)} />
         ))}
       </FilterGroup>
-
-      <details className="rounded-lg border border-ink/10 bg-white">
-        <summary className="cursor-pointer list-none px-3 py-2 text-sm font-semibold text-ink [&::-webkit-details-marker]:hidden">
-          Product type / subcategory
-        </summary>
-        <div className="grid max-h-72 gap-1 overflow-y-auto border-t border-ink/10 p-2">
-          {options.productTypes.map((type) => (
-            <Checkbox
-              key={type}
-              name="productType"
-              value={type}
-              label={type}
-              checked={selectedProductTypes.includes(type)}
-            />
-          ))}
+      <fieldset>
+        <legend className="text-sm font-semibold text-ink">Price</legend>
+        <div className="mt-3 grid grid-cols-2 gap-2">
+          <label className="grid gap-1 text-xs text-ink/70">
+            Minimum ($)
+            <input name="minPrice" type="number" min="0" step="1" defaultValue={minPrice} placeholder="Any"
+              className="min-h-11 w-full rounded-md border border-ink/20 bg-white px-3 text-base text-ink focus:outline-moss" />
+          </label>
+          <label className="grid gap-1 text-xs text-ink/70">
+            Maximum ($)
+            <input name="maxPrice" type="number" min="0" step="1" defaultValue={maxPrice} placeholder="Any"
+              className="min-h-11 w-full rounded-md border border-ink/20 bg-white px-3 text-base text-ink focus:outline-moss" />
+          </label>
         </div>
-      </details>
-
+      </fieldset>
       <FilterGroup title="Condition">
         {conditions.map((condition) => (
-          <Checkbox
-            key={condition}
-            name="condition"
-            value={condition}
-            label={condition}
-            checked={selectedConditions.includes(condition)}
-          />
+          <Checkbox key={condition} name="condition" value={condition} label={condition} checked={selectedConditions.includes(condition)} />
         ))}
       </FilterGroup>
-
-      <FilterGroup title="Functional status">
-        {options.functionalStatuses.map((status) => (
-          <Checkbox
-            key={status}
-            name="functionalStatus"
-            value={status}
-            label={status}
-            checked={selectedFunctionalStatuses.includes(status)}
-          />
-        ))}
-      </FilterGroup>
-
       <FilterGroup title="Availability">
         {availabilityOptions.map((option) => (
-          <Checkbox
-            key={option.value}
-            name="availability"
-            value={option.value}
-            label={option.label}
-            checked={selectedAvailability.includes(option.value)}
-          />
+          <Checkbox key={option.value} name="availability" value={option.value} label={option.label} checked={selectedAvailability.includes(option.value)} />
         ))}
       </FilterGroup>
-
-      <FilterGroup title="Includes / trust">
-        {INCLUDE_FILTER_OPTIONS.map((option) => (
-          <Checkbox
-            key={option.value}
-            name="includes"
-            value={option.value}
-            label={option.label}
-            checked={selectedIncludes.includes(option.value)}
-          />
-        ))}
-      </FilterGroup>
-
-      <details className="rounded-lg border border-ink/10 bg-white">
-        <summary className="cursor-pointer list-none px-3 py-2 text-sm font-semibold text-ink [&::-webkit-details-marker]:hidden">
-          Format, mount, and media
+      <details open={advancedActive > 0} className="border-y border-forest/15 py-2">
+        <summary className="min-h-11 cursor-pointer py-3 text-sm font-semibold text-forest">
+          More filters{advancedActive ? ` (${advancedActive})` : ''}
         </summary>
-        <div className="grid gap-5 border-t border-ink/10 p-3">
-          <CompactCheckboxGroup
-            title="Lens mount"
-            name="lensMount"
-            options={options.lensMounts}
-            selected={selectedLensMounts}
-          />
-          <CompactCheckboxGroup
-            title="Film format"
-            name="filmFormat"
-            options={options.filmFormats}
-            selected={selectedFilmFormats}
-          />
-          <CompactCheckboxGroup
-            title="Storage / media"
-            name="storageType"
-            options={options.storageTypes}
-            selected={selectedStorageTypes}
-          />
+        <div className="grid gap-5 py-3">
+          <CompactCheckboxGroup title="Camera type" name="type" options={options.cameraTypes} selected={selectedCameraTypes} />
+          <CompactCheckboxGroup title="Product type" name="productType" options={options.productTypes} selected={selectedProductTypes} />
+          <CompactCheckboxGroup title="Functional condition" name="functionalStatus" options={options.functionalStatuses} selected={selectedFunctionalStatuses} />
+          <FilterGroup title="Included accessories & details">
+            {INCLUDE_FILTER_OPTIONS.map((option) => (
+              <Checkbox key={option.value} name="includes" value={option.value} label={option.label} checked={selectedIncludes.includes(option.value)} />
+            ))}
+          </FilterGroup>
+          <CompactCheckboxGroup title="Lens mount" name="lensMount" options={options.lensMounts} selected={selectedLensMounts} />
+          <CompactCheckboxGroup title="Film format" name="filmFormat" options={options.filmFormats} selected={selectedFilmFormats} />
+          <CompactCheckboxGroup title="Storage / media" name="storageType" options={options.storageTypes} selected={selectedStorageTypes} />
         </div>
       </details>
-
-      <div>
-        <p className="text-sm font-semibold text-ink">Price range</p>
-        <div className="mt-2 grid grid-cols-2 gap-2">
-          <input
-            id="min-price"
-            name="minPrice"
-            type="number"
-            min="0"
-            step="25"
-            defaultValue={minPrice}
-            placeholder="Min"
-            className="min-h-11 w-full rounded-lg border border-ink/15 bg-cream px-3 py-2 text-base text-ink outline-none focus:border-moss sm:text-sm"
-          />
-          <input
-            id="max-price"
-            name="maxPrice"
-            type="number"
-            min="0"
-            step="25"
-            defaultValue={maxPrice}
-            placeholder="Max"
-            className="min-h-11 w-full rounded-lg border border-ink/15 bg-cream px-3 py-2 text-base text-ink outline-none focus:border-moss sm:text-sm"
-          />
-        </div>
+      <div className="sticky bottom-0 grid grid-cols-[1fr_auto] items-center gap-3 border-t border-forest/15 bg-cream py-4 pb-[max(1rem,env(safe-area-inset-bottom))]">
+        <button type="submit" className="min-h-11 rounded-md bg-forest px-4 py-3 text-sm font-semibold text-white hover:bg-moss focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-moss">Show results</button>
+        <Link href="/shop" className="inline-flex min-h-11 items-center px-2 text-sm font-semibold text-forest hover:underline">Clear all</Link>
       </div>
-
-      <button
-        type="submit"
-        className="min-h-12 rounded-full bg-forest px-5 py-3 text-sm font-semibold text-white transition hover:bg-moss"
-      >
-        Apply filters
-      </button>
     </form>
   );
 }
-
 function CompactCheckboxGroup({
   title,
   name,
@@ -1054,7 +851,7 @@ function CompactCheckboxGroup({
   return (
     <fieldset>
       <legend className="text-sm font-semibold text-ink">{title}</legend>
-      <div className="mt-2 grid gap-1">
+      <div className="mt-2 grid max-h-52 gap-1 overflow-y-auto">
         {options.map((option) => (
           <Checkbox key={option} name={name} value={option} label={option} checked={selected.includes(option)} />
         ))}
@@ -1067,7 +864,7 @@ function FilterGroup({ title, children }: { title: string; children: React.React
   return (
     <fieldset>
       <legend className="text-sm font-semibold text-ink">{title}</legend>
-      <div className="mt-3 grid gap-2">{children}</div>
+      <div className="mt-2 grid max-h-52 gap-1 overflow-y-auto">{children}</div>
     </fieldset>
   );
 }

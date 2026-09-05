@@ -19,7 +19,7 @@ const statusMessages: Record<string, string> = {
   resent: 'We sent a fresh verification link.',
   unverified: 'Please verify your email before logging in.',
   expired: 'That verification link expired. Request a fresh link below.',
-  'dev-email': 'Email delivery is not configured locally. Check the development server console for the verification link.',
+  'dev-email': 'Your verification email could not be sent. Please contact support for help.',
   'email-error': 'We created your account, but the verification email could not be sent. Try resending it below.'
 };
 

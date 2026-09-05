@@ -4,6 +4,7 @@ import Image from 'next/image';
 import { notFound } from 'next/navigation';
 import type { Metadata } from 'next';
 import { ProductCard } from '@/components/ProductCard';
+import { EmptyShelf } from '@/components/EmptyShelf';
 import { categories, getCategory, getRelatedCategories } from '@/lib/categories';
 import { getLikedProductIds } from '@/lib/customer-likes';
 import { getCustomerSession } from '@/lib/customer-auth';
@@ -209,13 +210,7 @@ export default async function CategoryPage({ params }: Props) {
               />
             ))
           ) : (
-            <div className="col-span-2 rounded-lg border border-ink/10 bg-white p-8 text-ink/70 lg:col-span-3">
-              <p className="font-serif text-2xl font-bold text-ink">No active inventory in this category yet</p>
-              <p className="mt-3 leading-7">
-                Shutterbug inventory changes as individual used items arrive. Browse the related resources above or
-                contact us about a specific {isPrinterCategory ? 'printer model' : 'camera model'}.
-              </p>
-            </div>
+            <div className="col-span-full"><EmptyShelf title={`No ${category.name.toLowerCase()} are available right now.`} /></div>
           )}
         </div>
 

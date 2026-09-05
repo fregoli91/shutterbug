@@ -1,19 +1,10 @@
 import Link from 'next/link';
 import Image from 'next/image';
 import { AccountMenu } from '@/components/AccountMenu';
-import { categories, featuredCategorySlugs } from '@/lib/categories';
+import { DesktopNavigation } from '@/components/DesktopNavigation';
 import { CartLink } from '@/components/cart/CartLink';
 import { MobileHeader } from '@/components/MobileHeader';
 import { getCustomerSession } from '@/lib/customer-auth';
-
-const desktopCategories = featuredCategorySlugs
-  .map((slug) => categories.find((category) => category.slug === slug))
-  .filter(Boolean);
-
-const categoryNavLabels: Record<string, string> = {
-  'canon-powershot-cameras': 'Canon',
-  'nikon-coolpix-cameras': 'Nikon'
-};
 
 const searchSuggestions = [
   'Canon PowerShot',
@@ -89,7 +80,7 @@ export async function Header() {
         <SearchForm
           id="site-search"
           className="min-w-0 flex-1"
-          placeholder="Search Canon PowerShot, Olympus, Nikon Coolpix..."
+          placeholder="Search cameras, brands & models"
           variant="desktop"
         />
 
@@ -108,18 +99,7 @@ export async function Header() {
         <CartLink />
       </div>
 
-      <div className="hidden border-t border-ink/10 bg-cream lg:block">
-        <nav className="mx-auto flex max-w-7xl items-center gap-7 px-8 py-2 text-sm font-semibold text-ink/78">
-          <Link href="/shop" className="transition hover:text-moss">All Cameras</Link>
-          {desktopCategories.map((category) => (
-            <Link key={category!.slug} href={`/categories/${category!.slug}`} className="transition hover:text-moss">
-              {categoryNavLabels[category!.slug] ?? category!.navLabel}
-            </Link>
-          ))}
-          <Link href="/brands/olympus" className="transition hover:text-moss">Olympus</Link>
-          <Link href="/testing-process" className="ml-auto text-moss transition hover:text-forest">Tested Gear Promise</Link>
-        </nav>
-      </div>
+      <DesktopNavigation />
     </header>
   );
 }

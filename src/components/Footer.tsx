@@ -23,12 +23,6 @@ export function Footer() {
             A camera-first used gear shop focused on tested vintage digital cameras, film cameras, real condition
             notes, clear included accessories, and honest parts/repair listings.
           </p>
-          <div className="mt-5 flex flex-wrap gap-2 text-xs font-semibold text-cream/75">
-            <p className="rounded-full border border-cream/10 px-3 py-2">Tested before listing</p>
-            <p className="rounded-full border border-cream/10 px-3 py-2">Actual photos when available</p>
-            <p className="rounded-full border border-cream/10 px-3 py-2">Honest flaws noted</p>
-            <p className="rounded-full border border-cream/10 px-3 py-2">Friendly support</p>
-          </div>
           <div className="mt-5 grid gap-1 text-sm text-cream/60">
             <a href={`mailto:${site.supportEmail}`} className="transition hover:text-white">
               {site.supportEmail}
@@ -84,7 +78,7 @@ export function Footer() {
           <p className="text-sm font-semibold uppercase tracking-[0.2em] text-cream/60">Trust</p>
           <div className="mt-4 grid gap-1 text-sm text-cream/75">
             <Link href="/testing-process" className="flex min-h-9 items-center transition hover:text-white">
-              Testing Process
+              How We Test
             </Link>
             <Link href="/buyer-guarantee" className="flex min-h-9 items-center transition hover:text-white">
               Buyer Guarantee
@@ -113,9 +107,7 @@ export function Footer() {
             <Link href="/terms" className="flex min-h-9 items-center transition hover:text-white">
               Terms
             </Link>
-            <Link href="/admin" className="flex min-h-9 items-center text-cream/45 transition hover:text-white">
-              Admin
-            </Link>
+
           </div>
         </div>
       </div>

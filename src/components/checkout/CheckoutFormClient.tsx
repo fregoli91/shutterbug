@@ -51,14 +51,14 @@ export function CheckoutFormClient({ defaultName = '', defaultEmail = '', error 
         const payload = (await response.json()) as CartValidationResponse | { error?: string };
 
         if (!response.ok || !isCartValidationResponse(payload)) {
-          throw new Error('Bag validation failed.');
+          throw new Error('We could not check your bag.');
         }
 
         if (!canceled) setValidation(payload);
       } catch {
         if (!canceled) {
           setValidation(null);
-          setValidationError('Bag could not be validated. Please return to your bag and try again.');
+          setValidationError('We could not check availability. Please return to your bag and try again.');
         }
       } finally {
         if (!canceled) setLoading(false);
@@ -106,7 +106,7 @@ export function CheckoutFormClient({ defaultName = '', defaultEmail = '', error 
         <p className="text-sm font-bold uppercase tracking-[0.2em] text-moss">Shipping contact</p>
         <h2 className="mt-3 font-serif text-3xl font-bold text-ink">Where should this order go?</h2>
         <p className="mt-3 text-sm leading-6 text-ink/65">
-          We will validate the bag, create a pending order, then send you to Stripe for secure payment.
+          We will confirm availability, then send you to Stripe for secure payment.
         </p>
 
         {error && errorMessages[error] ? (
@@ -159,7 +159,7 @@ export function CheckoutFormClient({ defaultName = '', defaultEmail = '', error 
               </div>
             </div>
           ))}
-          {!validation && loading ? <p className="rounded-lg bg-cream p-3 text-sm text-ink/65">Validating bag...</p> : null}
+          {!validation && loading ? <p className="rounded-lg bg-cream p-3 text-sm text-ink/65">Checking availability...</p> : null}
         </div>
 
         <div className="border-t border-ink/10 pt-4">

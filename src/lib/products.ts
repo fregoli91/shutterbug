@@ -76,6 +76,7 @@ export type Product = {
   partsRepair?: boolean;
   featured?: boolean;
   newArrival?: boolean;
+  createdAt?: string;
   tested: string[];
   included: string[];
   doesNotInclude?: string[];
@@ -369,6 +370,7 @@ function dbProductToProduct(product: ProductWithImages): Product {
     partsRepair: product.forPartsOrRepair || product.partsRepair,
     featured: product.featured,
     newArrival: product.newArrival,
+    createdAt: product.createdAt.toISOString(),
     tested: product.tested,
     included: product.included,
     doesNotInclude: product.doesNotInclude,
@@ -415,7 +417,7 @@ async function readDbProducts() {
 export async function getCatalogProducts() {
   const dbProducts = await readDbProducts();
   if (dbProducts) return dbProducts;
-  return process.env.NODE_ENV === 'production' ? [] : publicProducts;
+  return [];
 }
 
 export async function getActiveCatalogProducts() {
@@ -443,7 +445,7 @@ export async function getProductBySlug(slug: string) {
     }
   }
 
-  return process.env.NODE_ENV === 'production' ? undefined : getProduct(slug);
+  return undefined;
 }
 
 function productMatchesCategory(product: Product, categorySlug: string) {

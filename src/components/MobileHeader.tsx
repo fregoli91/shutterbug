@@ -14,18 +14,11 @@ type MobileHeaderItem = {
 
 const quickLinks: MobileHeaderItem[] = [
   { href: '/shop', label: 'Cameras' },
-  { href: '/shop?sort=newest', label: 'New Arrivals' },
   { href: '/categories/vintage-digital-cameras', label: 'Vintage Digital' },
   { href: '/categories/film-cameras', label: 'Film' },
-  { href: '/categories/lenses', label: 'Lenses' },
-  { href: '/brands/canon', label: 'Canon' },
-  { href: '/brands/nikon', label: 'Nikon' },
-  { href: '/brands/olympus', label: 'Olympus' },
-  { href: '/brands', label: 'All Brands' },
-  { href: '/blog', label: 'Journal' },
-  { href: '/sell-your-camera', label: 'Sell or Trade' }
+  { href: '/brands', label: 'Brands' },
+  { href: '/sell-your-camera', label: 'Sell' }
 ];
-
 const searchSuggestions = [
   'Canon PowerShot',
   'Olympus',
@@ -58,7 +51,38 @@ export function MobileHeader({
   const [scrolled, setScrolled] = useState(false);
   const [searchOpen, setSearchOpen] = useState(false);
   const scrolledRef = useRef(false);
+  const searchFormRef = useRef<HTMLFormElement>(null);
+  const searchToggleRef = useRef<HTMLButtonElement>(null);
   const compact = transactional || scrolled;
+
+  useEffect(() => {
+    if (!compact || !searchOpen) return;
+
+    function dismissOutside(event: Event) {
+      const target = event.target;
+      if (!(target instanceof Node)) return;
+      if (searchFormRef.current?.contains(target) || searchToggleRef.current?.contains(target)) return;
+
+      const focused = document.activeElement;
+      if (focused instanceof HTMLElement && searchFormRef.current?.contains(focused)) focused.blur();
+      setSearchOpen(false);
+    }
+
+    function handleEscape(event: globalThis.KeyboardEvent) {
+      if (event.key !== 'Escape') return;
+      setSearchOpen(false);
+      searchToggleRef.current?.focus();
+    }
+
+    document.addEventListener('pointerdown', dismissOutside, true);
+    document.addEventListener('focusin', dismissOutside);
+    document.addEventListener('keydown', handleEscape);
+    return () => {
+      document.removeEventListener('pointerdown', dismissOutside, true);
+      document.removeEventListener('focusin', dismissOutside);
+      document.removeEventListener('keydown', handleEscape);
+    };
+  }, [compact, searchOpen]);
 
   useEffect(() => {
     let frame = 0;
@@ -113,10 +137,11 @@ export function MobileHeader({
           {compact ? (
             <button
               type="button"
+              ref={searchToggleRef}
               aria-label={searchOpen ? 'Close search' : 'Open search'}
               aria-expanded={searchOpen}
               onClick={() => setSearchOpen((current) => !current)}
-              className="flex h-11 w-11 items-center justify-center rounded-lg border border-forest/15 bg-cream text-forest transition hover:border-moss/45 hover:bg-mint focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-moss"
+              className="flex h-11 w-11 items-center justify-center rounded-lg text-forest transition hover:bg-forest/5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-moss"
             >
               <SearchIcon />
             </button>
@@ -127,13 +152,13 @@ export function MobileHeader({
       </div>
 
       <div
-        className={`grid transition-[grid-template-rows,opacity] duration-200 ease-out ${
+        className={`grid transition-[grid-template-rows,opacity] duration-200 ease-out motion-reduce:transition-none ${
           showSearchRow ? 'grid-rows-[1fr] opacity-100' : 'grid-rows-[0fr] opacity-0'
         }`}
       >
         <div className="overflow-hidden">
           <div className="px-3 pb-2 sm:px-5">
-            <form action="/shop" role="search">
+            <form ref={searchFormRef} action="/shop" role="search" inert={!showSearchRow}>
               <label htmlFor="mobile-header-search" className="sr-only">
                 Search tested camera inventory
               </label>
@@ -166,7 +191,7 @@ export function MobileHeader({
       </div>
 
       <div
-        className={`grid transition-[grid-template-rows,opacity] duration-200 ease-out ${
+        className={`grid transition-[grid-template-rows,opacity] duration-200 ease-out motion-reduce:transition-none ${
           showCategoryRow ? 'grid-rows-[1fr] opacity-100' : 'grid-rows-[0fr] opacity-0'
         }`}
       >

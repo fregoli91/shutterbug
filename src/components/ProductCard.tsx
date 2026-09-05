@@ -4,113 +4,37 @@ import { AddToCartButton } from '@/components/cart/AddToCartButton';
 import { ProductLikeButton } from '@/components/ProductLikeButton';
 import { Product, formatPrice, isPurchasable } from '@/lib/products';
 
-export function ProductCard({
-  product,
-  liked = false,
-  signedIn = false
-}: {
-  product: Product;
-  liked?: boolean;
-  signedIn?: boolean;
+export function ProductCard({ product, liked = false, signedIn = false }: {
+  product: Product; liked?: boolean; signedIn?: boolean;
 }) {
   const purchasable = isPurchasable(product);
   const productHref = `/shop/${product.slug}`;
 
   return (
-    <article className="group flex h-full flex-col overflow-hidden rounded-lg border border-ink/10 bg-[#fffdf8] shadow-[0_3px_14px_rgba(35,43,32,0.07)] transition hover:-translate-y-1 hover:border-moss/35 hover:shadow-soft">
-      <div className="relative aspect-[4/3] bg-sand p-2.5 sm:p-6">
-        <Link href={productHref} className="block h-full w-full">
-          <Image
-            src={product.heroImage}
-            alt={product.title}
-            width={600}
-            height={450}
-            sizes="(min-width: 1280px) 25vw, (min-width: 768px) 33vw, 50vw"
-            unoptimized={product.heroImage.endsWith('.svg')}
-            className="h-full w-full object-contain"
-          />
+    <article className="group flex h-full min-w-0 flex-col overflow-hidden rounded-lg border border-ink/10 bg-[#fffdf8] transition hover:border-moss/35">
+      <Link href={productHref} className="block aspect-[4/3] bg-sand/40 p-2 sm:p-4 focus-visible:outline focus-visible:outline-2 focus-visible:outline-moss">
+        <Image src={product.heroImage} alt={product.title} width={600} height={450}
+          sizes="(min-width: 1280px) 300px, (min-width: 1024px) 30vw, (min-width: 768px) 33vw, 50vw"
+          unoptimized={product.heroImage.endsWith('.svg')} className="h-full w-full object-contain" />
+      </Link>
+      <div className="flex flex-1 flex-col px-3 pb-3 sm:px-4 sm:pb-4">
+        <div className="flex min-h-11 items-center justify-between gap-1">
+          <p className="min-w-0 break-words text-xs font-semibold text-moss">{product.brand}</p>
+          <ProductLikeButton productId={product.id} productSlug={product.slug} liked={liked}
+            signedIn={signedIn} redirectTo={productHref}
+            className={`flex h-11 w-11 shrink-0 items-center justify-center rounded-md transition focus-visible:outline focus-visible:outline-2 focus-visible:outline-moss ${liked ? 'text-forest bg-mint' : 'text-ink/65 hover:bg-mint hover:text-forest'}`} />
+        </div>
+        <Link href={productHref} className="block focus-visible:outline focus-visible:outline-2 focus-visible:outline-moss">
+          <h3 className="line-clamp-3 min-h-[3.75rem] break-words text-sm font-semibold leading-5 text-ink group-hover:text-moss sm:text-base">{product.model || product.title}</h3>
         </Link>
-        <div className="absolute right-2 top-2 z-20 flex h-11 w-11 items-center justify-center sm:right-4 sm:top-4">
-          <ProductLikeButton
-            productId={product.id}
-            productSlug={product.slug}
-            liked={liked}
-            signedIn={signedIn}
-            redirectTo={productHref}
-            className={`flex h-11 w-11 shrink-0 items-center justify-center rounded-full border shadow-sm transition ${
-              liked
-                ? 'border-forest bg-forest text-white hover:bg-moss'
-                : 'border-ink/10 bg-white text-ink hover:border-moss hover:text-moss'
-            }`}
-          />
-        </div>
-      </div>
-
-      <div className="flex flex-1 flex-col p-3 sm:p-5">
-        <div className="flex flex-wrap gap-1.5 text-[0.68rem] font-semibold sm:gap-2 sm:text-xs">
-          <span className="rounded-full bg-mint px-3 py-1 text-forest">{product.functionalStatus ?? 'Tested'}</span>
-          <span className="rounded-full bg-sage px-3 py-1 text-ink/70">{product.condition}</span>
-          {product.includesBattery ? (
-            <span className="hidden rounded-full bg-sage px-3 py-1 text-ink/70 sm:inline-flex">Battery</span>
-          ) : null}
-          {product.includesCharger ? (
-            <span className="hidden rounded-full bg-sage px-3 py-1 text-ink/70 sm:inline-flex">Charger</span>
-          ) : null}
-          {product.condition === 'For Parts' ? (
-            <span className="hidden rounded-full bg-sand px-3 py-1 text-ink/70 sm:inline-flex">Parts</span>
-          ) : null}
-        </div>
-
-        <p className="mt-3 text-[0.68rem] font-bold uppercase tracking-[0.14em] text-moss sm:mt-4 sm:text-xs sm:tracking-[0.16em]">
-          {product.brand}
-        </p>
-        <Link href={productHref} className="mt-1.5 block sm:mt-2">
-          <h3 className="line-clamp-2 min-h-10 text-[0.95rem] font-semibold leading-5 text-ink transition group-hover:text-moss sm:min-h-12 sm:text-lg sm:leading-6">
-            {product.title}
-          </h3>
-        </Link>
-        <p className="mt-3 hidden text-sm leading-6 text-ink/65 sm:line-clamp-2">{product.shortDescription}</p>
-
-        <div className="mt-4 hidden gap-1 text-sm text-ink/68 sm:grid">
-          <p>
-            <span className="font-semibold text-ink">Note:</span> {product.conditionSummary}
-          </p>
-          <p>
-            <span className="font-semibold text-ink">Ships:</span> from Shutterbug
-          </p>
-        </div>
-        <label className="mt-3 hidden min-h-9 items-center gap-2 text-sm font-semibold text-ink/60 sm:inline-flex">
-          <input type="checkbox" className="h-4 w-4 rounded border-ink/20 accent-[#24543a]" />
-          Compare
-        </label>
-
-        <div className="mt-auto grid gap-3 pt-3 sm:gap-4 sm:pt-5">
-          <div>
-            <p className="text-[0.68rem] uppercase tracking-[0.14em] text-ink/50 sm:text-xs sm:tracking-[0.16em]">
-              Price
-            </p>
-            <p className="text-xl font-bold leading-tight text-ink">{formatPrice(product.price)}</p>
-          </div>
-          <div className="grid gap-2 sm:grid-cols-2">
-            {purchasable ? (
-              <AddToCartButton
-                productId={product.id}
-                className="flex min-h-11 items-center justify-center rounded-full bg-forest px-3 py-2.5 text-center text-sm font-semibold text-white transition hover:bg-moss sm:px-4"
-              />
-            ) : (
-              <Link
-                href="/contact"
-                className="flex min-h-11 items-center justify-center rounded-full bg-forest px-3 py-2.5 text-center text-sm font-semibold text-white transition hover:bg-moss sm:px-4"
-              >
-                Alert me
-              </Link>
-            )}
-            <Link
-              href={productHref}
-              className="flex min-h-11 items-center justify-center rounded-full border border-ink/15 bg-[#fffdf8] px-3 py-2.5 text-center text-sm font-semibold text-ink transition hover:border-moss hover:text-moss sm:px-4"
-            >
-              Details
-            </Link>
+        <p className="mt-2 text-xs leading-5 text-ink/70">{product.condition}</p>
+        {product.functionalStatus ? <p className="text-xs leading-5 text-ink/60">{product.functionalStatus}</p> : null}
+        <div className="mt-auto pt-3">
+          <p className="text-lg font-bold text-ink sm:text-xl">{formatPrice(product.price)}</p>
+          <p className="mt-1 text-xs text-ink/65">{purchasable ? 'In stock' : 'Currently unavailable'}</p>
+          <div className="mt-3 grid gap-1">
+            {purchasable ? <AddToCartButton productId={product.id} className="flex min-h-11 items-center justify-center rounded-md bg-forest px-2 py-2 text-sm font-semibold text-white hover:bg-moss focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-moss" /> : null}
+            <Link href={productHref} className="inline-flex min-h-11 items-center justify-center rounded-md text-sm font-semibold text-forest hover:bg-mint focus-visible:outline focus-visible:outline-2 focus-visible:outline-moss">View details</Link>
           </div>
         </div>
       </div>

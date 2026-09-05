@@ -49,7 +49,7 @@ function brandDescription(name: string, count: number) {
       : `Browse Shutterbug's ${name} camera page for future inventory, restock interest, and used-camera buying help.`;
 
   if (name === 'Canon') {
-    return `${base} Canon PowerShot and Canon film/digital models are common high-intent searches for used-camera buyers.`;
+    return `${base} Explore Canon PowerShot compacts alongside classic Canon film and digital cameras.`;
   }
 
   if (name === 'Olympus') {

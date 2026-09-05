@@ -2,6 +2,7 @@
 
 import Image from 'next/image';
 import Link from 'next/link';
+import { ChevronLeft, ChevronRight, Pause, Play } from 'lucide-react';
 import {
   useCallback,
   useEffect,
@@ -28,6 +29,8 @@ type PointerStart = {
 
 export function HomePromotionalCarousel({ promotions }: HomePromotionalCarouselProps) {
   const [activeIndex, setActiveIndex] = useState(0);
+  const [autoplayPaused, setAutoplayPaused] = useState(false);
+  const swiped = useRef(false);
   const [isHovered, setIsHovered] = useState(false);
   const [isFocusWithin, setIsFocusWithin] = useState(false);
   const [isPageVisible, setIsPageVisible] = useState(true);
@@ -82,7 +85,7 @@ export function HomePromotionalCarousel({ promotions }: HomePromotionalCarouselP
       isHovered ||
       isFocusWithin ||
       !isPageVisible ||
-      isInteractionPaused
+      isInteractionPaused || autoplayPaused
     ) {
       return;
     }
@@ -92,7 +95,7 @@ export function HomePromotionalCarousel({ promotions }: HomePromotionalCarouselP
     }, AUTOPLAY_DELAY);
 
     return () => window.clearTimeout(timer);
-  }, [activeIndex, isFocusWithin, isHovered, isInteractionPaused, isPageVisible, prefersReducedMotion, promotions.length]);
+  }, [activeIndex, autoplayPaused, isFocusWithin, isHovered, isInteractionPaused, isPageVisible, prefersReducedMotion, promotions.length]);
 
   useEffect(
     () => () => {
@@ -112,6 +115,7 @@ export function HomePromotionalCarousel({ promotions }: HomePromotionalCarouselP
   }
 
   function handlePointerDown(event: PointerEvent<HTMLElement>) {
+    swiped.current = false;
     if (event.pointerType === 'mouse') return;
     pointerStart.current = { x: event.clientX, y: event.clientY, pointerId: event.pointerId };
   }
@@ -125,6 +129,7 @@ export function HomePromotionalCarousel({ promotions }: HomePromotionalCarouselP
     const deltaY = event.clientY - start.y;
     if (Math.abs(deltaX) < SWIPE_THRESHOLD || Math.abs(deltaX) <= Math.abs(deltaY) * 1.2) return;
 
+    swiped.current = true;
     if (deltaX > 0) goPrevious();
     else goNext();
   }
@@ -171,7 +176,13 @@ export function HomePromotionalCarousel({ promotions }: HomePromotionalCarouselP
                   href={promotion.href}
                   className="group/slide relative block aspect-[16/9] w-full overflow-hidden bg-cream sm:aspect-[2/1]"
                   tabIndex={index === activeIndex ? 0 : -1}
-                  onClick={pauseAfterInteraction}
+                  onClick={(event) => {
+                    if (swiped.current) {
+                      event.preventDefault();
+                      swiped.current = false;
+                    }
+                    pauseAfterInteraction();
+                  }}
                 >
                   {promotion.mobileImage ? (
                     <>
@@ -207,6 +218,7 @@ export function HomePromotionalCarousel({ promotions }: HomePromotionalCarouselP
                         alt=""
                         fill
                         loading={index === 0 ? 'eager' : 'lazy'}
+                        fetchPriority={index === 0 ? 'high' : undefined}
                         sizes="(min-width: 1280px) 1280px, (min-width: 640px) calc(100vw - 3rem), calc(100vw - 2rem)"
                         className={promotion.id === 'canon-powershot' ? 'object-contain sm:object-cover' : 'object-contain'}
                       />
@@ -225,6 +237,25 @@ export function HomePromotionalCarousel({ promotions }: HomePromotionalCarouselP
             </>
           ) : null}
         </div>
+        {promotions.length > 1 ? (
+          <div className="flex items-center justify-center gap-1" aria-label="Promotion controls">
+            {promotions.map((promotion, index) => (
+              <button key={promotion.id} type="button" onClick={() => goTo(index)}
+                aria-label={`Show promotion ${index + 1}: ${promotion.eyebrow}`}
+                aria-pressed={activeIndex === index}
+                className="flex h-11 w-9 items-center justify-center rounded focus-visible:outline focus-visible:outline-2 focus-visible:outline-moss">
+                <span className={`h-1.5 rounded-full ${activeIndex === index ? 'w-5 bg-forest' : 'w-1.5 bg-forest/30'}`} />
+              </button>
+            ))}
+            <button type="button" onClick={() => setAutoplayPaused((value) => !value)}
+              aria-label={autoplayPaused ? 'Play promotions' : 'Pause promotions'}
+              title={autoplayPaused ? 'Play promotions' : 'Pause promotions'}
+              className="flex h-11 w-11 items-center justify-center rounded text-forest hover:bg-mint focus-visible:outline focus-visible:outline-2 focus-visible:outline-moss">
+              {autoplayPaused ? <Play className="h-4 w-4" aria-hidden="true" /> : <Pause className="h-4 w-4" aria-hidden="true" />}
+            </button>
+            <p className="sr-only" aria-live={isInteractionPaused ? 'polite' : 'off'}>{promotions[activeIndex]?.eyebrow}</p>
+          </div>
+        ) : null}
       </div>
     </section>
   );
@@ -250,9 +281,7 @@ function CarouselButton({
       aria-label={label}
       onClick={onClick}
     >
-      <svg viewBox="0 0 24 24" aria-hidden="true" className={`h-4 w-4 ${isPrevious ? '' : 'rotate-180'}`}>
-        <path d="m14.5 5-7 7 7 7" fill="none" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" />
-      </svg>
+      {isPrevious ? <ChevronLeft className="h-4 w-4" aria-hidden="true" /> : <ChevronRight className="h-4 w-4" aria-hidden="true" />}
     </button>
   );
 }

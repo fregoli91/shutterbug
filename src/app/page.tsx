@@ -3,12 +3,14 @@ import Image from 'next/image';
 import type { Metadata } from 'next';
 import { HomePromotionalCarousel } from '@/components/HomePromotionalCarousel';
 import { ProductCard } from '@/components/ProductCard';
+import { EmptyShelf } from '@/components/EmptyShelf';
+import { compareNewest } from '@/lib/storefront-sort';
 import { SectionHeading } from '@/components/SectionHeading';
 import { categories, featuredCategorySlugs, type Category } from '@/lib/categories';
 import { getLikedProductIds } from '@/lib/customer-likes';
 import { getCustomerSession } from '@/lib/customer-auth';
 import { getActiveHomePromotions, type HomePromotion } from '@/lib/home-promotions';
-import { formatPrice, getCatalogProducts, type Product } from '@/lib/products';
+import { formatPrice, getCatalogProducts, isActiveProduct, type Product } from '@/lib/products';
 import { site } from '@/lib/seo';
 
 export const metadata: Metadata = {
@@ -61,13 +63,6 @@ const offerCards = [
   }
 ];
 
-const accountBenefits = [
-  'Track your camera orders',
-  'View your purchase history',
-  'Save time at checkout',
-  'Get easier support for past purchases'
-];
-
 const quickLinks = [
   ['Shop all cameras', '/shop'],
   ['Liked products', '/account/likes'],
@@ -77,10 +72,10 @@ const quickLinks = [
 ];
 
 export default async function Home() {
-  const catalog = await getCatalogProducts();
+  const catalog = (await getCatalogProducts()).filter(isActiveProduct).sort(compareNewest);
   const featuredProducts = catalog.filter((product) => product.featured).slice(0, 4);
   const featured = featuredProducts.length ? featuredProducts : catalog.slice(0, 4);
-  const shelfProducts = featured.slice(0, 3);
+  const shelfProducts = catalog.slice(0, 3);
   const newArrivals = catalog.slice(0, 6);
   const promotions = getActiveHomePromotions();
   const featuredCategories = featuredCategorySlugs
@@ -105,15 +100,13 @@ export default async function Home() {
     );
   }
 
-  return <LoggedOutHome featured={featured} shelfProducts={shelfProducts} promotions={promotions} />;
+  return <LoggedOutHome shelfProducts={shelfProducts} promotions={promotions} />;
 }
 
 function LoggedOutHome({
-  featured,
   shelfProducts,
   promotions
 }: {
-  featured: Product[];
   shelfProducts: Product[];
   promotions: HomePromotion[];
 }) {
@@ -153,6 +146,7 @@ function LoggedOutHome({
                 View all <ArrowRightIcon />
               </Link>
             </div>
+            {!shelfProducts.length ? <EmptyShelf /> : null}
             <div className="grid grid-cols-2 gap-3 lg:hidden">
               {shelfProducts.slice(0, 2).map((product) => (
                 <ProductCard key={product.id} product={product} />
@@ -186,16 +180,7 @@ function LoggedOutHome({
         </div>
       </section>
 
-      <div className="hidden lg:block">
-        <FeaturedProducts
-          eyebrow="Featured inventory"
-          title="Fresh camera finds"
-          products={featured}
-          intro="A few current finds from the Shutterbug shelf."
-          featureImage="/shutterbug-shop-cameras-page.png"
-          featureImageAlt="A curated display of vintage digital and film cameras at Shutterbug Camera Shop"
-        />
-      </div>
+
 
 
       <section className="bg-cream px-4 py-12 sm:px-6 sm:py-14 lg:px-8">
@@ -235,10 +220,10 @@ function LoggedOutHome({
       </section>
 
       <DirectStoreCallout />
-      <PrinterCallout />
       <CategoryPills title="Popular brands" showPopularBrandsImage />
       <TestingProcessCallout />
       <TrustCards />
+      <PrinterCallout />
       <SignupCallout />
       <JournalCallout />
     </>
@@ -259,7 +244,6 @@ function SummerSaleBanner() {
             alt="Shutterbug Camera Shop summer sale on tested vintage digital and film cameras"
             width={2400}
             height={720}
-            priority
             sizes="(min-width: 1280px) 1280px, (min-width: 640px) calc(100vw - 3rem), calc(100vw - 2rem)"
             className="h-auto w-full bg-sand object-contain object-center"
           />
@@ -532,7 +516,7 @@ function DirectStoreCallout() {
 
 function CategoryPills({ title, showPopularBrandsImage = false }: { title: string; showPopularBrandsImage?: boolean }) {
   return (
-    <section className="bg-cream px-4 py-14 sm:px-6 lg:px-8">
+    <section className="bg-cream px-4 py-8 sm:px-6 sm:py-12 lg:px-8">
       <div className="mx-auto max-w-7xl">
         <p className="text-center text-sm font-bold uppercase tracking-[0.24em] text-moss">{title}</p>
         {showPopularBrandsImage ? (
@@ -568,7 +552,7 @@ function CategoryPills({ title, showPopularBrandsImage = false }: { title: strin
 
 function CategoryGrid({ featuredCategories }: { featuredCategories: Category[] }) {
   return (
-    <section className="bg-cream px-4 py-12 sm:px-6 sm:py-16 lg:px-8">
+    <section className="bg-cream px-4 py-8 sm:px-6 sm:py-12 lg:px-8">
       <div className="mx-auto max-w-7xl">
         <div className="grid gap-8 lg:grid-cols-[1fr_24rem] lg:items-end">
           <SectionHeading eyebrow="Start here" title="Shop by category">
@@ -602,54 +586,20 @@ function CategoryGrid({ featuredCategories }: { featuredCategories: Category[] }
 
 function SignupCallout() {
   return (
-    <section className="bg-cream px-4 py-12 sm:px-6 sm:py-16 lg:px-8">
-      <div className="mx-auto max-w-7xl rounded-lg border border-ink/10 bg-white p-6 text-center shadow-sm lg:p-8">
+    <section className="border-y border-forest/10 bg-mint/40 px-4 py-8 sm:px-6 lg:px-8">
+      <div className="mx-auto flex max-w-7xl flex-col items-center justify-between gap-4 text-center sm:flex-row sm:text-left">
         <div>
-          <p className="text-center text-sm font-bold uppercase tracking-[0.24em] text-moss">Become a Shutterbug customer</p>
-          <h2 className="mt-3 font-serif text-4xl font-bold text-ink">Find a vintage camera worth keeping.</h2>
-          <Image
-            src="/shutterbug-customer-account-hero.png"
-            alt="Shutterbug customer account, checkout, liked products, and package tracking"
-            width={1448}
-            height={1086}
-            sizes="(min-width: 1280px) 72rem, 100vw"
-            className="mt-6 aspect-[4/3] w-full rounded-lg bg-sand object-cover object-center sm:aspect-[16/9]"
-          />
-          <p className="mx-auto mt-6 max-w-3xl leading-7 text-ink/70">
-            Create your account to shop tested digital and film cameras, track your orders, and keep every Shutterbug
-            purchase connected in one place.
-          </p>
-          <p className="mt-5 text-sm font-bold uppercase tracking-[0.18em] text-moss">Why create an account?</p>
-          <div className="mt-5 flex flex-wrap justify-center gap-2">
-            {accountBenefits.map((benefit) => (
-              <span
-                key={benefit}
-                className="rounded-full border border-ink/10 bg-cream px-4 py-2 text-sm font-semibold text-ink/72"
-              >
-                {benefit}
-              </span>
-            ))}
-          </div>
-          <div className="mt-7 flex flex-col justify-center gap-3 sm:flex-row">
-            <Link
-              href="/signup"
-              className="inline-flex min-h-11 items-center justify-center rounded-full bg-forest px-6 text-sm font-semibold text-white transition hover:bg-moss"
-            >
-              Create your account
-            </Link>
-            <Link
-              href="/login"
-              className="inline-flex min-h-11 items-center justify-center rounded-full border border-ink/15 bg-cream px-6 text-sm font-semibold text-ink transition hover:border-moss hover:text-moss"
-            >
-              Log in
-            </Link>
-          </div>
+          <h2 className="text-xl font-semibold text-ink">Keep your finds in one place.</h2>
+          <p className="mt-2 text-sm text-ink/70">Save favorites, track orders and revisit your purchases.</p>
+        </div>
+        <div className="flex shrink-0 items-center gap-4 text-sm font-semibold">
+          <Link href="/signup" className="inline-flex min-h-11 items-center rounded-md border border-forest/20 px-4 text-forest hover:bg-mint">Create account</Link>
+          <Link href="/login" className="inline-flex min-h-11 items-center text-forest hover:underline">Sign in</Link>
         </div>
       </div>
     </section>
   );
 }
-
 function PrinterCallout() {
   const printerBrands = ['Canon', 'Brother', 'HP', 'Lexmark'];
 
@@ -737,7 +687,7 @@ function FeaturedProducts({
   likedProductIds?: Set<string>;
 }) {
   return (
-    <section className="bg-cream px-4 py-12 sm:px-6 sm:py-16 lg:px-8">
+    <section className="bg-cream px-4 py-8 sm:px-6 sm:py-12 lg:px-8">
       <div className="mx-auto max-w-7xl">
         <div className="flex flex-col items-center gap-4 text-center">
           <div>
@@ -749,7 +699,7 @@ function FeaturedProducts({
             View all products &rarr;
           </Link>
         </div>
-        {featureImage ? (
+        {featureImage && products.length > 0 ? (
           <Image
             src={featureImage}
             alt={featureImageAlt ?? ''}
@@ -759,6 +709,7 @@ function FeaturedProducts({
             className="mt-6 aspect-[16/7] w-full rounded-lg border border-ink/10 bg-sand object-cover object-center shadow-sm sm:mt-8"
           />
         ) : null}
+        {!products.length ? <div className="mt-6"><EmptyShelf /></div> : null}
         <div className="mt-6 grid grid-cols-2 gap-3 sm:mt-10 sm:gap-6 md:grid-cols-3 lg:grid-cols-4">
           {products.map((product) => (
             <ProductCard
@@ -776,38 +727,17 @@ function FeaturedProducts({
 
 function TrustCards() {
   return (
-    <section className="bg-cream px-4 py-12 sm:px-6 sm:py-14 lg:px-8">
-      <div className="mx-auto grid max-w-7xl gap-6 lg:grid-cols-[1.4fr_0.6fr] lg:items-center">
-        <Image
-          src="/shutterbug-trust-banner.png"
-          alt="Shutterbug trust promise with secure shopping, tested cameras, honest service, and careful handling"
-          width={1600}
-          height={1000}
-          sizes="(min-width: 1024px) 58vw, 100vw"
-          className="aspect-[4/3] w-full rounded-lg border border-ink/10 bg-cream object-contain object-center shadow-sm sm:aspect-[16/9]"
-        />
-        <div className="rounded-lg border border-ink/10 bg-white p-6 text-center shadow-sm">
-          <p className="text-center text-sm font-bold uppercase tracking-[0.24em] text-moss">Buyer confidence</p>
-          <h2 className="mt-3 text-center font-serif text-3xl font-bold text-ink">Trusted cameras, honest service.</h2>
-          <div className="mt-5 grid gap-2">
-            {['Secure shopping', 'Tested cameras', 'Honest service', 'Careful handling'].map((item) => (
-              <span key={item} className="rounded-full bg-cream px-4 py-2 text-sm font-semibold text-ink/72">
-                {item}
-              </span>
-            ))}
-          </div>
-          <Link
-            href="/buyer-guarantee"
-            className="mt-6 inline-flex min-h-11 items-center justify-center rounded-full bg-forest px-5 text-sm font-semibold text-white transition hover:bg-moss"
-          >
-            Buyer guarantee
-          </Link>
-        </div>
+    <section className="bg-cream px-4 py-8 sm:px-6 lg:px-8">
+      <div className="mx-auto max-w-7xl border-y border-forest/15 py-6 text-center">
+        <h2 className="text-2xl font-semibold text-ink">The Shutterbug Standard</h2>
+        <ul className="mt-5 grid grid-cols-2 gap-4 text-sm text-ink/75 lg:grid-cols-4">
+          {['Tested when stated', 'Real photos of the item you buy', 'Honest condition notes', 'Careful packing & support'].map((item) => <li key={item}>{item}</li>)}
+        </ul>
+        <Link href="/testing-process" className="mt-4 inline-flex min-h-11 items-center font-semibold text-moss hover:underline">How We Test &rarr;</Link>
       </div>
     </section>
   );
 }
-
 function JournalCallout() {
   return (
     <section className="border-y border-ink/10 bg-mint px-4 py-12 sm:px-6 sm:py-14 lg:px-8">
@@ -854,10 +784,10 @@ function JournalCallout() {
 }
 function TestingProcessCallout() {
   return (
-    <section className="bg-mint px-4 py-12 sm:px-6 sm:py-16 lg:px-8">
+    <section className="bg-mint px-4 py-8 sm:px-6 sm:py-12 lg:px-8">
       <div className="mx-auto grid max-w-7xl gap-5 rounded-lg border border-ink/10 bg-white p-5 shadow-sm sm:gap-8 sm:p-6 lg:grid-cols-[minmax(0,1fr)_minmax(22rem,0.95fr)] lg:items-center lg:p-8">
         <div>
-          <p className="text-center text-sm font-bold uppercase tracking-[0.24em] text-moss">Testing process preview</p>
+          <p className="text-center text-sm font-bold uppercase tracking-[0.24em] text-moss">How We Test</p>
           <h2 className="mt-3 text-center font-serif text-3xl font-bold text-ink sm:text-4xl">Know what works before it arrives.</h2>
           <Link
             href="/testing-process"
@@ -877,7 +807,7 @@ function TestingProcessCallout() {
             href="/testing-process"
             className="mt-6 inline-flex min-h-11 items-center justify-center rounded-full bg-forest px-7 text-center font-semibold text-white transition hover:bg-moss"
           >
-            See how we test
+            How We Test
           </Link>
         </div>
         <Link

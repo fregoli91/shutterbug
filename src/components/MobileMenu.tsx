@@ -15,7 +15,8 @@ const shopItems: MobileMenuItem[] = [
   { href: '/categories/film-cameras', label: 'Film Cameras' },
   { href: '/categories/lenses', label: 'Lenses' },
   { href: '/categories/printers', label: 'Printers' },
-  { href: '/categories/camera-accessories', label: 'Accessories' }
+  { href: '/categories/camera-accessories', label: 'Accessories' },
+  { href: '/categories/parts-repair', label: 'Parts & Repair' }
 ];
 
 const brandItems: MobileMenuItem[] = [
@@ -24,14 +25,18 @@ const brandItems: MobileMenuItem[] = [
   { href: '/categories/sony-cyber-shot-cameras', label: 'Sony' },
   { href: '/categories/nikon-coolpix-cameras', label: 'Nikon' },
   { href: '/categories/polaroid-cameras', label: 'Polaroid' },
+  { href: '/brands/fujifilm', label: 'Fujifilm' },
+  { href: '/brands/pentax', label: 'Pentax' },
+  { href: '/brands/kodak', label: 'Kodak' },
   { href: '/brands', label: 'View All Brands' }
 ];
 
 const discoverItems: MobileMenuItem[] = [
-  { href: '/shop', label: 'Fresh Camera Finds' },
+  { href: '/shop?sort=newest', label: 'Fresh Camera Finds' },
   { href: '/blog', label: 'Shutterbug Journal' },
   { href: '/guides', label: 'Camera Guides' },
-  { href: '/testing-process', label: 'How We Test Cameras' }
+  { href: '/testing-process', label: 'How We Test' },
+  { href: '/buyer-guarantee', label: 'Buyer Guarantee' }
 ];
 
 const animationDuration = 250;
@@ -137,13 +142,13 @@ export function MobileMenu({
         aria-controls="mobile-navigation-drawer"
         aria-label={open ? 'Close menu' : 'Open menu'}
         onClick={open ? closeMenu : openMenu}
-        className="flex h-11 w-11 shrink-0 items-center justify-center rounded-lg border border-moss/30 bg-mint shadow-[inset_0_1px_0_rgba(255,255,255,0.75),0_2px_5px_rgba(35,43,32,0.12)] transition hover:border-moss/55 hover:bg-sage/45 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-moss"
+        className="flex h-11 w-11 shrink-0 items-center justify-center rounded-lg transition hover:bg-forest/5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-moss"
       >
         <span className="sr-only">{open ? 'Close menu' : 'Open menu'}</span>
-        <span aria-hidden="true" className="grid w-5 gap-1.5">
-          <span className="h-0.5 rounded-full bg-forest" />
-          <span className="h-0.5 rounded-full bg-moss" />
-          <span className="h-0.5 rounded-full bg-forest" />
+        <span aria-hidden="true" className="grid w-[18px] gap-1">
+          <span className="h-px bg-forest" />
+          <span className="h-px bg-forest" />
+          <span className="h-px bg-forest" />
         </span>
       </button>
 
@@ -161,7 +166,7 @@ export function MobileMenu({
             role="dialog"
             aria-modal="true"
             aria-label="Shutterbug shop navigation"
-            className={`absolute right-0 top-0 flex h-[100dvh] max-h-[100dvh] w-[min(26.25rem,93vw)] flex-col overflow-hidden border-l border-forest/15 bg-cream shadow-[-16px_0_45px_rgba(22,35,29,0.2)] transition-transform duration-[250ms] ease-out ${open ? 'translate-x-0' : 'translate-x-full'}`}
+            className={`absolute right-0 top-0 flex h-[100dvh] max-h-[100dvh] w-[min(26.25rem,93vw)] flex-col overflow-hidden border-l border-forest/15 bg-cream shadow-[-16px_0_45px_rgba(22,35,29,0.2)] transition-transform duration-[250ms] ease-out motion-reduce:transition-none ${open ? 'translate-x-0' : 'translate-x-full'}`}
           >
             <div className="sticky top-0 z-10 flex min-h-[76px] shrink-0 items-center justify-between border-b border-forest/15 bg-cream/95 px-4 pb-3 pt-[calc(env(safe-area-inset-top)+0.75rem)]">
               <Link href="/" onClick={closeMenu} aria-label="Shutterbug Camera Shop home">
@@ -179,14 +184,33 @@ export function MobileMenu({
                 type="button"
                 aria-label="Close menu"
                 onClick={closeMenu}
-                className="flex h-11 w-11 items-center justify-center rounded-[10px] border border-moss/25 bg-mint/75 text-forest shadow-[inset_0_1px_0_rgba(255,255,255,0.8),0_2px_5px_rgba(35,43,32,0.1)] transition hover:border-moss/45 hover:bg-sage/40 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-moss"
+                className="flex h-11 w-11 items-center justify-center rounded-md text-forest transition hover:border-moss/45 hover:bg-sage/40 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-moss"
               >
                 <CloseIcon />
               </button>
             </div>
 
             <div className="min-h-0 flex-1 overflow-y-auto overscroll-contain px-4 pb-[calc(env(safe-area-inset-bottom)+1.5rem)] pt-4">
-              <section className="pb-4">
+              <MenuSection title="Shop" items={shopItems} onNavigate={closeMenu} />
+              <MenuSection title="Shop by brand" items={brandItems} onNavigate={closeMenu} compact />
+              <MenuSection title="Discover" items={discoverItems} onNavigate={closeMenu} />
+
+              <section className="border-t border-forest/15 py-4">
+                <p className="text-[13px] font-bold uppercase tracking-[0.17em] text-moss">Sell to us</p>
+                <Link
+                  href="/sell-your-camera"
+                  onClick={closeMenu}
+                  className="mt-2 flex min-h-[58px] items-center justify-between rounded-lg border border-moss/20 bg-mint/75 px-3 py-2.5 text-forest shadow-[inset_0_1px_0_rgba(255,255,255,0.75),0_2px_6px_rgba(35,43,32,0.08)] transition hover:border-moss/40 hover:bg-sage/35 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-moss"
+                >
+                  <span>
+                    <span className="block text-base font-bold">Sell Your Camera</span>
+                    <span className="mt-0.5 block text-sm text-ink/62">We buy used camera gear.</span>
+                  </span>
+                  <ArrowRightIcon />
+                </Link>
+              </section>
+
+              <section className="border-t border-forest/15 py-4">
                 <p className="text-[13px] font-bold uppercase tracking-[0.17em] text-moss">Account</p>
                 {signedIn ? (
                   <>
@@ -213,25 +237,6 @@ export function MobileMenu({
                     <Link href="/signup" onClick={closeMenu} className="flex min-h-12 items-center justify-center rounded-lg bg-forest px-3 text-sm font-bold text-white shadow-sm transition hover:bg-moss">Create Account</Link>
                   </div>
                 )}
-              </section>
-
-              <MenuSection title="Shop" items={shopItems} onNavigate={closeMenu} />
-              <MenuSection title="Shop by brand" items={brandItems} onNavigate={closeMenu} compact />
-              <MenuSection title="Discover" items={discoverItems} onNavigate={closeMenu} />
-
-              <section className="border-t border-forest/15 py-4">
-                <p className="text-[13px] font-bold uppercase tracking-[0.17em] text-moss">Sell to us</p>
-                <Link
-                  href="/sell-your-camera"
-                  onClick={closeMenu}
-                  className="mt-2 flex min-h-[58px] items-center justify-between rounded-lg border border-moss/20 bg-mint/75 px-3 py-2.5 text-forest shadow-[inset_0_1px_0_rgba(255,255,255,0.75),0_2px_6px_rgba(35,43,32,0.08)] transition hover:border-moss/40 hover:bg-sage/35 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-moss"
-                >
-                  <span>
-                    <span className="block text-base font-bold">Sell Your Camera</span>
-                    <span className="mt-0.5 block text-sm text-ink/62">We buy used camera gear.</span>
-                  </span>
-                  <ArrowRightIcon />
-                </Link>
               </section>
 
               <Link
@@ -281,7 +286,7 @@ function MenuSection({
             key={item.href}
             href={item.href}
             onClick={onNavigate}
-            className="flex min-h-[46px] items-center justify-between rounded-md px-2 py-1.5 text-[17px] font-semibold text-ink/78 transition hover:bg-mint hover:text-ink focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-moss"
+            className="flex min-h-[46px] items-center justify-between rounded-md px-2 py-1.5 text-base font-semibold text-ink/78 transition hover:bg-mint hover:text-ink focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-moss"
           >
             {item.label}
             {compact && index === items.length - 1 ? <ArrowRightIcon /> : null}

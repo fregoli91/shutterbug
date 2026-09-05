@@ -54,18 +54,18 @@ export function CartPageClient() {
         const payload = (await response.json()) as CartValidationResponse | { error?: string };
 
         if (!response.ok) {
-          throw new Error('Bag could not be validated.');
+          throw new Error('We could not check your bag.');
         }
 
         if (!isCartValidationResponse(payload)) {
-          throw new Error('Bag could not be validated.');
+          throw new Error('We could not check your bag.');
         }
 
         if (!canceled) setValidation(payload);
       } catch {
         if (!canceled) {
           setValidation(null);
-          setError('Bag could not be validated against current inventory. Please refresh and try again.');
+          setError('We could not check availability. Please refresh and try again.');
         }
       } finally {
         if (!canceled) setLoading(false);
@@ -137,7 +137,7 @@ export function CartPageClient() {
               {item.issue ? (
                 <p className="mt-3 rounded-lg bg-sand px-3 py-2 text-sm font-semibold text-ink">{item.issue}</p>
               ) : (
-                <p className="mt-3 text-sm text-ink/60">Validated against current Shutterbug inventory.</p>
+                <p className="mt-3 text-sm text-ink/60">Availability checked before checkout.</p>
               )}
               <div className="mt-3 flex flex-wrap items-center gap-2">
                 <label className="sr-only" htmlFor={`cart-quantity-${item.id}`}>
@@ -178,11 +178,11 @@ export function CartPageClient() {
         <div>
           <p className="text-sm font-bold uppercase tracking-[0.18em] text-moss">Bag summary</p>
           <p className="mt-3 flex items-center justify-between text-sm text-ink/70">
-            Validated subtotal{' '}
+            Subtotal{' '}
             <span className="font-bold text-ink">{loading ? 'Checking...' : formatCents(subtotalCents)}</span>
           </p>
           <p className="mt-2 text-sm text-ink/60">
-            Prices, availability, and quantity limits are checked from current Shutterbug inventory.
+            We confirm current prices and availability before checkout.
           </p>
         </div>
 
@@ -213,11 +213,11 @@ export function CartPageClient() {
         )}
         {hasBlockingIssue ? (
           <p className="text-sm leading-6 text-ink/65">
-            Checkout will stay disabled until unavailable or over-quantity items are removed or updated.
+            Update the highlighted items to continue to checkout.
           </p>
         ) : (
           <p className="text-sm leading-6 text-ink/65">
-            Continue to create a pending order. Payment will be added in a later step.
+            Continue to confirm delivery details and pay securely.
           </p>
         )}
         <button type="button" onClick={clearCart} className="text-sm font-semibold text-moss">
@@ -225,12 +225,10 @@ export function CartPageClient() {
         </button>
         <div className="grid gap-2 border-t border-ink/10 pt-4 text-sm text-ink/65">
           <p>
-            <span className="font-semibold text-ink">Real inventory:</span> draft, archived, sold-out, and over-quantity
-            items are blocked.
+            <span className="font-semibold text-ink">Availability:</span> we check that each item is ready to purchase.
           </p>
           <p>
-            <span className="font-semibold text-ink">Current pricing:</span> totals are calculated from the server,
-            not from browser-submitted prices.
+            <span className="font-semibold text-ink">Current pricing:</span> your total reflects the latest listed prices.
           </p>
           <p>
             <span className="font-semibold text-ink">Used-camera details:</span> condition and availability stay visible
