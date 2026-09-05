@@ -587,7 +587,7 @@ function CategoryGrid({ featuredCategories }: { featuredCategories: Category[] }
 function SignupCallout() {
   return (
     <section className="border-y border-forest/10 bg-mint/40 px-4 py-8 sm:px-6 lg:px-8">
-      <div className="mx-auto flex max-w-7xl flex-col items-center justify-between gap-4 text-center sm:flex-row sm:text-left">
+      <div className="mx-auto flex max-w-4xl flex-col items-center justify-center gap-4 text-center md:flex-row md:gap-10 md:text-left">
         <div>
           <h2 className="text-xl font-semibold text-ink">Keep your finds in one place.</h2>
           <p className="mt-2 text-sm text-ink/70">Save favorites, track orders and revisit your purchases.</p>

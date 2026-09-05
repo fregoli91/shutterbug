@@ -202,7 +202,7 @@ export function MobileHeader({
               className="h-12 w-full min-w-0 touch-pan-x overflow-x-scroll overscroll-x-contain text-[0.82rem] font-semibold text-cream/90 [-webkit-overflow-scrolling:touch] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
               style={{ touchAction: 'pan-x' }}
             >
-              <div className="flex h-full w-max min-w-full gap-5 px-4 sm:px-6">
+              <div className="flex h-full w-max min-w-full justify-between gap-5 px-4 sm:px-6">
                 {quickLinks.map((item) => (
                   <Link
                     key={item.href}
@@ -215,7 +215,7 @@ export function MobileHeader({
               </div>
             </nav>
             <span className="pointer-events-none absolute inset-y-0 left-0 w-4 bg-gradient-to-r from-forest to-transparent" />
-            <span className="pointer-events-none absolute inset-y-0 right-0 w-7 bg-gradient-to-l from-forest to-transparent" />
+            <span className="pointer-events-none absolute inset-y-0 right-0 w-4 bg-gradient-to-l from-forest to-transparent" />
           </div>
         </div>
       </div>

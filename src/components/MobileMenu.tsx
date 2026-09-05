@@ -2,6 +2,7 @@
 
 import Link from 'next/link';
 import Image from 'next/image';
+import { ChevronLeft, ChevronRight, Equal, X } from 'lucide-react';
 import { useEffect, useRef, useState } from 'react';
 
 type MobileMenuItem = {
@@ -52,6 +53,9 @@ export function MobileMenu({
 }) {
   const [mounted, setMounted] = useState(false);
   const [open, setOpen] = useState(false);
+  const [panel, setPanel] = useState<'main' | 'brands' | 'discover' | 'account'>('main');
+  const panelHeadingRef = useRef<HTMLHeadingElement>(null);
+  const panelTriggerRef = useRef<HTMLButtonElement | null>(null);
   const closeButtonRef = useRef<HTMLButtonElement>(null);
   const triggerRef = useRef<HTMLButtonElement>(null);
   const drawerRef = useRef<HTMLDivElement>(null);
@@ -124,7 +128,20 @@ export function MobileMenu({
     };
   }, [open]);
 
+  function openPanel(next: 'brands' | 'discover' | 'account', trigger: HTMLButtonElement) {
+    panelTriggerRef.current = trigger;
+    setPanel(next);
+    window.requestAnimationFrame(() => panelHeadingRef.current?.focus());
+  }
+
+  function backToMenu() {
+    const panelName = panel;
+    setPanel('main');
+    window.requestAnimationFrame(() => drawerRef.current?.querySelector<HTMLButtonElement>(`[data-panel-trigger="${panelName}"]`)?.focus());
+  }
+
   function openMenu() {
+    setPanel('main');
     setMounted(true);
     window.setTimeout(() => setOpen(true), 0);
   }
@@ -132,6 +149,13 @@ export function MobileMenu({
   function closeMenu() {
     setOpen(false);
   }
+
+  const secondaryItems = panel === 'brands' ? brandItems : panel === 'discover' ? discoverItems : signedIn ? accountItems : [
+    { href: '/login', label: 'Sign in' },
+    { href: '/signup', label: 'Create account' }
+  ];
+  const panelTitle = panel === 'brands' ? 'Brands' : panel === 'discover' ? 'Discover' : 'Your account';
+  const primaryLinkClass = 'flex min-h-12 items-center py-2 text-2xl font-semibold leading-tight text-forest transition hover:text-moss focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-moss';
 
   return (
     <div className="lg:hidden">
@@ -142,173 +166,85 @@ export function MobileMenu({
         aria-controls="mobile-navigation-drawer"
         aria-label={open ? 'Close menu' : 'Open menu'}
         onClick={open ? closeMenu : openMenu}
-        className="flex h-11 w-11 shrink-0 items-center justify-center rounded-lg transition hover:bg-forest/5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-moss"
+        className="flex h-11 w-11 shrink-0 items-center justify-center rounded-md text-forest transition hover:bg-forest/5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-moss"
       >
-        <span className="sr-only">{open ? 'Close menu' : 'Open menu'}</span>
-        <span aria-hidden="true" className="grid w-[18px] gap-1">
-          <span className="h-px bg-forest" />
-          <span className="h-px bg-forest" />
-          <span className="h-px bg-forest" />
-        </span>
+        <Equal aria-hidden="true" className="h-6 w-6" strokeWidth={1.5} />
       </button>
 
       {mounted ? (
-        <div className="fixed inset-0 z-[70] h-[100dvh] max-h-[100dvh] overflow-hidden lg:hidden">
-          <button
-            type="button"
-            aria-label="Close navigation menu"
-            onClick={closeMenu}
-            className={`absolute inset-0 bg-[#142014]/40 backdrop-blur-[1px] transition-opacity duration-[250ms] ease-out ${open ? 'opacity-100' : 'opacity-0'}`}
-          />
+        <div className="fixed inset-0 z-[70] h-[100dvh] overflow-hidden lg:hidden">
           <div
             ref={drawerRef}
             id="mobile-navigation-drawer"
             role="dialog"
             aria-modal="true"
             aria-label="Shutterbug shop navigation"
-            className={`absolute right-0 top-0 flex h-[100dvh] max-h-[100dvh] w-[min(26.25rem,93vw)] flex-col overflow-hidden border-l border-forest/15 bg-cream shadow-[-16px_0_45px_rgba(22,35,29,0.2)] transition-transform duration-[250ms] ease-out motion-reduce:transition-none ${open ? 'translate-x-0' : 'translate-x-full'}`}
+            inert={!open}
+            className={`absolute inset-0 flex h-[100dvh] flex-col bg-cream transition-[opacity,transform] duration-[250ms] ease-out motion-reduce:transition-none ${open ? 'translate-y-0 opacity-100' : '-translate-y-3 opacity-0'}`}
           >
-            <div className="sticky top-0 z-10 flex min-h-[76px] shrink-0 items-center justify-between border-b border-forest/15 bg-cream/95 px-4 pb-3 pt-[calc(env(safe-area-inset-top)+0.75rem)]">
-              <Link href="/" onClick={closeMenu} aria-label="Shutterbug Camera Shop home">
-                <Image
-                  src="/shutterbug-header-logo-transparent.png"
-                  alt="Shutterbug Camera Shop"
-                  width={216}
-                  height={48}
-                  sizes="9rem"
-                  className="h-auto w-36 object-contain object-left"
-                />
-              </Link>
-              <button
-                ref={closeButtonRef}
-                type="button"
-                aria-label="Close menu"
-                onClick={closeMenu}
-                className="flex h-11 w-11 items-center justify-center rounded-md text-forest transition hover:border-moss/45 hover:bg-sage/40 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-moss"
-              >
-                <CloseIcon />
+            <div className="flex min-h-16 shrink-0 items-center justify-between px-3 pb-2 pt-[calc(env(safe-area-inset-top)+0.5rem)] sm:px-5">
+              {panel === 'main' ? (
+                <Link href="/" onClick={closeMenu} aria-label="Shutterbug Camera Shop home">
+                  <Image src="/shutterbug-header-logo-transparent.png" alt="Shutterbug Camera Shop" width={216} height={48} sizes="8rem" className="h-auto w-32 object-contain object-left" />
+                </Link>
+              ) : (
+                <button type="button" aria-label="Back to main menu" onClick={backToMenu} className="flex h-11 items-center gap-1 rounded-md pr-3 text-sm font-medium text-forest hover:bg-forest/5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-moss">
+                  <ChevronLeft aria-hidden="true" size={22} strokeWidth={1.5} /> Menu
+                </button>
+              )}
+              <button ref={closeButtonRef} type="button" aria-label="Close menu" onClick={closeMenu} className="flex h-11 w-11 items-center justify-center rounded-md text-forest hover:bg-forest/5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-moss">
+                <X aria-hidden="true" size={22} strokeWidth={1.5} />
               </button>
             </div>
 
-            <div className="min-h-0 flex-1 overflow-y-auto overscroll-contain px-4 pb-[calc(env(safe-area-inset-bottom)+1.5rem)] pt-4">
-              <MenuSection title="Shop" items={shopItems} onNavigate={closeMenu} />
-              <MenuSection title="Shop by brand" items={brandItems} onNavigate={closeMenu} compact />
-              <MenuSection title="Discover" items={discoverItems} onNavigate={closeMenu} />
-
-              <section className="border-t border-forest/15 py-4">
-                <p className="text-[13px] font-bold uppercase tracking-[0.17em] text-moss">Sell to us</p>
-                <Link
-                  href="/sell-your-camera"
-                  onClick={closeMenu}
-                  className="mt-2 flex min-h-[58px] items-center justify-between rounded-lg border border-moss/20 bg-mint/75 px-3 py-2.5 text-forest shadow-[inset_0_1px_0_rgba(255,255,255,0.75),0_2px_6px_rgba(35,43,32,0.08)] transition hover:border-moss/40 hover:bg-sage/35 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-moss"
-                >
-                  <span>
-                    <span className="block text-base font-bold">Sell Your Camera</span>
-                    <span className="mt-0.5 block text-sm text-ink/62">We buy used camera gear.</span>
-                  </span>
-                  <ArrowRightIcon />
-                </Link>
-              </section>
-
-              <section className="border-t border-forest/15 py-4">
-                <p className="text-[13px] font-bold uppercase tracking-[0.17em] text-moss">Account</p>
-                {signedIn ? (
+            <div key={panel} className="min-h-0 flex-1 overflow-y-auto overscroll-contain px-7 pb-[calc(env(safe-area-inset-bottom)+1.5rem)] pt-3 sm:px-10">
+              <div className="mx-auto max-w-xl">
+                {panel === 'main' ? (
                   <>
-                    <p className="mt-2 px-2 text-sm font-bold text-ink">{customerLabel ?? 'My Account'}</p>
-                    <nav className="mt-1 grid" aria-label="Customer account">
-                      {accountItems.map((item) => (
-                        <Link
-                          key={item.href}
-                          href={item.href}
-                          onClick={closeMenu}
-                          className="flex min-h-11 items-center rounded-md px-2 py-2 text-sm font-semibold text-ink/78 transition hover:bg-mint hover:text-ink"
-                        >
-                          {item.label}
-                        </Link>
+                    <nav aria-label="Shop" className="grid">
+                      {shopItems.slice(0, 3).map((item) => (
+                        <Link key={item.href} href={item.href} onClick={closeMenu} className={primaryLinkClass}>{item.label.replace(' Cameras', ' cameras')}</Link>
                       ))}
+                      <button type="button" data-panel-trigger="brands" onClick={(event) => openPanel('brands', event.currentTarget)} className={`${primaryLinkClass} justify-between text-left`}>
+                        Brands <ChevronRight aria-hidden="true" size={20} strokeWidth={1.5} className="text-moss" />
+                      </button>
+                      {shopItems.slice(3, 6).map((item) => (
+                        <Link key={item.href} href={item.href} onClick={closeMenu} className={primaryLinkClass}>{item.label}</Link>
+                      ))}
+                      <Link href="/sell-your-camera" onClick={closeMenu} className={primaryLinkClass}>Sell your camera</Link>
+                      <button type="button" data-panel-trigger="discover" onClick={(event) => openPanel('discover', event.currentTarget)} className={`${primaryLinkClass} justify-between text-left`}>
+                        Discover <ChevronRight aria-hidden="true" size={20} strokeWidth={1.5} className="text-moss" />
+                      </button>
                     </nav>
-                    <form action="/account/logout" method="post" className="mt-1" onSubmit={closeMenu}>
-                      <button className="min-h-11 w-full rounded-md px-2 py-2 text-left text-sm font-semibold text-ink/78 transition hover:bg-mint hover:text-ink">Sign Out</button>
-                    </form>
+                    <nav aria-label="Account and support" className="mt-6 grid border-t border-forest/10 pt-4 text-sm font-medium text-forest">
+                      <button type="button" data-panel-trigger="account" onClick={(event) => openPanel('account', event.currentTarget)} className="flex min-h-11 items-center justify-between text-left hover:text-moss focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-moss">
+                        {signedIn ? 'Your account' : 'Sign in / Create account'} <ChevronRight aria-hidden="true" size={16} />
+                      </button>
+                      <Link href="/contact" onClick={closeMenu} className="flex min-h-11 items-center hover:text-moss">Contact & support</Link>
+                      <Link href="/categories/parts-repair" onClick={closeMenu} className="flex min-h-11 items-center hover:text-moss">Parts & repair</Link>
+                    </nav>
                   </>
                 ) : (
-                  <div className="mt-2 grid grid-cols-2 gap-2.5">
-                    <Link href="/login" onClick={closeMenu} className="flex min-h-12 items-center justify-center rounded-lg border border-forest/20 bg-mint px-3 text-sm font-bold text-forest transition hover:bg-sage/35">Sign In</Link>
-                    <Link href="/signup" onClick={closeMenu} className="flex min-h-12 items-center justify-center rounded-lg bg-forest px-3 text-sm font-bold text-white shadow-sm transition hover:bg-moss">Create Account</Link>
-                  </div>
+                  <>
+                    <h2 ref={panelHeadingRef} tabIndex={-1} className="mb-5 text-sm font-medium text-moss outline-none">{panelTitle}</h2>
+                    {panel === 'account' && signedIn && customerLabel ? <p className="mb-3 break-words text-sm text-ink/65">{customerLabel}</p> : null}
+                    <nav aria-label={panelTitle} className="grid">
+                      {secondaryItems.map((item) => (
+                        <Link key={item.href} href={item.href} onClick={closeMenu} className={primaryLinkClass}>{item.label}</Link>
+                      ))}
+                    </nav>
+                    {panel === 'account' && signedIn ? (
+                      <form action="/account/logout" method="post" onSubmit={closeMenu} className="mt-5 border-t border-forest/10 pt-3">
+                        <button className="min-h-11 text-sm font-medium text-forest">Sign out</button>
+                      </form>
+                    ) : null}
+                  </>
                 )}
-              </section>
-
-              <Link
-                href="/contact"
-                onClick={closeMenu}
-                className="flex min-h-[68px] items-center gap-3 rounded-lg border border-forest/15 bg-mint/65 px-3 py-2.5 transition hover:border-moss/35 hover:bg-sage/30 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-moss"
-              >
-                <Image
-                  src="/shutterbug-basic-character.png"
-                  alt=""
-                  width={48}
-                  height={48}
-                  sizes="3rem"
-                  className="h-12 w-12 rounded-full bg-sand object-cover"
-                  aria-hidden="true"
-                />
-                <span>
-                  <span className="block text-sm font-bold text-ink">Need help finding a camera?</span>
-                  <span className="mt-0.5 block text-xs text-ink/65">Friendly Shutterbug support</span>
-                </span>
-              </Link>
+              </div>
             </div>
           </div>
         </div>
       ) : null}
     </div>
-  );
-}
-
-function MenuSection({
-  title,
-  items,
-  onNavigate,
-  compact = false
-}: {
-  title: string;
-  items: MobileMenuItem[];
-  onNavigate: () => void;
-  compact?: boolean;
-}) {
-  return (
-    <section className="border-t border-forest/15 py-4 first:border-t-0 first:pt-0">
-      <p className="text-[13px] font-bold uppercase tracking-[0.17em] text-moss">{title}</p>
-      <nav className={compact ? 'mt-1.5 grid grid-cols-2 gap-x-3' : 'mt-1.5 grid'} aria-label={title}>
-        {items.map((item, index) => (
-          <Link
-            key={item.href}
-            href={item.href}
-            onClick={onNavigate}
-            className="flex min-h-[46px] items-center justify-between rounded-md px-2 py-1.5 text-base font-semibold text-ink/78 transition hover:bg-mint hover:text-ink focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-moss"
-          >
-            {item.label}
-            {compact && index === items.length - 1 ? <ArrowRightIcon /> : null}
-          </Link>
-        ))}
-      </nav>
-    </section>
-  );
-}
-
-function CloseIcon() {
-  return (
-    <svg aria-hidden="true" viewBox="0 0 24 24" className="h-5 w-5" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
-      <path d="M6 6l12 12M18 6L6 18" />
-    </svg>
-  );
-}
-
-function ArrowRightIcon() {
-  return (
-    <svg aria-hidden="true" viewBox="0 0 24 24" className="h-4 w-4 shrink-0" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-      <path d="M5 12h14M13 6l6 6-6 6" />
-    </svg>
   );
 }
