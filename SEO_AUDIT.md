@@ -1,5 +1,7 @@
 # Shutterbug Camera Shop SEO Audit
 
+For the current 2026-09-13 phase, see [SEO_PHASE_2_AUDIT.md](SEO_PHASE_2_AUDIT.md), [query map](SEO_QUERY_MAP.md), [content roadmap](SEO_CONTENT_ROADMAP.md), and [Search Console playbook](SEO_SEARCH_CONSOLE_PLAYBOOK.md). The audit below is historical; its shipping/return schema and sold-page descriptions are superseded by phase 2.
+
 Audit date: 2026-08-10
 Canonical site: `https://www.shutterbugcamerashop.com`
 

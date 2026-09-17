@@ -1,5 +1,5 @@
 import { categories, getCategory } from '@/lib/categories';
-import { getActiveCatalogProducts, type Product } from '@/lib/products';
+import { getCatalogProducts, type Product } from '@/lib/products';
 import {
   absoluteUrl,
   googleProductCategory,
@@ -9,6 +9,7 @@ import {
   productTypePath
 } from '@/lib/seo-utils';
 import { site } from '@/lib/seo';
+import { hasRealProductImage } from '@/lib/catalog-seo';
 
 export const dynamic = 'force-dynamic';
 
@@ -22,7 +23,7 @@ function escapeXml(value: unknown) {
 }
 
 function hasMerchantReadyImage(product: Product) {
-  return Boolean(product.heroImage && !product.heroImage.includes('shutterbug-product-placeholder.png'));
+  return hasRealProductImage(product);
 }
 
 function productDescription(product: Product) {
@@ -67,19 +68,15 @@ ${additionalImages}
       <g:condition>${escapeXml(merchantCondition(product))}</g:condition>
       <g:brand>${escapeXml(product.brand)}</g:brand>
 ${identifiers}
-      <g:identifier_exists>${product.gtin || product.mpn ? 'yes' : 'no'}</g:identifier_exists>
+${product.gtin || product.mpn ? '      <g:identifier_exists>yes</g:identifier_exists>' : ''}
       <g:product_type>${escapeXml(productTypePath(product, category))}</g:product_type>
-      <g:google_product_category>${escapeXml(googleProductCategory(product))}</g:google_product_category>
-      <g:shipping>
-        <g:country>US</g:country>
-        <g:service>Standard</g:service>
-        <g:price>0.00 USD</g:price>
-      </g:shipping>
+${googleProductCategory(product) ? `      <g:google_product_category>${escapeXml(googleProductCategory(product))}</g:google_product_category>` : ''}
+
     </item>`;
 }
 
 export async function GET() {
-  const products = await getActiveCatalogProducts();
+  const products = await getCatalogProducts();
   const feedProducts = products.filter(hasMerchantReadyImage);
   const xml = `<?xml version="1.0" encoding="UTF-8"?>
 <rss version="2.0" xmlns:g="http://base.google.com/ns/1.0">
@@ -94,7 +91,7 @@ export async function GET() {
   return new Response(xml, {
     headers: {
       'Content-Type': 'application/xml; charset=utf-8',
-      'Cache-Control': 'public, s-maxage=3600, stale-while-revalidate=86400',
+      'Cache-Control': 'no-store',
       'X-Shutterbug-Feed-Items': String(feedProducts.length),
       'X-Shutterbug-Categories': String(categories.length)
     }

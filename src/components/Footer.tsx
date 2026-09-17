@@ -52,10 +52,10 @@ export function Footer() {
               Used Printers
             </Link>
             <Link href="/brands" className="flex min-h-9 items-center transition hover:text-white">
-              Camera Brands
+              Camera & Printer Brands
             </Link>
             <Link href="/guides" className="flex min-h-9 items-center transition hover:text-white">
-              Camera Buying Guides
+              Buying Guides
             </Link>
             <Link href="/blog" className="flex min-h-9 items-center transition hover:text-white">
               Shutterbug Journal

@@ -1,3 +1,5 @@
+import { isIndexableProduct, isPrinter } from '@/lib/catalog-seo';
+import { RelatedLinks } from '@/components/RelatedLinks';
 import { safeJsonLd } from '@/lib/security';
 import { notFound, permanentRedirect } from 'next/navigation';
 import Link from 'next/link';
@@ -7,7 +9,6 @@ import { ProductLikeButton } from '@/components/ProductLikeButton';
 import { ProductCard } from '@/components/ProductCard';
 import {
   formatPrice,
-  getAvailabilityLabel,
   getProductBySlug,
   getSimilarProductsAsync,
   isPurchasable,
@@ -32,6 +33,7 @@ export async function generateMetadata({ params }: Props) {
   if (!product) return {};
   return {
     title: product.seoTitle ?? product.title,
+    robots: isIndexableProduct(product) ? undefined : { index: false, follow: true },
     description: product.seoDescription,
     alternates: { canonical: `/shop/${product.slug}` },
     openGraph: {
@@ -52,6 +54,7 @@ export default async function ProductPage({ params }: Props) {
     if (category) permanentRedirect(`/categories/${category.slug}`);
     notFound();
   }
+  const printer = isPrinter(product);
   const category = getCategory(product.categorySlug);
   const similarProducts = await getSimilarProductsAsync(product);
   const customer = await getCustomerSession();
@@ -61,18 +64,21 @@ export default async function ProductPage({ params }: Props) {
   );
   const galleryImages = Array.from(new Set([product.heroImage, ...product.gallery]));
   const purchasable = isPurchasable(product);
-  const primaryActionLabel = purchasable ? 'Add to bag' : product.status === 'active' ? 'Contact to buy' : 'Ask about restock';
+  const primaryActionLabel = purchasable ? 'Add to bag' : 'Ask about availability';
   const primaryActionHref = purchasable ? '/cart' : '/contact';
   const researchLinks = [
-    { label: `More ${product.brand} cameras`, href: `/brands/${getBrandSlug(product.brand)}` },
-    { label: `Browse ${category?.name ?? 'similar camera gear'}`, href: `/categories/${product.categorySlug}` },
-    { label: 'How to buy a used camera', href: '/guides/how-to-buy-a-used-camera' }
+    { label: `More from ${product.brand}`, href: `/brands/${getBrandSlug(product.brand)}` },
+    ...(category ? [{ label: `Browse ${category.name}`, href: `/categories/${category.slug}` }] : [])
   ];
-  if (product.categorySlug.includes('film') || product.cameraType === 'Film Camera') {
-    researchLinks.push({ label: '35mm film camera buying guide', href: '/guides/35mm-film-camera-buying-guide' });
-  } else if (product.cameraType !== 'Accessory') {
-    researchLinks.push({ label: 'What is a CCD camera?', href: '/guides/what-is-a-ccd-camera' });
+  for (const slug of product.categorySlugs) {
+    const family = getCategory(slug);
+    if (family && slug !== product.categorySlug) researchLinks.push({ label: family.name, href: `/categories/${slug}` });
   }
+  if (!printer && product.cameraType !== 'Accessory') {
+    researchLinks.push({ label: 'How to buy a used camera', href: '/guides/how-to-buy-a-used-camera' });
+    if (product.cameraType === 'Film Camera') researchLinks.push({ label: '35mm film camera buying guide', href: '/guides/35mm-film-camera-buying-guide' });
+  }
+  if (printer) researchLinks.push({ label: 'Shop used printers', href: '/categories/printers' });
   const structuredData = jsonLdGraph([
     buildProductJsonLd(product, category),
     buildBreadcrumbJsonLd([
@@ -93,7 +99,7 @@ export default async function ProductPage({ params }: Props) {
             <div className="rounded-lg border border-ink/10 bg-white p-3 shadow-soft sm:p-6">
               <Image
                 src={product.heroImage}
-                alt={product.title}
+                alt={product.imageAlts?.[product.heroImage] || product.title}
                 width={900}
                 height={900}
                 priority
@@ -110,7 +116,7 @@ export default async function ProductPage({ params }: Props) {
                 >
                   <Image
                     src={image}
-                    alt={`${product.title} view ${index + 1}`}
+                    alt={product.imageAlts?.[image] || `${product.title} photo ${index + 1}`}
                     width={220}
                     height={220}
                     sizes="5rem"
@@ -122,7 +128,7 @@ export default async function ProductPage({ params }: Props) {
             </div>
             <div className="mt-4 grid grid-cols-3 gap-2 rounded-lg border border-ink/10 bg-white p-3 text-xs text-ink/70 shadow-sm sm:gap-3 sm:p-5 sm:text-sm">
               <TrustBadge title="Actual photos" copy={product.actualPhotos ? 'Exact item shown' : 'Photos coming soon'} />
-              <TrustBadge title="Tested" copy={product.tested[0] === 'Testing pending' ? 'Testing pending' : 'Checklist below'} />
+              <TrustBadge title="Tested" copy={product.tested.length ? 'See recorded checks below' : 'Not specified'} />
               <TrustBadge title="Ships from" copy="Shutterbug Camera Shop" />
             </div>
           </div>
@@ -136,10 +142,20 @@ export default async function ProductPage({ params }: Props) {
                 {category?.name ?? 'Camera Gear'}
               </Link>
               <span className="rounded-full bg-sage px-4 py-2 text-ink/70">{product.condition}</span>
-              <span className="rounded-full bg-white px-4 py-2 text-ink/70">{product.functionalStatus ?? 'Tested'}</span>
-              <span className="rounded-full bg-white px-4 py-2 text-ink/70">{getAvailabilityLabel(product.status)}</span>
+              <span className="rounded-full bg-white px-4 py-2 text-ink/70">{product.functionalStatus || 'Not specified'}</span>
+              <span className="rounded-full bg-white px-4 py-2 text-ink/70">{purchasable ? 'In stock' : 'Out of stock'}</span>
             </div>
 
+            <nav aria-label="Breadcrumb" className="mt-5 text-sm text-moss">
+              <Link href="/">Home</Link> / <Link href="/shop">Shop</Link> /{' '}
+              {category ? <><Link href={`/categories/${category.slug}`}>{category.name}</Link> / </> : null}
+              <Link href={`/brands/${getBrandSlug(product.brand)}`}>{product.brand}</Link> / <span aria-current="page">{product.model || product.title}</span>
+            </nav>
+            {!purchasable ? <div className="mt-5 rounded-lg bg-mint p-4">
+              <h2 className="font-serif text-2xl font-bold">{product.status === 'sold_out' ? 'This one has sold.' : 'This item is out of stock.'}</h2>
+              <p className="mt-2 text-sm">Photos, condition, and included accessories describe this individual unit.</p>
+              <Link className="mt-3 inline-block font-semibold text-moss" href={category ? `/categories/${category.slug}` : '/shop'}>Shop similar {printer ? 'printers' : 'items'}</Link>
+            </div> : null}
             <h1 className="mt-5 font-serif text-3xl font-bold tracking-tight text-ink sm:mt-6 sm:text-5xl lg:text-6xl">
               {product.title}
             </h1>
@@ -150,7 +166,7 @@ export default async function ProductPage({ params }: Props) {
             <div className="mt-6 rounded-lg border border-ink/10 bg-white p-4 shadow-sm sm:mt-7 sm:p-6">
               <div className="flex flex-col gap-5 sm:flex-row sm:items-center sm:justify-between">
                 <div>
-                  <p className="text-sm font-semibold text-ink/55">Price</p>
+                  <p className="text-sm font-semibold text-ink/55">{purchasable ? 'Price' : 'Last listed price'}</p>
                   <p className="text-3xl font-bold text-ink sm:text-4xl">{formatPrice(product.price)}</p>
                   <p className="mt-2 text-sm text-ink/60">{product.conditionSummary}</p>
                 </div>
@@ -201,8 +217,10 @@ export default async function ProductPage({ params }: Props) {
                   </Link>
                 </p>
                 <p>
-                  <span className="font-semibold text-ink">Functional status:</span> {product.functionalStatus ?? 'Tested'}
+                  <span className="font-semibold text-ink">Functional status:</span> {product.functionalStatus || 'Not specified'}
                 </p>
+                <p><span className="font-semibold text-ink">Model:</span> {product.model || 'Not specified'}</p>
+                <p><span className="font-semibold text-ink">SKU:</span> {product.sku}</p>
                 {product.productType ? (
                   <p>
                     <span className="font-semibold text-ink">Product type:</span> {product.productType}
@@ -224,7 +242,7 @@ export default async function ProductPage({ params }: Props) {
                   </p>
                 ) : null}
                 <Link href="/contact" className="font-semibold text-moss hover:text-ink">
-                  Questions about this camera? Ask before you buy.
+                  Questions about this item? Ask before you buy.
                 </Link>
               </div>
             </div>
@@ -260,10 +278,10 @@ export default async function ProductPage({ params }: Props) {
 
       <section className="px-4 pb-16 sm:px-6 lg:px-8">
         <div className="mx-auto grid max-w-7xl gap-6 lg:grid-cols-3">
-          <InfoPanel title="Who this camera is good for" items={product.goodFor} />
+          <InfoPanel title="Who this item is good for" items={product.goodFor} />
           <InfoPanel title="Shipping and returns" items={[product.shippingNote, product.returnsNote]} />
           <InfoPanel
-            title="Used-camera promise"
+            title="Used-gear promise"
             items={[
               'Condition and included accessories are listed clearly.',
               'Parts/repair gear is marked before purchase.',
@@ -275,17 +293,7 @@ export default async function ProductPage({ params }: Props) {
       </section>
 
       <section className="px-4 pb-16 sm:px-6 lg:px-8">
-        <nav className="mx-auto max-w-7xl rounded-lg border border-ink/10 bg-mint p-6" aria-label="Research this camera">
-          <p className="text-sm font-bold uppercase tracking-[0.22em] text-moss">Research this camera</p>
-          <h2 className="mt-2 font-serif text-2xl font-bold text-ink">More buying context</h2>
-          <div className="mt-4 flex flex-wrap gap-2">
-            {researchLinks.map((link) => (
-              <Link key={link.href} href={link.href} className="rounded-full bg-white px-4 py-2 text-sm font-semibold text-ink/72 hover:text-moss">
-                {link.label}
-              </Link>
-            ))}
-          </div>
-        </nav>
+        <div className="mx-auto max-w-7xl"><RelatedLinks title="More buying context" links={Array.from(new Map(researchLinks.map((link) => [link.href, link])).values())} /></div>
       </section>
 
       {similarProducts.length > 0 ? (
@@ -293,8 +301,8 @@ export default async function ProductPage({ params }: Props) {
           <div className="mx-auto max-w-7xl">
             <div className="flex items-end justify-between gap-4">
               <div>
-                <p className="text-sm font-bold uppercase tracking-[0.24em] text-moss">Similar cameras</p>
-                <h2 className="mt-3 font-serif text-4xl font-bold text-ink">More tested finds</h2>
+                <p className="text-sm font-bold uppercase tracking-[0.24em] text-moss">Similar available items</p>
+                <h2 className="mt-3 font-serif text-4xl font-bold text-ink">More available finds</h2>
               </div>
               <Link href="/shop" className="font-semibold text-moss hover:text-ink">
                 View all

@@ -210,7 +210,7 @@ export default async function CategoryPage({ params }: Props) {
               />
             ))
           ) : (
-            <div className="col-span-full"><EmptyShelf title={`No ${category.name.toLowerCase()} are available right now.`} /></div>
+            <div className="col-span-full"><EmptyShelf title={`No ${category.name.toLowerCase()} are available right now.`} description={category.slug === 'printers' ? 'Printer inventory changes as individual units arrive and sell. Contact us with a model or browse the current inventory.' : undefined} printer={category.slug === 'printers'} /></div>
           )}
         </div>
 

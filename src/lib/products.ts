@@ -17,6 +17,7 @@ import {
 } from '@/lib/catalog';
 import { getPrisma } from '@/lib/prisma';
 import { safeProductImageUrl } from '@/lib/security';
+import { availableRelatedProducts, isPrinter } from '@/lib/catalog-seo';
 
 export type ProductStatus = 'draft' | 'active' | 'sold_out' | 'archived';
 export type ProductCondition =
@@ -56,6 +57,8 @@ export type Product = {
   status: ProductStatus;
   heroImage: string;
   gallery: string[];
+  imageAlts?: Record<string, string>;
+  updatedAt?: string;
   shortDescription: string;
   seoTitle?: string;
   seoDescription: string;
@@ -340,8 +343,8 @@ function dbProductToProduct(product: ProductWithImages): Product {
     cameraType: cameraTypeFromDb[product.cameraType],
     format: formatFromDb[product.format],
     condition: conditionFromDb[product.condition],
-    functionalStatus: product.testedStatus || product.functionalStatus || 'Tested',
-    testedStatus: product.testedStatus || product.functionalStatus || 'Tested',
+    functionalStatus: product.testedStatus || product.functionalStatus || undefined,
+    testedStatus: product.testedStatus || product.functionalStatus || undefined,
     conditionSummary: product.conditionNotes || product.conditionSummary,
     conditionNotes: product.conditionNotes || product.conditionSummary,
     price: product.priceCents / 100,
@@ -350,6 +353,8 @@ function dbProductToProduct(product: ProductWithImages): Product {
     status: publicStatus,
     heroImage: hero ?? '/shutterbug-product-placeholder.png',
     gallery: gallery.length ? gallery : ['/shutterbug-product-placeholder.png'],
+    imageAlts: Object.fromEntries(sortedImages.filter((image) => image.alt.trim()).map((image) => [image.url, image.alt.trim()])),
+    updatedAt: product.updatedAt.toISOString(),
     shortDescription: product.shortDescription || product.description,
     seoTitle: product.seoTitle ?? undefined,
     seoDescription: product.seoDescription || product.shortDescription || product.description,
@@ -448,8 +453,9 @@ export async function getProductBySlug(slug: string) {
   return undefined;
 }
 
-function productMatchesCategory(product: Product, categorySlug: string) {
+export function productMatchesCategory(product: Product, categorySlug: string) {
   if (categorySlug === 'vintage-cameras') {
+    if (isPrinter(product)) return false;
     return (
       product.cameraType === 'Vintage Digital' ||
       product.cameraType === 'Film Camera' ||
@@ -468,14 +474,7 @@ export async function getProductsByCategoryAsync(categorySlug: string) {
 
 export async function getSimilarProductsAsync(product: Product, limit = 3) {
   const catalog = await getCatalogProducts();
-  return catalog
-    .filter(
-      (candidate) =>
-        candidate.id !== product.id &&
-        (candidate.brand === product.brand ||
-          candidate.categorySlugs.some((slug) => product.categorySlugs.includes(slug)))
-    )
-    .slice(0, limit);
+  return availableRelatedProducts(product, catalog, limit);
 }
 
 export function getFilterOptions(catalog: Product[]) {

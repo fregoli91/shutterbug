@@ -1,6 +1,7 @@
 import type { Category } from '@/lib/categories';
 import type { Product } from '@/lib/products';
 import { site } from '@/lib/seo';
+import { isPrinter } from '@/lib/catalog-seo';
 
 export type JsonLdNode = Record<string, unknown>;
 
@@ -45,7 +46,6 @@ export function productConditionUrl(product: Product) {
 
 export function productAvailabilityUrl(product: Product) {
   if (product.status === 'active' && (product.quantity ?? 1) > 0) return 'https://schema.org/InStock';
-  if (product.status === 'draft') return 'https://schema.org/PreOrder';
   return 'https://schema.org/OutOfStock';
 }
 
@@ -64,13 +64,9 @@ export function googleProductCategory(product: Product) {
     return 'Cameras & Optics > Camera & Optic Accessories';
   }
 
-  if (
-    product.categorySlug === 'printers' ||
-    product.categorySlug === 'scanners-printers' ||
-    product.productType?.toLowerCase().includes('printer')
-  ) {
-    return 'Electronics > Print, Copy, Scan & Fax';
-  }
+  if (isPrinter(product)) return 'Electronics > Print, Copy, Scan & Fax > Printers, Copiers & Fax Machines';
+  if (product.categorySlug === 'scanners-printers') return 'Electronics > Print, Copy, Scan & Fax';
+  if (!product.categorySlug.includes('camera') && !product.categorySlugs.some((slug) => slug.includes('camera'))) return undefined;
 
   return 'Cameras & Optics > Cameras';
 }
@@ -88,7 +84,7 @@ export function jsonLdGraph(nodes: JsonLdNode[]) {
 
 export function buildOrganizationJsonLd(): JsonLdNode {
   return {
-    '@type': 'Store',
+    '@type': 'OnlineStore',
     '@id': `${site.domain}/#organization`,
     name: site.name,
     url: site.domain,
@@ -97,6 +93,7 @@ export function buildOrganizationJsonLd(): JsonLdNode {
     description: site.description,
     telephone: site.supportPhone,
     email: site.supportEmail,
+    contactPoint: { '@type': 'ContactPoint', contactType: 'Customer Service', telephone: site.supportPhone, email: site.supportEmail },
     sameAs: site.amazonStoreUrl ? [site.amazonStoreUrl] : [],
     areaServed: {
       '@type': 'Country',
@@ -198,44 +195,8 @@ export function buildProductJsonLd(product: Product, category?: Category): JsonL
       priceCurrency: 'USD',
       availability: productAvailabilityUrl(product),
       itemCondition: productConditionUrl(product),
-      seller: { '@id': `${site.domain}/#organization` },
-      shippingDetails: {
-        '@type': 'OfferShippingDetails',
-        shippingRate: {
-          '@type': 'MonetaryAmount',
-          value: 0,
-          currency: 'USD'
-        },
-        shippingDestination: {
-          '@type': 'DefinedRegion',
-          addressCountry: 'US'
-        },
-        deliveryTime: {
-          '@type': 'ShippingDeliveryTime',
-          handlingTime: {
-            '@type': 'QuantitativeValue',
-            minValue: 1,
-            maxValue: 3,
-            unitCode: 'DAY'
-          },
-          transitTime: {
-            '@type': 'QuantitativeValue',
-            minValue: 2,
-            maxValue: 7,
-            unitCode: 'DAY'
-          }
-        },
-        shippingSettingsLink: absoluteUrl('/shipping')
-      },
-      hasMerchantReturnPolicy: {
-        '@type': 'MerchantReturnPolicy',
-        applicableCountry: 'US',
-        returnPolicyCategory: 'https://schema.org/MerchantReturnFiniteReturnWindow',
-        merchantReturnDays: 14,
-        returnMethod: 'https://schema.org/ReturnByMail',
-        returnFees: 'https://schema.org/ReturnShippingFees',
-        merchantReturnLink: absoluteUrl('/returns')
-      }
+      seller: { '@id': `${site.domain}/#organization` }
+
     }
   };
 }

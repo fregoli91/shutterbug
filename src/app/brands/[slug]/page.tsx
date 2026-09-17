@@ -1,3 +1,4 @@
+import { isPrinter } from '@/lib/catalog-seo';
 import { safeJsonLd } from '@/lib/security';
 import Link from 'next/link';
 import Image from 'next/image';
@@ -23,8 +24,9 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const brand = await getBrandPageBySlug(slug);
   if (!brand) return {};
 
+  const printerBrand = ['hp', 'lexmark', 'brother'].includes(slug);
   const profile = getBrandSeoProfile(slug);
-  const title = profile?.title ?? `${brand.name} Cameras and Gear`;
+  const title = profile?.title ?? `${brand.name} ${printerBrand ? 'Printers' : 'Cameras and Gear'}`;
   const description = profile?.description ?? brand.description;
   const hero = profile?.heroImage;
 
@@ -48,10 +50,11 @@ export default async function BrandPage({ params }: Props) {
   const brand = await getBrandPageBySlug(slug);
   if (!brand) notFound();
 
+  const printerBrand = ['hp', 'lexmark', 'brother'].includes(slug);
   const profile = getBrandSeoProfile(slug);
   const brandHeroImage = profile?.heroImage;
-  const title = profile?.title ?? `${brand.name} Cameras and Gear`;
-  const heading = profile?.heading ?? `${brand.name} cameras and gear.`;
+  const title = profile?.title ?? `${brand.name} ${printerBrand ? 'Printers' : 'Cameras and Gear'}`;
+  const heading = profile?.heading ?? `${brand.name} ${printerBrand ? 'printers' : 'cameras and gear'}.`;
   const description = profile?.description ?? brand.description;
   const intro = profile?.intro ?? brand.description;
   const customer = await getCustomerSession();
@@ -78,7 +81,7 @@ export default async function BrandPage({ params }: Props) {
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: safeJsonLd(structuredData) }} />
       <div className="mx-auto max-w-7xl">
         <header className="mx-auto max-w-4xl text-center">
-          <p className="text-sm font-bold uppercase tracking-[0.28em] text-moss">Used camera brand guide</p>
+          <p className="text-sm font-bold uppercase tracking-[0.28em] text-moss">Used gear by brand</p>
           <h1 className="mt-3 font-serif text-3xl font-bold text-ink sm:text-5xl">{heading}</h1>
           <p className="mt-5 text-lg leading-8 text-ink/70">{intro}</p>
         </header>
@@ -143,12 +146,18 @@ export default async function BrandPage({ params }: Props) {
                 Ask about {brand.name}
               </Link>
             )}
-            <Link href="/sell-your-camera" className="inline-flex min-h-11 items-center justify-center rounded-full border border-ink/15 bg-cream px-5 text-sm font-semibold text-ink transition hover:border-moss hover:text-moss">
-              Sell us this brand
-            </Link>
+            {!printerBrand ? <Link href="/sell-your-camera" className="inline-flex min-h-11 items-center justify-center rounded-full border border-ink/15 bg-cream px-5 text-sm font-semibold text-ink transition hover:border-moss hover:text-moss">
+              Sell us this camera brand
+            </Link> : null}
           </div>
         </div> : null}
 
+        {slug === 'canon' || printerBrand ? <nav id="printer-shopping" aria-label="Printer shopping" className="mt-8 rounded-lg bg-mint p-6">
+          <h2 className="font-serif text-2xl font-bold">{brand.name} printers</h2>
+          <p className="mt-3 text-sm leading-6">Check the full model number, recorded tests, included supplies, cable connections, and condition on each printer listing. Camera accessories and printer supplies are not interchangeable.</p>
+          <Link href="/categories/printers" className="mt-3 inline-block font-semibold text-moss">Browse all used printers</Link>
+          {brand.products.some(isPrinter) ? <div className="mt-4 flex flex-wrap gap-3">{brand.products.filter(isPrinter).map((product) => <Link key={product.id} href={`/shop/${product.slug}`} className="font-semibold text-moss">{product.title}</Link>)}</div> : null}
+        </nav> : null}
         {brand.products.length ? (
           <div id="current-listings" className="mt-10 grid scroll-mt-32 grid-cols-2 gap-3 sm:gap-6 lg:grid-cols-4">
             {brand.products.map((product) => (
@@ -156,7 +165,7 @@ export default async function BrandPage({ params }: Props) {
             ))}
           </div>
         ) : (
-          <div className="mt-8"><EmptyShelf title={`No ${brand.name} cameras are available right now.`} description="Our inventory changes as cameras arrive and sell. Explore another collection or tell us about a camera you would like to sell." sellLabel={`Sell a ${brand.name} camera`} /></div>
+          printerBrand ? <div className="mt-8 rounded-lg bg-mint p-6 text-center"><h2 className="font-serif text-2xl font-bold">No {brand.name} printers are listed right now.</h2><Link href="/categories/printers" className="mt-3 inline-block font-semibold text-moss">Browse used printers</Link></div> : <div className="mt-8"><EmptyShelf title={`No ${brand.name} cameras are available right now.`} description="Our inventory changes as cameras arrive and sell. Explore another collection or tell us about a camera you would like to sell." sellLabel={`Sell a ${brand.name} camera`} /></div>
         )}
       </div>
     </section>

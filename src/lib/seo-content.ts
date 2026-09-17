@@ -226,7 +226,7 @@ const categoryProfiles: Record<string, CategorySeoProfile> = {
     supportingHeading: 'What matters on a used printer',
     supportingCopy: ['A useful printer listing should identify power, connectivity, paper feed, controls, print or scan testing, and the supplies included with the exact item.', 'Ink and toner levels can change and consumables may need replacement. Shutterbug separates confirmed accessories from anything the buyer will need to provide.'],
     buyerTips: ['Confirm USB, Ethernet, or wireless connectivity.', 'Check whether power and data cables are included.', 'Read ink, toner, drum, and paper-feed notes.', 'Allow space for secure shipment and setup.'],
-    links: [{ label: 'Canon printers and cameras', href: '/brands/canon' }, { label: 'HP products', href: '/brands/hp' }, { label: 'Camera accessories', href: '/categories/camera-accessories' }, { label: 'All inventory', href: '/shop' }]
+    links: [{ label: 'Canon printers and cameras', href: '/brands/canon' }, { label: 'HP products', href: '/brands/hp' }, { label: 'Lexmark printers', href: '/brands/lexmark' }, { label: 'Brother printers', href: '/brands/brother' }, { label: 'All inventory', href: '/shop' }]
   },
   'parts-repair': {
     title: 'Parts and Repair Cameras',
