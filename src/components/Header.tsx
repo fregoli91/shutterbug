@@ -1,5 +1,6 @@
 import Link from 'next/link';
 import Image from 'next/image';
+import { Search } from 'lucide-react';
 import { AccountMenu } from '@/components/AccountMenu';
 import { DesktopNavigation } from '@/components/DesktopNavigation';
 import { CartLink } from '@/components/cart/CartLink';
@@ -95,7 +96,20 @@ export async function Header() {
           )}
         </div>
 
-        <Link href="/shop" className="inline-flex rounded-full bg-forest px-5 py-2 text-sm font-semibold text-white shadow-sm transition hover:bg-moss">Shop Cameras</Link>
+        <Link
+          href="/shop"
+          aria-label="Shop cameras"
+          className="group inline-flex h-14 w-14 shrink-0 items-center justify-center overflow-hidden rounded-xl border border-ink/10 bg-white shadow-sm transition hover:border-moss/40 hover:shadow-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-moss focus-visible:ring-offset-2"
+        >
+          <Image
+            src="/homepage-shop-camera-button.png"
+            alt=""
+            width={56}
+            height={56}
+            sizes="3.5rem"
+            className="h-full w-full object-cover transition-transform group-hover:scale-105"
+          />
+        </Link>
         <CartLink />
       </div>
 
@@ -156,7 +170,13 @@ function SearchForm({
           className="min-w-0 flex-1 bg-transparent px-4 text-sm text-ink outline-none placeholder:text-ink/40"
         />
         <SearchSuggestions id={id} />
-        <button type="submit" className="min-w-20 bg-forest px-5 text-sm font-semibold text-white transition hover:bg-moss">Search</button>
+        <button
+          type="submit"
+          aria-label="Submit search"
+          className="flex min-w-14 items-center justify-center bg-forest px-4 text-white transition hover:bg-moss focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-sage"
+        >
+          <Search className="h-5 w-5" aria-hidden="true" />
+        </button>
       </div>
     </form>
   );
