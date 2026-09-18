@@ -71,7 +71,7 @@ export async function Header() {
             height={64}
             priority
             sizes="15rem"
-            className="h-14 w-60 object-contain object-left"
+            className="h-14 w-60 object-contain object-center"
           />
         </Link>
 
