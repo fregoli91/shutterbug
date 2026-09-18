@@ -25,7 +25,7 @@ export default function CheckoutCancelPage() {
             another customer purchases it first.
           </p>
           <div className="mt-6 flex flex-wrap gap-3">
-            <Link href="/cart" className="rounded-full bg-forest px-5 py-3 text-sm font-semibold text-white">
+            <Link href="/bag" className="rounded-full bg-forest px-5 py-3 text-sm font-semibold text-white">
               Return to bag
             </Link>
             <Link

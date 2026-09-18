@@ -1,9 +1,9 @@
 import Link from 'next/link';
 import Image from 'next/image';
 import { Search } from 'lucide-react';
-import { AccountMenu } from '@/components/AccountMenu';
 import { DesktopNavigation } from '@/components/DesktopNavigation';
 import { CartLink } from '@/components/cart/CartLink';
+import { BagPanel, BagPanelProvider } from '@/components/cart/BagPanel';
 import { MobileHeader } from '@/components/MobileHeader';
 import { getCustomerSession } from '@/lib/customer-auth';
 
@@ -37,6 +37,7 @@ export async function Header() {
   ];
 
   return (
+    <BagPanelProvider>
     <header className="sticky top-0 z-40 border-b border-ink/10 bg-cream/95 backdrop-blur">
       <div className="hidden border-b border-ink/10 bg-cream lg:block">
         <div className="mx-auto flex h-8 max-w-7xl items-center justify-between px-8 text-xs text-ink/70">
@@ -51,11 +52,6 @@ export async function Header() {
             <Link href="/returns" className="transition hover:text-ink">Returns</Link>
             <Link href="/shipping" className="transition hover:text-ink">Shipping</Link>
             <Link href="/contact" className="font-semibold text-moss transition hover:text-forest">Customer Service</Link>
-            {customer ? (
-              <Link href="/account/orders" className="transition hover:text-ink">My Orders</Link>
-            ) : (
-              <Link href="/signup" className="transition hover:text-ink">Sign Up</Link>
-            )}
           </nav>
         </div>
       </div>
@@ -86,17 +82,6 @@ export async function Header() {
           variant="desktop"
         />
 
-        <div className="flex items-center gap-2">
-          {customer ? (
-            <AccountMenu label={accountLabel} email={customer.email} />
-          ) : (
-            <>
-              <Link href="/login" className="rounded-lg border border-ink/10 bg-white px-4 py-2 text-sm font-semibold text-ink shadow-sm transition hover:border-moss/40 hover:text-moss">Login</Link>
-              <Link href="/signup" className="rounded-lg border border-ink/10 bg-white px-4 py-2 text-sm font-semibold text-ink shadow-sm transition hover:border-moss/40 hover:text-moss">Sign Up</Link>
-            </>
-          )}
-        </div>
-
         <Link
           href="/shop"
           aria-label="Shop cameras"
@@ -115,7 +100,9 @@ export async function Header() {
       </div>
 
       <DesktopNavigation />
+      <BagPanel signedIn={Boolean(customer)} customerLabel={accountLabel} />
     </header>
+    </BagPanelProvider>
   );
 }
 

@@ -217,9 +217,6 @@ export function MobileMenu({
                       </button>
                     </nav>
                     <nav aria-label="Account and support" className="mt-6 grid border-t border-forest/10 pt-4 text-sm font-medium text-forest">
-                      <button type="button" data-panel-trigger="account" onClick={(event) => openPanel('account', event.currentTarget)} className="flex min-h-11 items-center justify-between text-left hover:text-moss focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-moss">
-                        {signedIn ? 'Your account' : 'Sign in / Create account'} <ChevronRight aria-hidden="true" size={16} />
-                      </button>
                       <Link href="/contact" onClick={closeMenu} className="flex min-h-11 items-center hover:text-moss">Contact & support</Link>
                       <Link href="/categories/parts-repair" onClick={closeMenu} className="flex min-h-11 items-center hover:text-moss">Parts & repair</Link>
                     </nav>

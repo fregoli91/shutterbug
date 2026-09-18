@@ -1,4 +1,5 @@
 import Image from 'next/image';
+import Link from 'next/link';
 import { CheckoutFormClient } from '@/components/checkout/CheckoutFormClient';
 import { getCustomerSession } from '@/lib/customer-auth';
 
@@ -21,6 +22,7 @@ export default async function CheckoutPage({ searchParams }: Props) {
   return (
     <section className="px-4 py-8 sm:px-6 lg:px-8">
       <div className="mx-auto max-w-7xl">
+        <Link href="/bag" className="mb-5 inline-flex text-sm font-bold text-moss hover:underline">← Back to Bag</Link>
         <div className="mb-8 grid gap-5 lg:grid-cols-[1fr_24rem] lg:items-center">
           <div>
             <p className="text-sm font-bold uppercase tracking-[0.22em] text-moss">Checkout</p>

@@ -41,7 +41,7 @@ export default async function AdminPage() {
         <div className="grid gap-4 md:grid-cols-3">
           <AdminCard title="Products" value="Setup required" href="/admin/products" />
           <AdminCard title="Orders" value="Setup required" href="/admin/orders" />
-          <AdminCard title="Checkout" value="Env required" href="/cart" />
+          <AdminCard title="Checkout" value="Env required" href="/bag" />
         </div>
         <AdminActionGrid />
         <SetupChecklist />

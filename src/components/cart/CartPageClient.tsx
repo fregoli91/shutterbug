@@ -1,247 +1,26 @@
 'use client';
-
-import Link from 'next/link';
 import Image from 'next/image';
-import { useEffect, useState } from 'react';
-import type { CartValidationResponse, CartValidationItem } from '@/lib/cart-validation';
+import Link from 'next/link';
+import type { CartValidationItem } from '@/lib/cart-validation';
 import { formatCents } from '@/lib/money';
-import { useCart } from './CartProvider';
-
-function isCartValidationResponse(payload: CartValidationResponse | { error?: string }): payload is CartValidationResponse {
-  return 'items' in payload && Array.isArray(payload.items);
+import { useValidatedCart } from './useValidatedCart';
+function placeholder(id:string,quantity:number):CartValidationItem{return{id,sku:'',slug:'',title:'Checking item…',image:'/shutterbug-product-placeholder.png',condition:'Checking current inventory',statusLabel:'Checking',requestedQuantity:quantity,validatedQuantity:0,availableQuantity:0,unitPriceCents:0,lineTotalCents:0,purchasable:false};}
+export function CartPageClient({signedIn=false}:{signedIn?:boolean}){
+ const {items,hydrated,validation,loading,error,hasBlockingIssue,updateQuantity,removeItem,clearCart}=useValidatedCart();
+ if(!hydrated)return <div className="mt-10 rounded-[1.5rem] border border-ink/10 bg-white p-10 text-center shadow-sm"><p className="font-serif text-3xl font-bold text-ink">Loading your bag</p><p className="mt-3 text-ink/60">Checking the camera gear saved on this device.</p></div>;
+ if(!items.length)return <Empty signedIn={signedIn}/>;
+ const display=validation?.items.length?validation.items:items.map(item=>placeholder(item.id,item.quantity));const subtotal=validation?.subtotalCents??0;
+ return <div className="mt-10 grid items-start gap-8 lg:grid-cols-[minmax(0,1fr)_23rem]">
+  <section aria-label="Bag items" className="grid gap-5">{display.map(item=><article key={item.id} className="grid gap-5 rounded-[1.25rem] border border-ink/10 bg-white p-5 shadow-sm sm:grid-cols-[9rem_minmax(0,1fr)_auto]">
+   <Image src={item.image} alt={item.title} width={180} height={180} sizes="9rem" unoptimized={item.image.startsWith('http')||item.image.endsWith('.svg')} className="aspect-square w-36 rounded-lg bg-sand object-contain"/>
+   <div className="min-w-0">{item.slug?<Link href={`/shop/${item.slug}`} className="font-serif text-2xl font-bold text-ink hover:text-moss">{item.title}</Link>:<p className="font-serif text-2xl font-bold text-ink">{item.title}</p>}<p className="mt-2 text-sm text-ink/65"><span className="font-semibold text-ink">Condition:</span> {item.condition}</p><p className={`mt-2 text-sm font-semibold ${item.purchasable?'text-forest':'text-[#9b3d2e]'}`}>{item.statusLabel}</p>{item.issue?<p className="mt-3 rounded-lg bg-sand p-3 text-sm font-semibold text-ink">{item.issue}</p>:<p className="mt-3 text-sm text-ink/55">Availability checked against current inventory.</p>}
+    <div className="mt-5 flex flex-wrap items-center gap-3"><div className="inline-flex items-center overflow-hidden rounded-full border border-ink/15 bg-cream"><button type="button" aria-label={`Decrease quantity for ${item.title}`} onClick={()=>updateQuantity(item.id,item.requestedQuantity-1)} disabled={item.requestedQuantity<=1} className="h-10 w-10 font-bold text-ink disabled:opacity-35">−</button><span className="min-w-9 text-center text-sm font-bold">{item.requestedQuantity}</span><button type="button" aria-label={`Increase quantity for ${item.title}`} onClick={()=>updateQuantity(item.id,item.requestedQuantity+1)} disabled={item.requestedQuantity>=Math.max(1,item.availableQuantity)} className="h-10 w-10 font-bold text-ink disabled:opacity-35">+</button></div>{item.validatedQuantity>0&&item.validatedQuantity!==item.requestedQuantity?<button type="button" onClick={()=>updateQuantity(item.id,item.validatedQuantity)} className="text-sm font-bold text-moss">Use available quantity ({item.validatedQuantity})</button>:null}<button type="button" onClick={()=>removeItem(item.id)} className="text-sm font-semibold text-ink/60 underline-offset-4 hover:text-ink hover:underline">Remove</button></div>
+   </div><div className="sm:text-right"><p className="text-xl font-bold text-ink">{formatCents(item.lineTotalCents)}</p><p className="mt-1 text-xs text-ink/50">{formatCents(item.unitPriceCents)} each</p></div>
+  </article>)}<button type="button" onClick={clearCart} className="justify-self-start text-sm font-semibold text-ink/55 underline-offset-4 hover:text-ink hover:underline">Clear bag</button></section>
+  <aside className="rounded-[1.25rem] border border-ink/10 bg-white p-6 shadow-soft lg:sticky lg:top-44"><p className="text-sm font-bold uppercase tracking-[.18em] text-moss">Order summary</p><div className="mt-5 space-y-3 border-b border-ink/10 pb-5 text-sm"><p className="flex justify-between gap-4 text-ink/70"><span>Merchandise subtotal</span><strong className="text-ink">{loading?'Checking…':formatCents(subtotal)}</strong></p><p className="flex justify-between gap-4 text-ink/70"><span>Shipping</span><span>Calculated at checkout</span></p><p className="flex justify-between gap-4 text-ink/70"><span>Estimated tax</span><span>Calculated at checkout</span></p></div><p className="mt-5 flex items-baseline justify-between gap-4"><span className="font-serif text-xl font-bold text-ink">Subtotal</span><span className="font-serif text-3xl font-bold text-ink">{loading?'—':formatCents(subtotal)}</span></p>{error?<p className="mt-4 rounded-lg bg-sand p-3 text-sm font-semibold text-ink">{error}</p>:null}{validation?.warnings.length?<div className="mt-4 rounded-lg bg-sand p-3 text-sm font-semibold text-ink">{validation.warnings.map(w=><p key={w}>{w}</p>)}</div>:null}
+   {hasBlockingIssue?<button disabled className="mt-6 min-h-14 w-full rounded-full bg-forest px-6 font-bold text-white opacity-50">Checkout unavailable</button>:<Link href="/checkout" className="mt-6 inline-flex min-h-14 w-full items-center justify-center rounded-full bg-forest px-6 font-bold text-white hover:bg-moss">Checkout</Link>}<Link href="/shop" className="mt-3 inline-flex min-h-11 w-full items-center justify-center font-semibold text-moss hover:text-forest">Continue Shopping</Link><p className="mt-4 text-center text-xs leading-5 text-ink/50">Prices and inventory are confirmed before payment. Secure payment is handled by Stripe.</p>
+  </aside>
+ </div>;
 }
-
-function placeholderItem(id: string, quantity: number): CartValidationItem {
-  return {
-    id,
-    sku: '',
-    slug: '',
-    title: 'Checking item...',
-    image: '/shutterbug-product-placeholder.png',
-    condition: 'Checking current inventory',
-    statusLabel: 'Checking',
-    requestedQuantity: quantity,
-    validatedQuantity: 0,
-    availableQuantity: 0,
-    unitPriceCents: 0,
-    lineTotalCents: 0,
-    purchasable: false
-  };
-}
-
-export function CartPageClient() {
-  const { items, hydrated, updateQuantity, removeItem, clearCart } = useCart();
-  const [validation, setValidation] = useState<CartValidationResponse | null>(null);
-  const [error, setError] = useState('');
-  const [loading, setLoading] = useState(false);
-
-  useEffect(() => {
-    if (!hydrated) return;
-    if (!items.length) return;
-
-    let canceled = false;
-
-    async function validateCart() {
-      setLoading(true);
-      setError('');
-
-      try {
-        const response = await fetch('/api/cart/validate', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ items })
-        });
-        const payload = (await response.json()) as CartValidationResponse | { error?: string };
-
-        if (!response.ok) {
-          throw new Error('We could not check your bag.');
-        }
-
-        if (!isCartValidationResponse(payload)) {
-          throw new Error('We could not check your bag.');
-        }
-
-        if (!canceled) setValidation(payload);
-      } catch {
-        if (!canceled) {
-          setValidation(null);
-          setError('We could not check availability. Please refresh and try again.');
-        }
-      } finally {
-        if (!canceled) setLoading(false);
-      }
-    }
-
-    void validateCart();
-
-    return () => {
-      canceled = true;
-    };
-  }, [hydrated, items]);
-
-  if (!hydrated) {
-    return (
-      <div className="rounded-lg border border-ink/10 bg-cream p-8 text-center shadow-sm">
-        <h1 className="font-serif text-3xl font-bold text-ink">Loading your bag</h1>
-        <p className="mt-3 text-sm leading-6 text-ink/65">Checking the camera gear saved on this device.</p>
-      </div>
-    );
-  }
-
-  if (items.length === 0) {
-    return (
-      <div className="rounded-lg border border-ink/10 bg-cream p-8 text-center shadow-sm">
-        <h1 className="font-serif text-3xl font-bold text-ink">Your bag is empty</h1>
-        <p className="mt-3 text-sm leading-6 text-ink/65">Browse tested used cameras and add one when it feels right.</p>
-        <Link href="/shop" className="mt-6 inline-flex min-h-12 items-center rounded-full bg-forest px-6 text-sm font-semibold text-white">
-          Shop cameras
-        </Link>
-      </div>
-    );
-  }
-
-  const displayItems = validation?.items.length
-    ? validation.items
-    : items.map((item) => placeholderItem(item.id, item.quantity));
-  const subtotalCents = validation?.subtotalCents ?? 0;
-  const hasBlockingIssue = Boolean(error || loading || !validation || validation.hasBlockingIssue);
-
-  return (
-    <div className="grid gap-6 lg:grid-cols-[1fr_22rem]">
-      <div className="grid gap-3">
-        {displayItems.map((item) => (
-          <div
-            key={item.id}
-            className="grid gap-3 rounded-lg border border-ink/10 bg-cream p-4 shadow-sm sm:grid-cols-[6rem_1fr_auto]"
-          >
-            <Image
-              src={item.image}
-              alt={item.title}
-              width={96}
-              height={96}
-              sizes="6rem"
-              unoptimized={item.image.endsWith('.svg') || item.image.startsWith('http')}
-              className="aspect-square w-24 rounded-lg bg-sand object-contain"
-            />
-            <div>
-              {item.slug ? (
-                <Link href={`/shop/${item.slug}`} className="font-semibold text-ink hover:text-moss">
-                  {item.title}
-                </Link>
-              ) : (
-                <p className="font-semibold text-ink">{item.title}</p>
-              )}
-              <p className="mt-1 text-sm text-ink/60">
-                {item.condition} | {item.statusLabel}
-              </p>
-              {item.issue ? (
-                <p className="mt-3 rounded-lg bg-sand px-3 py-2 text-sm font-semibold text-ink">{item.issue}</p>
-              ) : (
-                <p className="mt-3 text-sm text-ink/60">Availability checked before checkout.</p>
-              )}
-              <div className="mt-3 flex flex-wrap items-center gap-2">
-                <label className="sr-only" htmlFor={`cart-quantity-${item.id}`}>
-                  Quantity for {item.title}
-                </label>
-                <input
-                  id={`cart-quantity-${item.id}`}
-                  type="number"
-                  min="1"
-                  max={Math.max(1, item.availableQuantity || item.requestedQuantity)}
-                  value={item.requestedQuantity}
-                  onChange={(event) => updateQuantity(item.id, Number(event.target.value))}
-                  className="h-10 w-20 rounded-lg border border-ink/15 bg-cream px-3 text-sm"
-                />
-                {item.validatedQuantity > 0 && item.validatedQuantity !== item.requestedQuantity ? (
-                  <button
-                    type="button"
-                    className="text-sm font-semibold text-moss"
-                    onClick={() => updateQuantity(item.id, item.validatedQuantity)}
-                  >
-                    Use {item.validatedQuantity}
-                  </button>
-                ) : null}
-                <button type="button" className="text-sm font-semibold text-moss" onClick={() => removeItem(item.id)}>
-                  Remove
-                </button>
-              </div>
-            </div>
-            <div className="text-left sm:text-right">
-              <p className="font-bold text-ink">{formatCents(item.lineTotalCents)}</p>
-              <p className="mt-1 text-xs text-ink/55">{formatCents(item.unitPriceCents)} each</p>
-            </div>
-          </div>
-        ))}
-      </div>
-
-      <aside className="grid content-start gap-4 rounded-lg border border-ink/10 bg-cream p-5 shadow-sm">
-        <div>
-          <p className="text-sm font-bold uppercase tracking-[0.18em] text-moss">Bag summary</p>
-          <p className="mt-3 flex items-center justify-between text-sm text-ink/70">
-            Subtotal{' '}
-            <span className="font-bold text-ink">{loading ? 'Checking...' : formatCents(subtotalCents)}</span>
-          </p>
-          <p className="mt-2 text-sm text-ink/60">
-            We confirm current prices and availability before checkout.
-          </p>
-        </div>
-
-        {error ? <p className="rounded-lg bg-sand p-3 text-sm font-semibold text-ink">{error}</p> : null}
-        {validation?.warnings.length ? (
-          <div className="grid gap-2 rounded-lg bg-sand p-3 text-sm font-semibold text-ink">
-            {validation.warnings.map((warning) => (
-              <p key={warning}>{warning}</p>
-            ))}
-          </div>
-        ) : null}
-
-        {hasBlockingIssue ? (
-          <button
-            type="button"
-            disabled
-            className="min-h-12 rounded-full bg-forest px-5 py-3 text-sm font-semibold text-white opacity-60"
-          >
-            Checkout unavailable
-          </button>
-        ) : (
-          <Link
-            href="/checkout"
-            className="inline-flex min-h-12 items-center justify-center rounded-full bg-forest px-5 py-3 text-sm font-semibold text-white transition hover:bg-moss"
-          >
-            Continue to checkout
-          </Link>
-        )}
-        {hasBlockingIssue ? (
-          <p className="text-sm leading-6 text-ink/65">
-            Update the highlighted items to continue to checkout.
-          </p>
-        ) : (
-          <p className="text-sm leading-6 text-ink/65">
-            Continue to confirm delivery details and pay securely.
-          </p>
-        )}
-        <button type="button" onClick={clearCart} className="text-sm font-semibold text-moss">
-          Clear bag
-        </button>
-        <div className="grid gap-2 border-t border-ink/10 pt-4 text-sm text-ink/65">
-          <p>
-            <span className="font-semibold text-ink">Availability:</span> we check that each item is ready to purchase.
-          </p>
-          <p>
-            <span className="font-semibold text-ink">Current pricing:</span> your total reflects the latest listed prices.
-          </p>
-          <p>
-            <span className="font-semibold text-ink">Used-camera details:</span> condition and availability stay visible
-            before purchase.
-          </p>
-          <p>
-            <Link href="/login?redirect=/cart" className="font-semibold text-moss">
-              Log in
-            </Link>{' '}
-            to keep your Shutterbug account ready for future order history.
-          </p>
-        </div>
-      </aside>
-    </div>
-  );
-}
+function Empty({signedIn}:{signedIn:boolean}){return <section className="mt-10 overflow-hidden rounded-[1.5rem] border border-ink/10 bg-white shadow-soft"><div className="grid gap-8 p-7 sm:p-10 lg:grid-cols-[1fr_22rem] lg:items-center"><div><h2 className="font-serif text-4xl font-bold text-ink">Your bag is empty.</h2><p className="mt-3 max-w-xl leading-7 text-ink/65">The Shutterbug shelf changes often. Browse tested cameras, printers, and one-of-a-kind finds when you are ready.</p><Link href="/shop" className="mt-6 inline-flex min-h-12 items-center rounded-full bg-forest px-7 font-bold text-white hover:bg-moss">Continue Shopping</Link></div><Image src="/shutterbug-checkout.png" alt="" width={500} height={375} className="aspect-[4/3] w-full rounded-lg bg-sand object-cover"/></div><div className="grid border-t border-ink/10 bg-[#faf4e8] sm:grid-cols-2 lg:grid-cols-4">{!signedIn?<EmptyLink href="/login?returnTo=%2Fbag" label="Sign In"/>:<EmptyLink href="/account" label="Account"/>}<EmptyLink href={signedIn?'/account/likes':'/login?returnTo=%2Faccount%2Flikes'} label="Saved Items"/><EmptyLink href="/categories/vintage-digital-cameras" label="Browse Cameras"/><EmptyLink href="/categories/printers" label="Browse Printers"/></div></section>}
+function EmptyLink({href,label}:{href:string;label:string}){return <Link href={href} className="flex min-h-16 items-center justify-center border-b border-ink/10 px-4 font-semibold text-ink hover:bg-mint sm:border-r">{label}</Link>}

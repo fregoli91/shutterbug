@@ -33,7 +33,7 @@ const searchSuggestions = [
   'Parts Repair'
 ];
 
-const transactionalPrefixes = ['/login', '/signup', '/cart', '/checkout', '/account', '/orders'];
+const transactionalPrefixes = ['/login', '/signup', '/bag', '/cart', '/checkout', '/account', '/orders'];
 
 export function MobileHeader({
   accountItems,

@@ -65,7 +65,7 @@ export default async function ProductPage({ params }: Props) {
   const galleryImages = Array.from(new Set([product.heroImage, ...product.gallery]));
   const purchasable = isPurchasable(product);
   const primaryActionLabel = purchasable ? 'Add to bag' : 'Ask about availability';
-  const primaryActionHref = purchasable ? '/cart' : '/contact';
+  const primaryActionHref = purchasable ? '/bag' : '/contact';
   const researchLinks = [
     { label: `More from ${product.brand}`, href: `/brands/${getBrandSlug(product.brand)}` },
     ...(category ? [{ label: `Browse ${category.name}`, href: `/categories/${category.slug}` }] : [])

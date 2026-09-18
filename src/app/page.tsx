@@ -66,7 +66,7 @@ const offerCards = [
 const quickLinks = [
   ['Shop all cameras', '/shop'],
   ['Liked products', '/account/likes'],
-  ['View bag', '/cart'],
+  ['View bag', '/bag'],
   ['My orders', '/account/orders'],
   ['Sell your camera', '/sell-your-camera']
 ];

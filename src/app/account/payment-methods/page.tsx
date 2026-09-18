@@ -40,7 +40,7 @@ export default async function AccountPaymentMethodsPage() {
         </div>
       </div>
       <div className="mt-6 flex flex-wrap gap-3">
-        <Link href="/cart" className="inline-flex min-h-11 items-center rounded-full bg-forest px-5 text-sm font-semibold text-white transition hover:bg-moss">
+        <Link href="/bag" className="inline-flex min-h-11 items-center rounded-full bg-forest px-5 text-sm font-semibold text-white transition hover:bg-moss">
           Go to bag
         </Link>
         <Link href="/privacy" className="inline-flex min-h-11 items-center rounded-full border border-ink/15 bg-cream px-5 text-sm font-semibold text-ink transition hover:border-moss hover:text-moss">

@@ -1,60 +1,10 @@
 'use client';
-
-import Link from 'next/link';
 import Image from 'next/image';
 import { useCart } from './CartProvider';
+import { useBagPanel } from './BagPanel';
 
-export function CartLink({ compact = false }: { compact?: boolean }) {
-  const { count } = useCart();
-  const displayCount = count > 99 ? '99+' : String(count);
-  const ariaLabel = count ? `Bag, ${count} item${count === 1 ? '' : 's'}` : 'Bag';
-
-  if (compact) {
-    return (
-      <Link
-        href="/cart"
-        aria-label={ariaLabel}
-        className="relative flex h-11 w-11 shrink-0 items-center justify-center rounded-lg transition hover:bg-forest/5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-moss"
-      >
-        <Image
-          src="/shutterbug-bag-icon.png"
-          alt=""
-          width={32}
-          height={32}
-          sizes="2rem"
-          className="h-8 w-8 rounded-md object-contain"
-        />
-        {count ? (
-          <span className="absolute right-0 top-0.5 flex h-4 min-w-4 items-center justify-center rounded-full bg-[#b8523b] px-1 text-[0.6rem] font-semibold leading-none text-white">
-            {displayCount}
-          </span>
-        ) : null}
-      </Link>
-    );
-  }
-
-  return (
-    <Link
-      href="/cart"
-      aria-label={ariaLabel}
-      className="inline-flex min-h-11 items-center gap-2 rounded-full border border-ink/15 bg-[#faf4e8] px-3 pr-4 text-sm font-semibold text-ink shadow-sm transition hover:border-moss/40"
-    >
-      <span className="block h-8 w-8 overflow-hidden rounded-lg bg-[#faf4e8]">
-        <Image
-          src="/shutterbug-bag-icon.png"
-          alt=""
-          width={32}
-          height={32}
-          sizes="2rem"
-          className="h-full w-full scale-[1.35] object-cover"
-        />
-      </span>
-      <span>Bag</span>
-      {count ? (
-        <span className="rounded-full bg-forest px-2 py-0.5 text-xs font-bold text-white">
-          {displayCount}
-        </span>
-      ) : null}
-    </Link>
-  );
+export function CartLink({compact=false}:{compact?:boolean}){
+ const {count}=useCart();const {open,toggle}=useBagPanel();const displayCount=count>99?'99+':String(count);const ariaLabel=count?`Bag, ${count} item${count===1?'':'s'}`:'Bag';
+ if(compact)return <button type="button" aria-label={open?'Close bag panel':ariaLabel} aria-expanded={open} aria-controls="header-bag-panel" onClick={event=>toggle(event.currentTarget)} className="relative flex h-11 w-11 shrink-0 items-center justify-center rounded-lg transition hover:bg-forest/5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-moss"><Image src="/shutterbug-bag-icon.png" alt="" width={32} height={32} sizes="2rem" className="h-8 w-8 rounded-md object-contain"/>{count?<span className="absolute right-0 top-0.5 flex h-4 min-w-4 items-center justify-center rounded-full bg-[#b8523b] px-1 text-[.6rem] font-semibold leading-none text-white">{displayCount}</span>:null}</button>;
+ return <button type="button" aria-label={open?'Close bag panel':ariaLabel} aria-expanded={open} aria-controls="header-bag-panel" onClick={event=>toggle(event.currentTarget)} className="inline-flex min-h-11 items-center gap-2 rounded-full border border-ink/15 bg-[#faf4e8] px-3 pr-4 text-sm font-semibold text-ink shadow-sm transition hover:border-moss/40 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-moss"><span className="block h-8 w-8 overflow-hidden rounded-lg bg-[#faf4e8]"><Image src="/shutterbug-bag-icon.png" alt="" width={32} height={32} sizes="2rem" className="h-full w-full scale-[1.35] object-cover"/></span><span>Bag</span>{count?<span className="rounded-full bg-forest px-2 py-0.5 text-xs font-bold text-white">{displayCount}</span>:null}</button>;
 }
