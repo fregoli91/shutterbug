@@ -48,10 +48,19 @@ export async function Header() {
             </Link>
             <Link href="/testing-process" className="transition hover:text-ink">How We Test</Link>
             <Link href="/buyer-guarantee" className="transition hover:text-ink">Buyer Guarantee</Link>
-            <Link href="/blog" className="transition hover:text-ink">Journal</Link>
-            <Link href="/returns" className="transition hover:text-ink">Returns</Link>
-            <Link href="/shipping" className="transition hover:text-ink">Shipping</Link>
+            <Link href="/blog" className="hidden transition hover:text-ink xl:inline-flex">Journal</Link>
+            <Link href="/returns" className="hidden transition hover:text-ink xl:inline-flex">Returns</Link>
+            <Link href="/shipping" className="hidden transition hover:text-ink xl:inline-flex">Shipping</Link>
             <Link href="/contact" className="font-semibold text-moss transition hover:text-forest">Customer Service</Link>
+            <span aria-hidden="true" className="h-4 border-l border-ink/20" />
+            {customer ? (
+              <Link href="/account" className="font-semibold text-forest transition hover:text-moss">My Account</Link>
+            ) : (
+              <>
+                <Link href="/login" className="font-semibold text-forest transition hover:text-moss">Log In</Link>
+                <Link href="/signup" className="rounded-full bg-forest px-3 py-1 font-semibold text-white transition hover:bg-moss">Sign Up</Link>
+              </>
+            )}
           </nav>
         </div>
       </div>

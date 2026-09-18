@@ -2,6 +2,7 @@
 
 import Link from 'next/link';
 import Image from 'next/image';
+import { DEFAULT_CUSTOMER_PROFILE_IMAGE } from '@/lib/customer-profile';
 import { ChevronLeft, ChevronRight, Equal, X } from 'lucide-react';
 import { useEffect, useRef, useState } from 'react';
 
@@ -201,6 +202,37 @@ export function MobileMenu({
               <div className="mx-auto max-w-xl">
                 {panel === 'main' ? (
                   <>
+                    <section aria-label="Customer account" className="mb-6 rounded-2xl border border-forest/15 bg-white/70 p-4 shadow-sm">
+                      <div className="flex items-center gap-3">
+                        <Image
+                          src={DEFAULT_CUSTOMER_PROFILE_IMAGE}
+                          alt=""
+                          width={64}
+                          height={64}
+                          sizes="4rem"
+                          className="h-16 w-16 shrink-0 rounded-full border border-forest/15 bg-sand object-cover shadow-sm"
+                        />
+                        <div className="min-w-0">
+                          <p className="truncate font-serif text-xl font-bold text-ink">
+                            {signedIn ? customerLabel || 'Your account' : 'Welcome to Shutterbug'}
+                          </p>
+                          <p className="mt-1 text-sm leading-5 text-ink/65">
+                            {signedIn ? 'Manage orders, likes, trade-ins, and account details.' : 'Log in to track orders and save your favorite finds.'}
+                          </p>
+                        </div>
+                      </div>
+                      {signedIn ? (
+                        <button type="button" data-panel-trigger="account" onClick={(event) => openPanel('account', event.currentTarget)} className="mt-4 flex min-h-11 w-full items-center justify-between rounded-full bg-forest px-5 text-sm font-semibold text-white transition hover:bg-moss focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-moss focus-visible:ring-offset-2">
+                          My account <ChevronRight aria-hidden="true" size={18} strokeWidth={1.5} />
+                        </button>
+                      ) : (
+                        <div className="mt-4 grid grid-cols-2 gap-3">
+                          <Link href="/login" onClick={closeMenu} className="flex min-h-11 items-center justify-center rounded-full border border-forest/20 bg-cream px-4 text-sm font-semibold text-forest transition hover:border-moss">Log in</Link>
+                          <Link href="/signup" onClick={closeMenu} className="flex min-h-11 items-center justify-center rounded-full bg-forest px-4 text-sm font-semibold text-white transition hover:bg-moss">Sign up</Link>
+                        </div>
+                      )}
+                    </section>
+
                     <nav aria-label="Shop" className="grid">
                       {shopItems.slice(0, 3).map((item) => (
                         <Link key={item.href} href={item.href} onClick={closeMenu} className={primaryLinkClass}>{item.label.replace(' Cameras', ' cameras')}</Link>
