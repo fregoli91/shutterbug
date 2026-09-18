@@ -214,7 +214,7 @@ export function MobileMenu({
                         />
                         <div className="min-w-0">
                           <p className="break-words font-serif text-lg font-bold leading-tight text-ink sm:text-xl">
-                            {signedIn ? customerLabel || 'Your account' : 'Welcome to Shutterbug'}
+                            {signedIn ? customerLabel || 'Your account' : 'Welcome to Shutterbug Camera Shop'}
                           </p>
                           <p className="mt-1 text-sm leading-5 text-ink/65">
                             {signedIn ? 'Manage orders, likes, trade-ins, and account details.' : 'Log in to track orders and save your favorite finds.'}
