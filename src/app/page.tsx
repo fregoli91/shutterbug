@@ -183,6 +183,8 @@ function LoggedOutHome({
 
 
 
+      <DirectStoreCallout />
+
       <section className="bg-cream px-4 py-12 sm:px-6 sm:py-14 lg:px-8">
         <div className="mx-auto max-w-7xl">
           <div className="flex flex-col items-center gap-4 text-center">
@@ -219,7 +221,6 @@ function LoggedOutHome({
         </div>
       </section>
 
-      <DirectStoreCallout />
       <CategoryPills title="Popular brands" showPopularBrandsImage />
       <TestingProcessCallout />
       <TrustCards />
