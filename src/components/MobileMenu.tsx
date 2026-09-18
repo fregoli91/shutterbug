@@ -213,7 +213,7 @@ export function MobileMenu({
                           className="h-16 w-16 shrink-0 rounded-full border border-forest/15 bg-sand object-cover shadow-sm"
                         />
                         <div className="min-w-0">
-                          <p className="truncate font-serif text-xl font-bold text-ink">
+                          <p className="break-words font-serif text-lg font-bold leading-tight text-ink sm:text-xl">
                             {signedIn ? customerLabel || 'Your account' : 'Welcome to Shutterbug'}
                           </p>
                           <p className="mt-1 text-sm leading-5 text-ink/65">
