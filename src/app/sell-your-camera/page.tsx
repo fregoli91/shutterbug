@@ -54,7 +54,7 @@ export default async function SellYourCameraPage() {
           <p className="text-sm font-bold uppercase tracking-[.24em] text-moss">Camera trade-in and buyback</p>
           <h1 className="mt-3 max-w-3xl font-serif text-4xl font-bold leading-tight text-ink sm:text-6xl">Turn unused camera gear into cash or your next camera.</h1>
           <p className="mt-5 max-w-2xl text-lg leading-8 text-ink/72">Tell us what you have, upload clear photos, and track the entire review in your Shutterbug account. No mystery forms and no obligation to accept.</p>
-          {promotion ? <div className="mt-6 rounded-lg border border-clay/30 bg-sand p-4"><p className="font-bold text-ink">{promotion.label}</p><p className="mt-1 text-sm text-ink/70">{promotion.description}</p></div> : null}
+          {promotion ? <Image src="/shutterbug-summer-trade-in-bonus.png" alt="Shutterbug summer trade-in bonus offering 10 percent extra store credit" width={2172} height={724} sizes="(min-width: 1024px) 52vw, 100vw" className="mt-6 aspect-[3/1] w-full rounded-lg border border-ink/10 bg-sand object-cover object-center shadow-sm" /> : null}
           <div className="mt-7 flex flex-wrap gap-3">
             <Link href={ctaHref} className="inline-flex min-h-12 items-center rounded-full bg-forest px-6 font-semibold text-white hover:bg-moss">Start your trade-in</Link>
             <a href="#how-it-works" className="inline-flex min-h-12 items-center rounded-full border border-ink/15 bg-white px-6 font-semibold text-ink hover:border-moss">See how it works</a>
