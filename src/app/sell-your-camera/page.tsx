@@ -5,7 +5,6 @@ import type { Metadata } from 'next';
 import { site } from '@/lib/seo';
 import { buildBreadcrumbJsonLd, jsonLdGraph } from '@/lib/seo-utils';
 import { getCustomerSession } from '@/lib/customer-auth';
-import { getActiveTradeInPromotion } from '@/lib/trade-in-promotion';
 
 export const metadata: Metadata = {
   title: 'Sell Your Camera | Fast Camera Trade-In & Buyback',
@@ -38,7 +37,7 @@ const faqs = [
 ];
 
 export default async function SellYourCameraPage() {
-  const [customer, promotion] = await Promise.all([getCustomerSession(), Promise.resolve(getActiveTradeInPromotion())]);
+  const customer = await getCustomerSession();
   const wizardPath = '/account/trade-ins/new';
   const ctaHref = customer ? wizardPath : `/login?returnTo=${encodeURIComponent(wizardPath)}`;
   const structuredData = jsonLdGraph([
@@ -54,7 +53,7 @@ export default async function SellYourCameraPage() {
           <p className="text-sm font-bold uppercase tracking-[.24em] text-moss">Camera trade-in and buyback</p>
           <h1 className="mt-3 max-w-3xl font-serif text-4xl font-bold leading-tight text-ink sm:text-6xl">Turn unused camera gear into cash or your next camera.</h1>
           <p className="mt-5 max-w-2xl text-lg leading-8 text-ink/72">Tell us what you have, upload clear photos, and track the entire review in your Shutterbug account. No mystery forms and no obligation to accept.</p>
-          {promotion ? <Image src="/shutterbug-summer-trade-in-bonus.png" alt="Shutterbug summer trade-in bonus offering 10 percent extra store credit" width={2172} height={724} sizes="(min-width: 1024px) 52vw, 100vw" className="mt-6 aspect-[3/1] w-full rounded-lg border border-ink/10 bg-sand object-cover object-center shadow-sm" /> : null}
+          <Link href="/shop?sort=featured" aria-label="Shop the Shutterbug fall sale" className="mt-6 block overflow-hidden rounded-lg border border-ink/10 bg-sand shadow-sm transition hover:border-moss/40 hover:shadow-soft focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-moss focus-visible:ring-offset-2"><Image src="/shutterbug-fall-sale-banner.png" alt="Shutterbug Camera Shop fall sale with up to 30 percent off cameras and gear" width={2172} height={724} sizes="(min-width: 1024px) 52vw, 100vw" className="aspect-[3/1] w-full object-cover object-center transition duration-500 hover:scale-[1.01]" /></Link>
           <div className="mt-7 flex flex-wrap gap-3">
             <Link href={ctaHref} className="inline-flex min-h-12 items-center rounded-full bg-forest px-6 font-semibold text-white hover:bg-moss">Start your trade-in</Link>
             <a href="#how-it-works" className="inline-flex min-h-12 items-center rounded-full border border-ink/15 bg-white px-6 font-semibold text-ink hover:border-moss">See how it works</a>
