@@ -37,9 +37,9 @@ export function CartLink({ compact = false }: { compact?: boolean }) {
     <Link
       href="/cart"
       aria-label={ariaLabel}
-      className="inline-flex min-h-11 items-center gap-2 rounded-full border border-ink/15 bg-cream px-3 pr-4 text-sm font-semibold text-ink shadow-sm transition hover:border-moss/40"
+      className="inline-flex min-h-11 items-center gap-2 rounded-full border border-ink/15 bg-[#faf4e8] px-3 pr-4 text-sm font-semibold text-ink shadow-sm transition hover:border-moss/40"
     >
-      <span className="block h-8 w-8 overflow-hidden rounded-lg bg-cream">
+      <span className="block h-8 w-8 overflow-hidden rounded-lg bg-[#faf4e8]">
         <Image
           src="/shutterbug-bag-icon.png"
           alt=""
