@@ -1,5 +1,6 @@
 import Link from 'next/link';
 import Image from 'next/image';
+import { DEFAULT_CUSTOMER_PROFILE_IMAGE } from '@/lib/customer-profile';
 import type { Metadata } from 'next';
 import { HomePromotionalCarousel } from '@/components/HomePromotionalCarousel';
 import { ProductCard } from '@/components/ProductCard';
@@ -346,7 +347,7 @@ function LoggedInHome({
           <div className="rounded-lg border border-ink/10 bg-white p-5 text-center shadow-sm">
             <div className="flex items-center justify-center gap-4">
               <Image
-                src="/shutterbug-basic-character.png"
+                src={DEFAULT_CUSTOMER_PROFILE_IMAGE}
                 alt=""
                 width={80}
                 height={80}

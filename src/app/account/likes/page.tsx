@@ -1,5 +1,6 @@
 import Link from 'next/link';
 import Image from 'next/image';
+import { DEFAULT_CUSTOMER_PROFILE_IMAGE } from '@/lib/customer-profile';
 import { AccountFeaturePage } from '@/components/account/AccountFeaturePage';
 import { ProductLikeButton } from '@/components/ProductLikeButton';
 import { getCustomerLikedProducts, getLikedProductHeroImage } from '@/lib/customer-likes';
@@ -81,7 +82,7 @@ export default async function AccountLikesPage() {
       ) : (
           <div className="rounded-lg border border-ink/10 bg-white p-8 text-center shadow-sm">
             <Image
-              src="/shutterbug-basic-character.png"
+              src={DEFAULT_CUSTOMER_PROFILE_IMAGE}
               alt=""
               width={96}
               height={96}

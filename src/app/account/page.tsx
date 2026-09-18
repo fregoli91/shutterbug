@@ -1,5 +1,6 @@
 import Link from 'next/link';
 import Image from 'next/image';
+import { DEFAULT_CUSTOMER_PROFILE_IMAGE } from '@/lib/customer-profile';
 import { PaymentStatus } from '@/generated/prisma/client';
 import { logoutAction } from './actions';
 import { requireCustomer } from '@/lib/customer-auth';
@@ -104,7 +105,7 @@ export default async function AccountPage({ searchParams }: Props) {
             </p>
           </div>
           <Image
-            src="/shutterbug-basic-character.png"
+            src={DEFAULT_CUSTOMER_PROFILE_IMAGE}
             alt=""
             width={288}
             height={288}
