@@ -212,9 +212,15 @@ export function MobileMenu({
                           sizes="4rem"
                           className="h-16 w-16 shrink-0 rounded-full border border-forest/15 bg-sand object-cover shadow-sm"
                         />
-                        <div className="min-w-0">
+                        <div className="min-w-0 flex-1 text-center">
                           <p className="break-words font-serif text-lg font-bold leading-tight text-ink sm:text-xl">
-                            {signedIn ? customerLabel || 'Your account' : 'Welcome to Shutterbug Camera Shop'}
+                            {signedIn ? customerLabel || 'Your account' : (
+                              <>
+                                <span className="block">Welcome To</span>
+                                <span className="block">Shutterbug</span>
+                                <span className="block">Camera Shop</span>
+                              </>
+                            )}
                           </p>
                           <p className="mt-1 text-sm leading-5 text-ink/65">
                             {signedIn ? 'Manage orders, likes, trade-ins, and account details.' : 'Log in to track orders and save your favorite finds.'}
