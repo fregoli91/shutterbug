@@ -49,12 +49,12 @@ export default async function SellYourCameraPage() {
     <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: safeJsonLd(structuredData) }} />
     <section className="bg-cream px-4 py-8 sm:px-6 sm:py-14 lg:px-8">
       <div className="mx-auto grid max-w-7xl items-center gap-9 lg:grid-cols-[1.05fr_.95fr]">
-        <div>
+        <div className="text-center">
           <p className="text-sm font-bold uppercase tracking-[.24em] text-moss">Camera trade-in and buyback</p>
-          <h1 className="mt-3 max-w-3xl font-serif text-4xl font-bold leading-tight text-ink sm:text-6xl">Turn unused camera gear into cash or your next camera.</h1>
-          <p className="mt-5 max-w-2xl text-lg leading-8 text-ink/72">Tell us what you have, upload clear photos, and track the entire review in your Shutterbug account. No mystery forms and no obligation to accept.</p>
+          <h1 className="mx-auto mt-3 max-w-3xl font-serif text-4xl font-bold leading-tight text-ink sm:text-6xl">Turn unused camera gear into cash or your next camera.</h1>
+          <p className="mx-auto mt-5 max-w-2xl text-lg leading-8 text-ink/72">Tell us what you have, upload clear photos, and track the entire review in your Shutterbug account. No mystery forms and no obligation to accept.</p>
           <Link href="/shop?sort=featured" aria-label="Shop the Shutterbug fall sale" className="mt-6 block overflow-hidden rounded-lg border border-ink/10 bg-sand shadow-sm transition hover:border-moss/40 hover:shadow-soft focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-moss focus-visible:ring-offset-2"><Image src="/shutterbug-fall-sale-banner.png" alt="Shutterbug Camera Shop fall sale with up to 30 percent off cameras and gear" width={2172} height={724} sizes="(min-width: 1024px) 52vw, 100vw" className="aspect-[3/1] w-full object-cover object-center transition duration-500 hover:scale-[1.01]" /></Link>
-          <div className="mt-7 flex flex-wrap gap-3">
+          <div className="mt-7 flex flex-wrap justify-center gap-3">
             <Link href={ctaHref} className="inline-flex min-h-12 items-center rounded-full bg-forest px-6 font-semibold text-white hover:bg-moss">Start your trade-in</Link>
             <a href="#how-it-works" className="inline-flex min-h-12 items-center rounded-full border border-ink/15 bg-white px-6 font-semibold text-ink hover:border-moss">See how it works</a>
           </div>
