@@ -31,7 +31,7 @@ const errorMessages: Record<string, string> = {
 
 export default async function LoginPage({ searchParams }: Props) {
   const params = searchParams ? await searchParams : {};
-  const redirectTo = cleanRedirect(params.redirect);
+  const redirectTo = cleanRedirect(params.returnTo ?? params.redirect);
   const admin = await getAdminSession();
   if (admin) redirect('/admin');
 

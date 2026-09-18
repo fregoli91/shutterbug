@@ -4,6 +4,7 @@ const accountLinks = [
   { href: '/account', label: 'Dashboard', copy: 'Account overview' },
   { href: '/account/likes', label: 'Liked Products', copy: 'Saved cameras' },
   { href: '/account/orders', label: 'My Orders', copy: 'Purchase history' },
+  { href: '/account/trade-ins', label: 'My Trade-Ins', copy: 'Drafts, offers, and status' },
   { href: '/account/track', label: 'Track Orders', copy: 'Shipping status' },
   { href: '/account/addresses', label: 'Saved Addresses', copy: 'Checkout details' },
   { href: '/account/payment-methods', label: 'Payment Methods', copy: 'Secure payment info' },

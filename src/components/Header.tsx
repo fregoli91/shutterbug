@@ -28,6 +28,7 @@ export async function Header() {
     { href: '/account', label: 'Account Dashboard' },
     { href: '/account/likes', label: 'Liked Products' },
     { href: '/account/orders', label: 'Purchase History' },
+    { href: '/account/trade-ins', label: 'My Trade-Ins' },
     { href: '/account/track', label: 'Track Orders' },
     { href: '/account/addresses', label: 'Saved Addresses' },
     { href: '/account/payment-methods', label: 'Payment Methods' },

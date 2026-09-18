@@ -73,6 +73,64 @@ enum OrderStatus {
   REFUNDED
 }
 
+enum TradeInStatus {
+  DRAFT
+  SUBMITTED
+  UNDER_REVIEW
+  OFFER_SENT
+  OFFER_ACCEPTED
+  OFFER_DECLINED
+  SHIPPING_ARRANGED
+  RECEIVED
+  INSPECTING
+  REVISED_OFFER_SENT
+  COMPLETED
+  CANCELLED
+}
+
+enum TradeInItemType {
+  DIGITAL_CAMERA
+  FILM_CAMERA
+  LENS
+  ACCESSORY
+  COLLECTION
+  OTHER
+}
+
+enum TradeInCondition {
+  LIKE_NEW
+  EXCELLENT
+  GOOD
+  FAIR
+  POOR
+  FOR_PARTS
+  UNKNOWN
+}
+
+enum TradeInPayoutMethod {
+  CASH
+  STORE_CREDIT
+}
+
+enum TradeInOfferKind {
+  INITIAL
+  REVISED
+}
+
+enum TradeInOfferStatus {
+  PENDING
+  ACCEPTED
+  DECLINED
+  EXPIRED
+  SUPERSEDED
+}
+
+enum TradeInHistoryActor {
+  CUSTOMER
+  ADMIN
+  SYSTEM
+}
+
 model Product {
   id                String           @id @default(cuid())
   sku               String?          @unique
@@ -173,10 +231,96 @@ model Customer {
   emailVerificationTokens CustomerEmailVerificationToken[]
   productLikes            CustomerProductLike[]
   orders                  Order[]
+  tradeIns                TradeInSubmission[]
   createdAt               DateTime                         @default(now())
   updatedAt               DateTime                         @updatedAt
 
   @@index([email])
+}
+
+model TradeInSubmission {
+  id                    String                @id @default(cuid())
+  reference             String                @unique
+  customerId            String
+  customer              Customer              @relation(fields: [customerId], references: [id], onDelete: Cascade)
+  status                TradeInStatus         @default(DRAFT)
+  itemType              TradeInItemType?
+  brand                 String                @default("")
+  model                 String                @default("")
+  modelUnknown          Boolean               @default(false)
+  quantity              Int                   @default(1)
+  condition             TradeInCondition?
+  powersOn              Boolean?
+  functionalNotes       String                @default("")
+  cosmeticNotes         String                @default("")
+  includedItems         String[]              @default([])
+  additionalNotes       String                @default("")
+  payoutPreference      TradeInPayoutMethod?
+  phone                 String                @default("")
+  localHandoffRequested Boolean               @default(false)
+  shippingInstructions  String                @default("")
+  inboundCarrier        String                @default("")
+  inboundTracking       String                @default("")
+  adminNotes            String                @default("")
+  finalPayoutCents      Int?
+  submittedAt           DateTime?
+  completedAt           DateTime?
+  images                TradeInImage[]
+  offers                TradeInOffer[]
+  history               TradeInStatusEvent[]
+  createdAt             DateTime              @default(now())
+  updatedAt             DateTime              @updatedAt
+
+  @@index([customerId, createdAt])
+  @@index([status, updatedAt])
+  @@index([reference])
+}
+
+model TradeInImage {
+  id                 String            @id @default(cuid())
+  tradeInId          String
+  tradeIn            TradeInSubmission @relation(fields: [tradeInId], references: [id], onDelete: Cascade)
+  cloudinaryPublicId String
+  cloudinaryVersion  Int
+  format             String
+  mimeType           String
+  bytes              Int
+  width              Int?
+  height             Int?
+  sortOrder          Int               @default(0)
+  createdAt          DateTime          @default(now())
+
+  @@index([tradeInId, sortOrder])
+}
+
+model TradeInOffer {
+  id               String             @id @default(cuid())
+  tradeInId        String
+  tradeIn          TradeInSubmission  @relation(fields: [tradeInId], references: [id], onDelete: Cascade)
+  kind             TradeInOfferKind   @default(INITIAL)
+  status           TradeInOfferStatus @default(PENDING)
+  cashCents        Int
+  storeCreditCents Int
+  note             String             @default("")
+  expiresAt        DateTime?
+  respondedAt      DateTime?
+  createdAt        DateTime           @default(now())
+  updatedAt        DateTime           @updatedAt
+
+  @@index([tradeInId, createdAt])
+  @@index([status, expiresAt])
+}
+
+model TradeInStatusEvent {
+  id        String              @id @default(cuid())
+  tradeInId String
+  tradeIn   TradeInSubmission   @relation(fields: [tradeInId], references: [id], onDelete: Cascade)
+  actor     TradeInHistoryActor @default(SYSTEM)
+  status    TradeInStatus
+  message   String
+  createdAt DateTime            @default(now())
+
+  @@index([tradeInId, createdAt])
 }
 
 model CustomerEmailVerificationToken {

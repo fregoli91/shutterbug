@@ -62,11 +62,12 @@ export default async function AccountPage({ searchParams }: Props) {
   const prisma = requirePrisma();
   const params = searchParams ? await searchParams : {};
   const status = asString(params.status);
-  const [orderCount, likedCount, recentOrder] = await Promise.all([
+  const [orderCount, likedCount, tradeInCount, recentOrder] = await Promise.all([
     prisma.order.count({
       where: { customerId: customer.id, paymentStatus: { in: [PaymentStatus.PAID, PaymentStatus.REFUNDED] } }
     }),
     prisma.customerProductLike.count({ where: { customerId: customer.id } }),
+    prisma.tradeInSubmission.count({ where: { customerId: customer.id } }),
     prisma.order.findFirst({
       where: { customerId: customer.id, paymentStatus: { in: [PaymentStatus.PAID, PaymentStatus.REFUNDED] } },
       orderBy: { createdAt: 'desc' },
@@ -112,9 +113,10 @@ export default async function AccountPage({ searchParams }: Props) {
           />
         </div>
 
-        <div className="mt-8 grid gap-3 sm:grid-cols-3">
+        <div className="mt-8 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
           <AccountStat label="Orders" value={String(orderCount)} />
           <AccountStat label="Liked products" value={String(likedCount)} />
+          <AccountStat label="Trade-ins" value={String(tradeInCount)} />
           <AccountStat label="Email status" value={customer.emailVerifiedAt ? 'Verified' : 'Needs verification'} />
         </div>
 

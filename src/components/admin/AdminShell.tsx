@@ -21,6 +21,9 @@ export function AdminShell({ children }: { children: React.ReactNode }) {
             <Link href="/admin/orders" className="rounded-full bg-white px-4 py-2 text-sm font-semibold text-ink shadow-sm">
               Orders
             </Link>
+            <Link href="/admin/trade-ins" className="rounded-full bg-white px-4 py-2 text-sm font-semibold text-ink shadow-sm">
+              Trade-ins
+            </Link>
             <form action={logoutAction}>
               <button className="rounded-full border border-ink/15 bg-cream px-4 py-2 text-sm font-semibold text-ink">
                 Sign out
