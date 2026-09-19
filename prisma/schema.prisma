@@ -230,6 +230,7 @@ model Customer {
   emailVerifiedAt         DateTime?
   emailVerificationTokens CustomerEmailVerificationToken[]
   productLikes            CustomerProductLike[]
+  modelWatches            CustomerModelWatch[]
   orders                  Order[]
   tradeIns                TradeInSubmission[]
   createdAt               DateTime                         @default(now())
@@ -349,6 +350,21 @@ model CustomerProductLike {
   @@index([productId])
 }
 
+model CustomerModelWatch {
+  id           String   @id @default(cuid())
+  customerId   String
+  customer     Customer @relation(fields: [customerId], references: [id], onDelete: Cascade)
+  key          String
+  brand        String
+  model        String
+  categorySlug String   @default("")
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  @@unique([customerId, key])
+  @@index([customerId, createdAt])
+  @@index([key])
+}
 model Order {
   id                String             @id @default(cuid())
   orderNumber       String             @unique

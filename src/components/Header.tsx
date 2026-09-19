@@ -27,6 +27,7 @@ export async function Header() {
   const accountItems = [
     { href: '/account', label: 'Account Dashboard' },
     { href: '/account/likes', label: 'Liked Products' },
+    { href: '/account/watchlist', label: 'Model Watchlist' },
     { href: '/account/orders', label: 'Purchase History' },
     { href: '/account/trade-ins', label: 'My Trade-Ins' },
     { href: '/account/track', label: 'Track Orders' },
@@ -87,7 +88,7 @@ export async function Header() {
         <SearchForm
           id="site-search"
           className="min-w-0 flex-1"
-          placeholder="Search cameras, brands & models"
+          placeholder="Search cameras, printers, brands & models"
           variant="desktop"
         />
 
@@ -129,7 +130,7 @@ function SearchForm({
   if (variant === 'mobile') {
     return (
       <form action="/shop" className={className} role="search">
-        <label htmlFor={id} className="sr-only">Search tested camera inventory</label>
+        <label htmlFor={id} className="sr-only">Search Shutterbug inventory</label>
         <div className="relative flex h-12 items-center rounded-lg border border-forest/25 bg-mint shadow-[inset_0_2px_5px_rgba(36,84,58,0.08),0_2px_5px_rgba(35,43,32,0.08)] focus-within:border-moss focus-within:ring-2 focus-within:ring-sage">
           <span aria-hidden="true" className="pointer-events-none absolute left-3 text-xl leading-none text-forest">⌕</span>
           <input
@@ -156,7 +157,7 @@ function SearchForm({
 
   return (
     <form action="/shop" className={className} role="search">
-      <label htmlFor={id} className="sr-only">Search tested camera inventory</label>
+      <label htmlFor={id} className="sr-only">Search Shutterbug inventory</label>
       <div className="flex h-12 overflow-hidden rounded-lg border border-ink/15 bg-white shadow-sm focus-within:border-moss focus-within:ring-2 focus-within:ring-sage">
         <input
           id={id}

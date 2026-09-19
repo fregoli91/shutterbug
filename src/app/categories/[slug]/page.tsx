@@ -229,8 +229,8 @@ export default async function CategoryPage({ params }: Props) {
               <ul className="mt-4 grid list-disc gap-3 pl-5 text-sm leading-6 text-ink/72">
                 {profile.buyerTips.map((tip) => <li key={tip}>{tip}</li>)}
               </ul>
-              <Link href="/testing-process" className="mt-5 inline-flex min-h-11 items-center font-semibold text-moss hover:text-ink">
-                See how Shutterbug tests used cameras
+              <Link href={isPrinterCategory ? '/guides/how-we-test-used-printers' : '/testing-process'} className="mt-5 inline-flex min-h-11 items-center font-semibold text-moss hover:text-ink">
+                {isPrinterCategory ? 'See how Shutterbug tests used printers' : 'See how Shutterbug tests used cameras'}
               </Link>
             </div>
           </section>

@@ -22,6 +22,7 @@ export function AccountFeaturePage({ eyebrow, title, intro, children }: AccountF
           <p className="font-serif text-2xl font-bold text-ink">Account tools</p>
           <AccountLink href="/account" label="Dashboard" />
           <AccountLink href="/account/likes" label="Liked products" />
+          <AccountLink href="/account/watchlist" label="Model watchlist" />
           <AccountLink href="/account/orders" label="Orders" />
           <AccountLink href="/account/track" label="Tracking" />
           <AccountLink href="/account/addresses" label="Addresses" />

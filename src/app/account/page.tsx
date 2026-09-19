@@ -27,6 +27,11 @@ const accountCards = [
     copy: 'Review saved cameras, open product details, or remove items from your liked list.'
   },
   {
+    href: '/account/watchlist',
+    title: 'Model watchlist',
+    copy: 'Keep camera and printer models saved while you wait for another unit to arrive.'
+  },
+  {
     href: '/account/orders',
     title: 'Orders',
     copy: 'View purchase history, order details, payment status, and fulfillment notes.'
@@ -63,11 +68,12 @@ export default async function AccountPage({ searchParams }: Props) {
   const prisma = requirePrisma();
   const params = searchParams ? await searchParams : {};
   const status = asString(params.status);
-  const [orderCount, likedCount, tradeInCount, recentOrder] = await Promise.all([
+  const [orderCount, likedCount, watchCount, tradeInCount, recentOrder] = await Promise.all([
     prisma.order.count({
       where: { customerId: customer.id, paymentStatus: { in: [PaymentStatus.PAID, PaymentStatus.REFUNDED] } }
     }),
     prisma.customerProductLike.count({ where: { customerId: customer.id } }),
+    prisma.customerModelWatch.count({ where: { customerId: customer.id } }),
     prisma.tradeInSubmission.count({ where: { customerId: customer.id } }),
     prisma.order.findFirst({
       where: { customerId: customer.id, paymentStatus: { in: [PaymentStatus.PAID, PaymentStatus.REFUNDED] } },
@@ -114,9 +120,10 @@ export default async function AccountPage({ searchParams }: Props) {
           />
         </div>
 
-        <div className="mt-8 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+        <div className="mt-8 grid gap-3 sm:grid-cols-2 lg:grid-cols-5">
           <AccountStat label="Orders" value={String(orderCount)} />
           <AccountStat label="Liked products" value={String(likedCount)} />
+          <AccountStat label="Watched models" value={String(watchCount)} />
           <AccountStat label="Trade-ins" value={String(tradeInCount)} />
           <AccountStat label="Email status" value={customer.emailVerifiedAt ? 'Verified' : 'Needs verification'} />
         </div>

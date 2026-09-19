@@ -20,6 +20,8 @@ import { getCustomerSession } from '@/lib/customer-auth';
 import { site } from '@/lib/seo';
 import { getBrandSlug } from '@/lib/brands';
 import { buildBreadcrumbJsonLd, buildProductJsonLd, jsonLdGraph } from '@/lib/seo-utils';
+import { buildModelWatchTarget, getCustomerModelWatchKeys } from '@/lib/model-watchlist';
+import { toggleModelWatchAction } from '@/app/account/watchlist/actions';
 
 type Props = { params: Promise<{ slug: string }> };
 
@@ -64,6 +66,13 @@ export default async function ProductPage({ params }: Props) {
   );
   const galleryImages = Array.from(new Set([product.heroImage, ...product.gallery]));
   const purchasable = isPurchasable(product);
+  const watchTarget = buildModelWatchTarget({
+    brand: product.brand,
+    model: product.model || product.title,
+    categorySlug: product.categorySlug
+  });
+  const watchedModelKeys = await getCustomerModelWatchKeys(customer?.id, watchTarget ? [watchTarget.key] : []);
+  const watchingModel = Boolean(watchTarget && watchedModelKeys.has(watchTarget.key));
   const primaryActionLabel = purchasable ? 'Add to bag' : 'Ask about availability';
   const primaryActionHref = purchasable ? '/bag' : '/contact';
   const researchLinks = [
@@ -78,7 +87,10 @@ export default async function ProductPage({ params }: Props) {
     researchLinks.push({ label: 'How to buy a used camera', href: '/guides/how-to-buy-a-used-camera' });
     if (product.cameraType === 'Film Camera') researchLinks.push({ label: '35mm film camera buying guide', href: '/guides/35mm-film-camera-buying-guide' });
   }
-  if (printer) researchLinks.push({ label: 'Shop used printers', href: '/categories/printers' });
+  if (printer) researchLinks.push(
+    { label: 'How we test used printers', href: '/guides/how-we-test-used-printers' },
+    { label: 'Shop used printers', href: '/categories/printers' }
+  );
   const structuredData = jsonLdGraph([
     buildProductJsonLd(product, category),
     buildBreadcrumbJsonLd([
@@ -155,6 +167,21 @@ export default async function ProductPage({ params }: Props) {
               <h2 className="font-serif text-2xl font-bold">{product.status === 'sold_out' ? 'This one has sold.' : 'This item is out of stock.'}</h2>
               <p className="mt-2 text-sm">Photos, condition, and included accessories describe this individual unit.</p>
               <Link className="mt-3 inline-block font-semibold text-moss" href={category ? `/categories/${category.slug}` : '/shop'}>Shop similar {printer ? 'printers' : 'items'}</Link>
+              {watchTarget ? (
+                <>
+                  <form action={toggleModelWatchAction} className="mt-4">
+                    <input type="hidden" name="productId" value={product.id} />
+                    <input type="hidden" name="productSlug" value={product.slug} />
+                    <input type="hidden" name="redirectTo" value={`/shop/${product.slug}`} />
+                    <button className="inline-flex min-h-11 items-center justify-center rounded-full bg-forest px-5 text-sm font-semibold text-white transition hover:bg-moss">
+                      {watchingModel ? 'Watching this model' : 'Watch this model'}
+                    </button>
+                  </form>
+                  <p className="mt-2 text-xs leading-5 text-ink/60">
+                    {customer ? 'Saved models appear in your account. Automatic alerts are not active yet.' : 'Sign in to save this model to your account.'}
+                  </p>
+                </>
+              ) : null}
             </div> : null}
             <h1 className="mt-5 font-serif text-3xl font-bold tracking-tight text-ink sm:mt-6 sm:text-5xl lg:text-6xl">
               {product.title}

@@ -7,14 +7,14 @@ import { site } from '@/lib/seo';
 import { buildBreadcrumbJsonLd, jsonLdGraph } from '@/lib/seo-utils';
 
 export const metadata: Metadata = {
-  title: 'Camera Buying Guides',
+  title: 'Camera & Printer Guides',
   description:
-    'Practical Shutterbug guides to buying used cameras, understanding vintage digital cameras, and choosing 35mm film gear.',
+    'Practical Shutterbug guides to buying used cameras and printers, understanding older equipment, and reading testing notes.',
   alternates: { canonical: '/guides' },
   openGraph: {
-    title: 'Camera Buying Guides | Shutterbug Camera Shop',
+    title: 'Camera & Printer Guides | Shutterbug Camera Shop',
     description:
-      'Used-camera checklists and clear explanations for vintage digital, CCD, and 35mm film camera shoppers.',
+      'Used-camera and printer checklists with clear explanations of condition, testing, accessories, and limitations.',
     url: `${site.domain}/guides`,
     type: 'website',
     images: [{ url: '/shutterbug-how-we-test-used.png', width: 1672, height: 941, alt: 'Shutterbug testing a used camera' }]
@@ -25,7 +25,7 @@ export default function GuidesPage() {
   const structuredData = jsonLdGraph([
     {
       '@type': 'CollectionPage',
-      name: 'Camera Buying Guides',
+      name: 'Camera & Printer Guides',
       description: metadata.description,
       url: `${site.domain}/guides`,
       isPartOf: { '@id': `${site.domain}/#website` },
@@ -46,15 +46,15 @@ export default function GuidesPage() {
   ]);
 
   return (
-    <main className="px-4 py-12 sm:px-6 sm:py-16 lg:px-8">
+    <div className="px-4 py-12 sm:px-6 sm:py-16 lg:px-8">
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: safeJsonLd(structuredData) }} />
       <div className="mx-auto max-w-7xl">
         <header className="max-w-3xl">
-          <p className="text-sm font-bold uppercase tracking-[0.24em] text-moss">Shutterbug camera guides</p>
-          <h1 className="mt-3 font-serif text-4xl font-bold text-ink sm:text-6xl">Buy older cameras with clarity.</h1>
+          <p className="text-sm font-bold uppercase tracking-[0.24em] text-moss">Shutterbug equipment guides</p>
+          <h1 className="mt-3 font-serif text-4xl font-bold text-ink sm:text-6xl">Buy used cameras and printers with clarity.</h1>
           <p className="mt-5 text-base leading-7 text-ink/70 sm:text-lg sm:leading-8">
-            Practical checklists and plain-language explanations for choosing used digital and film cameras, reading
-            condition notes, and understanding the accessories an older camera needs.
+            Practical checklists and plain-language explanations for choosing used cameras and printers, reading
+            condition notes, and understanding the supplies and accessories older equipment needs.
           </p>
         </header>
 
@@ -71,7 +71,7 @@ export default function GuidesPage() {
                   className="aspect-[16/10] w-full bg-sand object-cover transition duration-300 group-hover:scale-[1.02]"
                 />
                 <div className="p-5 sm:p-6">
-                  <p className="text-xs font-bold uppercase tracking-[0.2em] text-moss">Camera guide</p>
+                  <p className="text-xs font-bold uppercase tracking-[0.2em] text-moss">Equipment guide</p>
                   <h2 className="mt-3 font-serif text-2xl font-bold text-ink">{guide.title}</h2>
                   <p className="mt-3 text-sm leading-6 text-ink/68">{guide.summary}</p>
                   <span className="mt-5 inline-flex min-h-11 items-center font-semibold text-moss group-hover:text-ink">
@@ -95,12 +95,15 @@ export default function GuidesPage() {
             <Link href="/categories/lenses" className="rounded-full bg-white px-4 py-2 text-sm font-semibold text-ink/72 hover:text-moss">
               Used camera lenses
             </Link>
+            <Link href="/categories/printers" className="rounded-full bg-white px-4 py-2 text-sm font-semibold text-ink/72 hover:text-moss">
+              Used printers
+            </Link>
             <Link href="/shop" className="rounded-full bg-forest px-4 py-2 text-sm font-semibold text-white hover:bg-moss">
               Shop all used gear
             </Link>
           </div>
         </nav>
       </div>
-    </main>
+    </div>
   );
 }
