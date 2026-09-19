@@ -20,10 +20,12 @@ test('bag page exposes real quantity, removal, checkout, and customer utilities'
  assert.match(page,/updateQuantity/);assert.match(page,/removeItem/);assert.match(page,/href="\/checkout"/);
  assert.match(page,/\/account\/likes/);assert.match(page,/Browse Cameras/);assert.match(page,/Browse Printers/);
 });
-test('header authentication access lives in the bag panel',()=>{
+test('header, mobile menu, and bag panel expose consistent account access',()=>{
  const header=fs.readFileSync('src/components/Header.tsx','utf8');
+ const menu=fs.readFileSync('src/components/MobileMenu.tsx','utf8');
  const panel=fs.readFileSync('src/components/cart/BagPanel.tsx','utf8');
- assert.doesNotMatch(header,/href="\/login"/);assert.doesNotMatch(header,/href="\/signup"/);assert.doesNotMatch(header,/AccountMenu/);
+ assert.match(header,/href="\/login"/);assert.match(header,/href="\/signup"/);assert.doesNotMatch(header,/AccountMenu/);
+ assert.match(menu,/DEFAULT_CUSTOMER_PROFILE_IMAGE/);assert.match(menu,/Welcome To/);assert.match(menu,/href="\/login"/);assert.match(menu,/href="\/signup"/);
  assert.match(panel,/title="Sign In"/);assert.match(panel,/title="Create Account"/);
  assert.match(panel,/\/account\/orders/);assert.match(panel,/\/account\/likes/);
 });

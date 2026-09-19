@@ -68,8 +68,9 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
       <body className="min-h-screen bg-cream text-ink">
         <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: safeJsonLd(structuredData) }} />
         <CartProvider>
+          <a href="#main-content" className="sr-only z-[100] rounded-md bg-white px-4 py-3 font-semibold text-forest shadow-lg focus:not-sr-only focus:fixed focus:left-4 focus:top-4">Skip to content</a>
           <Header />
-          <main>{children}</main>
+          <main id="main-content" tabIndex={-1}>{children}</main>
           <Footer />
         </CartProvider>
       </body>

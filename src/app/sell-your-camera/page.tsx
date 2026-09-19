@@ -45,7 +45,7 @@ export default async function SellYourCameraPage() {
     buildBreadcrumbJsonLd([{ name: 'Home', url: '/' }, { name: 'Sell Your Camera', url: '/sell-your-camera' }])
   ]);
 
-  return <main className="pb-16">
+  return <div className="pb-16">
     <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: safeJsonLd(structuredData) }} />
     <section className="bg-cream px-4 py-8 sm:px-6 sm:py-14 lg:px-8">
       <div className="mx-auto grid max-w-7xl items-center gap-9 lg:grid-cols-[1.05fr_.95fr]">
@@ -53,7 +53,6 @@ export default async function SellYourCameraPage() {
           <p className="text-sm font-bold uppercase tracking-[.24em] text-moss">Camera trade-in and buyback</p>
           <h1 className="mx-auto mt-3 max-w-3xl font-serif text-4xl font-bold leading-tight text-ink sm:text-6xl">Turn unused camera gear into cash or your next camera.</h1>
           <p className="mx-auto mt-5 max-w-2xl text-lg leading-8 text-ink/72">Tell us what you have, upload clear photos, and track the entire review in your Shutterbug account. No mystery forms and no obligation to accept.</p>
-          <Link href="/shop?sort=featured" aria-label="Shop the Shutterbug fall sale" className="mt-6 block overflow-hidden rounded-lg border border-ink/10 bg-sand shadow-sm transition hover:border-moss/40 hover:shadow-soft focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-moss focus-visible:ring-offset-2"><Image src="/shutterbug-fall-sale-banner.png" alt="Shutterbug Camera Shop fall sale with up to 30 percent off cameras and gear" width={2172} height={724} sizes="(min-width: 1024px) 52vw, 100vw" className="aspect-[3/1] w-full object-cover object-center transition duration-500 hover:scale-[1.01]" /></Link>
           <div className="mt-7 flex flex-wrap justify-center gap-3">
             <Link href={ctaHref} className="inline-flex min-h-12 items-center rounded-full bg-forest px-6 font-semibold text-white hover:bg-moss">Start your trade-in</Link>
             <a href="#how-it-works" className="inline-flex min-h-12 items-center rounded-full border border-ink/15 bg-white px-6 font-semibold text-ink hover:border-moss">See how it works</a>
@@ -95,5 +94,5 @@ export default async function SellYourCameraPage() {
     <section className="px-4 py-14 sm:px-6 lg:px-8"><div className="mx-auto max-w-5xl"><p className="text-center text-sm font-bold uppercase tracking-[.2em] text-moss">Questions</p><h2 className="mt-2 text-center font-serif text-4xl font-bold text-ink">Before you submit</h2><div className="mt-7 grid gap-3">{faqs.map(([q,a])=><details key={q} className="rounded-lg border border-ink/10 bg-white p-5"><summary className="cursor-pointer font-bold text-ink">{q}</summary><p className="mt-3 text-sm leading-6 text-ink/70">{a}</p></details>)}</div></div></section>
 
     <section className="px-4 sm:px-6 lg:px-8"><div className="mx-auto max-w-5xl rounded-[1.5rem] bg-ink p-8 text-center text-white sm:p-12"><h2 className="font-serif text-4xl font-bold">Ready to see what your gear is worth?</h2><p className="mx-auto mt-4 max-w-2xl leading-7 text-white/75">Create a private submission, save your progress, and return whenever you need.</p><Link href={ctaHref} className="mt-7 inline-flex min-h-12 items-center rounded-full bg-sand px-7 font-bold text-ink">Start your trade-in</Link><p className="mx-auto mt-5 max-w-3xl text-xs leading-5 text-white/60">Offers are preliminary until physical inspection. Values can change if condition, function, identity, or included accessories differ. Local handoff requires prior confirmation. By submitting, you confirm the gear is yours to sell and agree to our <Link href="/terms" className="underline">terms</Link>.</p></div></section>
-  </main>;
+  </div>;
 }

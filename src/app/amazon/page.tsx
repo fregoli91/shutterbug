@@ -36,7 +36,7 @@ export default function AmazonPage() {
   ]);
 
   return (
-    <main className="px-4 py-12 sm:px-6 sm:py-16 lg:px-8">
+    <div className="px-4 py-12 sm:px-6 sm:py-16 lg:px-8">
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: safeJsonLd(structuredData) }} />
       <div className="mx-auto max-w-6xl">
         <header className="mx-auto max-w-3xl text-center">
@@ -83,6 +83,6 @@ export default function AmazonPage() {
           </section>
         </div>
       </div>
-    </main>
+    </div>
   );
 }

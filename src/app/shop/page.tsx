@@ -38,15 +38,15 @@ export async function generateMetadata({ searchParams }: Props): Promise<Metadat
   );
 
   return {
-    title: 'Used Cameras for Sale',
+    title: 'Used Cameras, Printers & Gear for Sale',
     description:
-      'Shop tested used vintage digital cameras, film cameras, lenses, accessories, parts and repair gear, and camera equipment from Shutterbug Camera Shop.',
+      'Shop tested used cameras, printers, lenses, accessories, parts and repair gear, and one-of-one equipment from Shutterbug Camera Shop.',
     alternates: { canonical: '/shop' },
     robots: hasFilters ? { index: false, follow: true } : undefined,
     openGraph: {
-      title: 'Used Cameras for Sale | Shutterbug Camera Shop',
+      title: 'Used Cameras, Printers & Gear for Sale | Shutterbug Camera Shop',
       description:
-        'Browse tested vintage digital cameras, film cameras, lenses, accessories, and used camera gear with honest condition notes.',
+        'Browse tested used cameras, printers, lenses, accessories, and gear with honest condition notes and real availability.',
       url: `${site.domain}/shop`,
       type: 'website'
     }
@@ -315,10 +315,10 @@ export default async function ShopPage({ searchParams }: Props) {
       <div className="mx-auto max-w-7xl">
         <div className="grid gap-6 lg:grid-cols-[1fr_32rem] lg:items-center">
           <div className="max-w-3xl">
-            <p className="text-sm font-bold uppercase tracking-[0.28em] text-moss">Shop cameras</p>
-            <h1 className="mt-3 font-serif text-3xl font-bold text-ink sm:text-4xl">Cameras & gear</h1>
+            <p className="text-sm font-bold uppercase tracking-[0.28em] text-moss">Shop inventory</p>
+            <h1 className="mt-3 font-serif text-3xl font-bold text-ink sm:text-4xl">Cameras, printers & gear</h1>
             <p className="mt-4 text-base leading-7 text-ink/70 sm:mt-5 sm:text-lg sm:leading-8">
-              Vintage digital, film, lenses and more. Find your next camera with clear condition notes and real product photos.
+              Vintage digital cameras, film cameras, printers, lenses, and more with clear condition notes and real product photos.
             </p>
           </div>
 
@@ -342,7 +342,7 @@ export default async function ShopPage({ searchParams }: Props) {
                   name="q"
                   type="search"
                   defaultValue={query}
-                  placeholder="Search cameras, brands & models"
+                  placeholder="Search cameras, printers, brands & models"
                   className="min-w-0 flex-1 bg-transparent px-4 text-base text-ink outline-none placeholder:text-ink/40 sm:text-sm"
                 />
                 <button type="submit" className="bg-forest px-5 text-sm font-semibold text-white transition hover:bg-moss">

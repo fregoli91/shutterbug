@@ -1,5 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
+import fs from 'node:fs';
 import { compareNewest } from '../src/lib/storefront-sort.ts';
 import { shopHref } from '../src/lib/shop-query.ts';
 import { homePromotions } from '../src/lib/home-promotions.ts';
@@ -28,8 +29,24 @@ test('removing one multi-select filter preserves its siblings', () => {
   assert.deepEqual(url.searchParams.getAll('brand'), ['Nikon']);
 });
 
-test('the campaign order and final trade-in bonus remain unchanged', () => {
+test('the approved carousel order remains stable without the retired summer bonus', () => {
   assert.deepEqual(homePromotions.map((item) => item.id), [
-    'canon-powershot', 'olympus-stylus', 'nikon-cameras', 'sell-your-camera', 'summer-trade-in-bonus'
+    'canon-powershot', 'olympus-stylus', 'nikon-cameras', 'sell-your-camera'
   ]);
+  assert.equal(homePromotions.some((item) => /30%|free shipping|since 2008/i.test(`${item.title} ${item.description}`)), false);
+});
+
+test('the shared shell owns the single main landmark and offers skip navigation', () => {
+  const layout = fs.readFileSync('src/app/layout.tsx', 'utf8');
+  assert.match(layout, /href="#main-content"/);
+  assert.match(layout, /<main id="main-content"/);
+  for (const path of ['src/app/bag/page.tsx', 'src/app/guides/page.tsx', 'src/app/amazon/page.tsx', 'src/app/sell-your-camera/page.tsx']) {
+    assert.doesNotMatch(fs.readFileSync(path, 'utf8'), /<main[ >]/);
+  }
+});
+
+test('global search language includes cameras and printers', () => {
+  for (const path of ['src/components/Header.tsx', 'src/components/MobileHeader.tsx', 'src/app/shop/page.tsx']) {
+    assert.match(fs.readFileSync(path, 'utf8'), /Search cameras, printers, brands & models/);
+  }
 });

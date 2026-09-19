@@ -160,7 +160,7 @@ export function MobileHeader({
           <div className="px-3 pb-2 sm:px-5">
             <form ref={searchFormRef} action="/shop" role="search" inert={!showSearchRow}>
               <label htmlFor="mobile-header-search" className="sr-only">
-                Search tested camera inventory
+                Search Shutterbug inventory
               </label>
               <div className="relative flex h-12 items-center rounded-lg border border-forest/25 bg-mint shadow-[inset_0_2px_5px_rgba(36,84,58,0.08),0_2px_5px_rgba(35,43,32,0.08)] focus-within:border-moss focus-within:ring-2 focus-within:ring-sage">
                 <input
@@ -168,7 +168,7 @@ export function MobileHeader({
                   name="q"
                   type="search"
                   list="mobile-header-search-suggestions"
-                  placeholder="Search cameras, brands & models"
+                  placeholder="Search cameras, printers, brands & models"
                   enterKeyHint="search"
                   className="h-full min-w-0 flex-1 bg-transparent pl-4 pr-12 text-sm text-ink outline-none placeholder:text-ink/45 min-[390px]:text-base"
                 />

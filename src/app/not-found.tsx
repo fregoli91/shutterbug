@@ -10,7 +10,7 @@ const helpfulLinks = [
 
 export default function NotFound() {
   return (
-    <main className="px-4 py-20 sm:px-6 lg:px-8">
+    <div className="px-4 py-20 sm:px-6 lg:px-8">
       <div className="mx-auto max-w-3xl text-center">
         <p className="text-sm font-bold uppercase tracking-[0.24em] text-moss">404 - page not found</p>
         <h1 className="mt-3 font-serif text-4xl font-bold text-ink sm:text-6xl">That camera page is out of frame.</h1>
@@ -32,6 +32,6 @@ export default function NotFound() {
           ))}
         </nav>
       </div>
-    </main>
+    </div>
   );
 }
