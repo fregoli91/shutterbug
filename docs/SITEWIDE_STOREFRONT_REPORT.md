@@ -1,5 +1,7 @@
 # Sitewide Storefront Polish — Phase Report
 
+> Final readiness verification was completed on September 20, 2026. See [STOREFRONT_FINAL_READINESS.md](./STOREFRONT_FINAL_READINESS.md) for the current responsive, lifecycle, accessibility, migration, and performance results.
+
 Date: September 19, 2026
 Branch: `codex/sitewide-storefront-polish`
 
