@@ -238,17 +238,27 @@ function SummerSaleBanner() {
       <div className="mx-auto max-w-7xl">
         <Link
           href="/shop?sort=featured"
-          className="block overflow-hidden rounded-lg border border-ink/10 bg-white shadow-sm transition hover:border-moss/35"
-          aria-label="Shop the Shutterbug summer sale"
+          className="group relative block min-h-44 overflow-hidden rounded-lg border border-ink/10 bg-white shadow-sm transition hover:border-moss/35 sm:min-h-64"
+          aria-label="Browse current Shutterbug camera finds"
         >
           <Image
-            src="/shutterbug-summer-sale-banner.png"
-            alt="Shutterbug Camera Shop summer sale on tested vintage digital and film cameras"
-            width={2400}
-            height={720}
+            src="/shutterbug-shelf-cameras-display.png"
+            alt=""
+            fill
             sizes="(min-width: 1280px) 1280px, (min-width: 640px) calc(100vw - 3rem), calc(100vw - 2rem)"
-            className="h-auto w-full bg-sand object-contain object-center"
+            className="object-cover object-center transition-transform duration-500 motion-reduce:transition-none group-hover:scale-[1.01]"
           />
+          <div className="absolute inset-0 bg-gradient-to-r from-ink/85 via-ink/55 to-transparent" />
+          <div className="relative flex min-h-44 max-w-xl flex-col justify-center p-6 text-white sm:min-h-64 sm:p-10">
+            <p className="text-xs font-bold uppercase tracking-[0.22em] text-sage">Fresh Shutterbug finds</p>
+            <h2 className="mt-2 font-serif text-3xl font-bold sm:text-5xl">Cameras and gear for their next story.</h2>
+            <p className="mt-3 max-w-md text-sm leading-6 text-white/85 sm:text-base">
+              Browse current inventory with exact-item availability, real photos, and clear condition notes.
+            </p>
+            <span className="mt-5 inline-flex min-h-11 w-fit items-center rounded-full bg-cream px-5 text-sm font-bold text-forest">
+              Browse current inventory
+            </span>
+          </div>
         </Link>
       </div>
     </section>

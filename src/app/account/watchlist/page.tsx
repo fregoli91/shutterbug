@@ -45,7 +45,7 @@ export default async function AccountWatchlistPage() {
           <p className="mx-auto mt-3 max-w-xl text-sm leading-6 text-ink/65">
             Open a sold product and choose <strong>Watch this model</strong> to save it here.
           </p>
-          <Link href="/shop?availability=sold-out" className="mt-6 inline-flex min-h-12 items-center rounded-full bg-forest px-6 text-sm font-semibold text-white">
+          <Link href="/shop?availability=sold_out" className="mt-6 inline-flex min-h-12 items-center rounded-full bg-forest px-6 text-sm font-semibold text-white">
             Browse sold finds
           </Link>
         </div>

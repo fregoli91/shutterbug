@@ -220,10 +220,20 @@ export function HomePromotionalCarousel({ promotions }: HomePromotionalCarouselP
                         loading={index === 0 ? 'eager' : 'lazy'}
                         fetchPriority={index === 0 ? 'high' : undefined}
                         sizes="(min-width: 1280px) 1280px, (min-width: 640px) calc(100vw - 3rem), calc(100vw - 2rem)"
-                        className={promotion.id === 'canon-powershot' ? 'object-contain sm:object-cover' : 'object-contain'}
+                        className={promotion.embeddedCopy ? 'object-contain' : 'object-cover'}
                       />
                     </>
                   )}
+                  {!promotion.embeddedCopy ? (
+                    <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-ink/90 via-ink/65 to-transparent px-5 pb-5 pt-16 text-white sm:px-8 sm:pb-8 sm:pt-24">
+                      <p className="text-xs font-bold uppercase tracking-[0.2em] text-sage">{promotion.eyebrow}</p>
+                      <h2 className="mt-2 max-w-2xl font-serif text-2xl font-bold leading-tight sm:text-4xl">{promotion.title}</h2>
+                      <p className="mt-2 hidden max-w-2xl text-sm leading-6 text-white/85 sm:block">{promotion.description}</p>
+                      <span className="mt-4 inline-flex min-h-11 items-center rounded-full bg-cream px-5 text-sm font-bold text-forest shadow-sm">
+                        {promotion.ctaLabel}
+                      </span>
+                    </div>
+                  ) : null}
                   <span className="sr-only">{promotion.alt}</span>
                 </Link>
               </article>

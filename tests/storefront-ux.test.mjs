@@ -33,7 +33,13 @@ test('the approved carousel order remains stable without the retired summer bonu
   assert.deepEqual(homePromotions.map((item) => item.id), [
     'canon-powershot', 'olympus-stylus', 'nikon-cameras', 'sell-your-camera'
   ]);
-  assert.equal(homePromotions.some((item) => /30%|free shipping|since 2008/i.test(`${item.title} ${item.description}`)), false);
+  assert.equal(homePromotions.some((item) => /30%|20%|free shipping|since 2008|authentic|warranty/i.test(`${item.title} ${item.description}`)), false);
+  assert.equal(homePromotions.some((item) => item.desktopImage.startsWith('/carousel-')), false);
+  assert.equal(homePromotions.every((item) => item.embeddedCopy === false), true);
+
+  const homepage = fs.readFileSync('src/app/page.tsx', 'utf8');
+  assert.doesNotMatch(homepage, /shutterbug-summer-sale-banner\.png/);
+  assert.doesNotMatch(homepage, /20% off|authentic|warranty/i);
 });
 
 test('the shared shell owns the single main landmark and offers skip navigation', () => {

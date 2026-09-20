@@ -2,7 +2,7 @@
 
 import { revalidatePath } from 'next/cache';
 import { redirect } from 'next/navigation';
-import { ProductStatus } from '@/generated/prisma/client';
+import { Prisma, ProductStatus } from '@/generated/prisma/client';
 import { getCustomerSession } from '@/lib/customer-auth';
 import { buildModelWatchTarget } from '@/lib/model-watchlist';
 import { requirePrisma } from '@/lib/prisma';
@@ -17,7 +17,6 @@ function revalidateWatchlistSurfaces(productSlug: string, redirectTo: string) {
 
 export async function toggleModelWatchAction(formData: FormData) {
   const productId = String(formData.get('productId') ?? '').trim().slice(0, 64);
-  const productSlug = String(formData.get('productSlug') ?? '').trim().slice(0, 200);
   const redirectTo = cleanInternalRedirect(formData.get('redirectTo'), '/account/watchlist');
   const customer = await getCustomerSession();
   if (!customer) redirect(`/login?returnTo=${encodeURIComponent(redirectTo)}`);
@@ -26,12 +25,12 @@ export async function toggleModelWatchAction(formData: FormData) {
   const prisma = requirePrisma();
   const product = await prisma.product.findFirst({
     where: { id: productId, status: { in: [ProductStatus.ACTIVE, ProductStatus.SOLD_OUT] } },
-    select: { brand: true, model: true, title: true, categorySlug: true }
+    select: { slug: true, brand: true, model: true, title: true, categorySlug: true }
   });
   const target = product
     ? buildModelWatchTarget({ brand: product.brand, model: product.model || product.title, categorySlug: product.categorySlug })
     : null;
-  if (!target) redirect(redirectTo);
+  if (!product || !target) redirect(redirectTo);
 
   const existing = await prisma.customerModelWatch.findUnique({
     where: { customerId_key: { customerId: customer.id, key: target.key } }
@@ -39,9 +38,13 @@ export async function toggleModelWatchAction(formData: FormData) {
   if (existing) {
     await prisma.customerModelWatch.delete({ where: { id: existing.id } });
   } else {
-    await prisma.customerModelWatch.create({ data: { customerId: customer.id, ...target } });
+    try {
+      await prisma.customerModelWatch.create({ data: { customerId: customer.id, ...target } });
+    } catch (error) {
+      if (!(error instanceof Prisma.PrismaClientKnownRequestError && error.code === 'P2002')) throw error;
+    }
   }
-  revalidateWatchlistSurfaces(productSlug, redirectTo);
+  revalidateWatchlistSurfaces(product.slug, redirectTo);
   redirect(redirectTo);
 }
 

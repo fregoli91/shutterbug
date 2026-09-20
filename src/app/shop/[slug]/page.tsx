@@ -171,7 +171,6 @@ export default async function ProductPage({ params }: Props) {
                 <>
                   <form action={toggleModelWatchAction} className="mt-4">
                     <input type="hidden" name="productId" value={product.id} />
-                    <input type="hidden" name="productSlug" value={product.slug} />
                     <input type="hidden" name="redirectTo" value={`/shop/${product.slug}`} />
                     <button className="inline-flex min-h-11 items-center justify-center rounded-full bg-forest px-5 text-sm font-semibold text-white transition hover:bg-moss">
                       {watchingModel ? 'Watching this model' : 'Watch this model'}
