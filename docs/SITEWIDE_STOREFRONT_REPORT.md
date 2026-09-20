@@ -198,3 +198,38 @@ No Lighthouse score, LCP, CLS, or INP result is reported. Measuring the current 
 - `cb084b3` — Record Next.js workspace agent rules
 
 No commit was pushed to `main`.
+## PRE-MERGE STATUS
+
+- **Branch:** `codex/sitewide-storefront-polish`
+- **Validated storefront code HEAD:** `37d667b` before this documentation-only preparation commit. The exact final pushed HEAD is recorded in the release handoff because a commit cannot embed its own final SHA.
+- **Push status:** Pending the final documentation commit and repeated test gate; push only this feature branch to `origin/codex/sitewide-storefront-polish`.
+- **Migration required:** Yes, before watchlist code receives production traffic.
+- **Migration filename:** `prisma/migrations/20260919120000_customer_model_watchlist/migration.sql`.
+- **Tests:** 45 passed, 0 failed in the final-readiness gate; repeat from the final committed state before push.
+- **Lint:** Passed with 0 errors in the final-readiness gate; repeat before push.
+- **Build:** Passed; Next.js generated 128 pages in the final-readiness gate; repeat before push.
+- **Responsive QA:** 143 route-width cases across 11 routes and 13 widths; 0 document-overflow failures, 0 main-landmark failures, and 0 visible-H1 failures.
+- **Accessibility QA:** Skip navigation, landmarks, headings, labels/alt text, reduced motion, keyboard opening, Escape dismissal, and focus restoration passed focused local checks. Preview contrast and screen-reader checks remain manual.
+- **Watchlist QA:** Signed-out redirect/return path, customer-scoped reads/deletes, duplicate prevention, database-derived slug, sold CTA, and empty state passed automated/source and local route checks. Signed-in browser E2E remains a preview checklist item.
+- **Sold-product QA:** Purchase gating, OutOfStock structured data, retained-content rules, watch CTA, and active-only related inventory passed regression checks. The current local database has no sold product for full visual E2E.
+- **Known limitations:** Lighthouse is unavailable locally; recorded metrics are unthrottled local lab measurements rather than production Core Web Vitals. INP requires field data. No repository Vercel project configuration is committed, and preview availability must be confirmed after push. Automatic watch alerts are intentionally inactive.
+- **Owner decisions:** Returns, warranty, shipping, trade-ins, privacy vendors/tracking, and watch-notification policy remain with Zach; see [OWNER_POLICY_DECISIONS.md](./OWNER_POLICY_DECISIONS.md).
+- **Preview URL:** Not known before push. If GitHub/Vercel integration does not publish one, follow [PREMERGE_PREVIEW_CHECKLIST.md](./PREMERGE_PREVIEW_CHECKLIST.md) using a Vercel preview with non-production database and test-mode integrations.
+- **Production blockers:** Apply and verify the additive watchlist migration; complete preview visual/authenticated QA; verify preview/production secrets; resolve only owner decisions that change live claims; run preview Lighthouse and production smoke checks. Do not merge or deploy until these gates are accepted.
+
+### Recommended deployment order
+
+1. Push `codex/sitewide-storefront-polish` to `origin` and record the exact SHA.
+2. Confirm or create an HTTPS Vercel preview for that SHA with a separate preview database, test Stripe keys/webhook, preview email configuration, and non-production media settings.
+3. Apply `20260919120000_customer_model_watchlist` to the preview database only and verify its table, indexes, unique constraint, and foreign key.
+4. Complete [PREMERGE_PREVIEW_CHECKLIST.md](./PREMERGE_PREVIEW_CHECKLIST.md), including authenticated watchlist ownership and a real sold product if preview data provides one.
+5. Run three mobile Lighthouse passes per required public route and record median scores/metrics; fix only release-blocking regressions.
+6. Confirm Zach's decisions only where they affect copy or configuration intended for this release.
+7. Verify production secrets and endpoint configuration without displaying values; ensure Stripe remains live-only in production and test-only in preview.
+8. Take or confirm a recent production database backup and a tested rollback path.
+9. Run `prisma migrate deploy` against production using the direct/session migration URL before new watchlist application traffic; verify migration status and the new objects.
+10. Merge the reviewed feature branch to `main` through the normal protected workflow.
+11. Deploy the exact merged production artifact.
+12. Run live smoke tests for Home, Shop, sold lifecycle, watchlist, Bag, account, printers/guide, Sell Your Camera, sitemap, canonical links, and product structured data.
+13. Run production Lighthouse and begin real-user LCP, CLS, and INP monitoring.
+14. Monitor application, database, Stripe, checkout, webhook, email, and upload logs. If the application must roll back, the additive watchlist table can remain for the prior version.
