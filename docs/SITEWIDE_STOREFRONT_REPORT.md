@@ -202,7 +202,7 @@ No commit was pushed to `main`.
 
 - **Branch:** `codex/sitewide-storefront-polish`
 - **Validated storefront code HEAD:** `37d667b` before this documentation-only preparation commit. The exact final pushed HEAD is recorded in the release handoff because a commit cannot embed its own final SHA.
-- **Push status:** Pending the final documentation commit and repeated test gate; push only this feature branch to `origin/codex/sitewide-storefront-polish`.
+- **Push status:** Successful. `codex/sitewide-storefront-polish` was pushed to `origin/codex/sitewide-storefront-polish`; local and remote were verified at `4bb9d7fc51cfe82eaf6de1adbb40caf7ca75fcb5` before this documentation-only status update. The exact final pushed HEAD is recorded in the release handoff.
 - **Migration required:** Yes, before watchlist code receives production traffic.
 - **Migration filename:** `prisma/migrations/20260919120000_customer_model_watchlist/migration.sql`.
 - **Tests:** 45 passed, 0 failed in the final-readiness gate; repeat from the final committed state before push.
@@ -214,7 +214,7 @@ No commit was pushed to `main`.
 - **Sold-product QA:** Purchase gating, OutOfStock structured data, retained-content rules, watch CTA, and active-only related inventory passed regression checks. The current local database has no sold product for full visual E2E.
 - **Known limitations:** Lighthouse is unavailable locally; recorded metrics are unthrottled local lab measurements rather than production Core Web Vitals. INP requires field data. No repository Vercel project configuration is committed, and preview availability must be confirmed after push. Automatic watch alerts are intentionally inactive.
 - **Owner decisions:** Returns, warranty, shipping, trade-ins, privacy vendors/tracking, and watch-notification policy remain with Zach; see [OWNER_POLICY_DECISIONS.md](./OWNER_POLICY_DECISIONS.md).
-- **Preview URL:** Not known before push. If GitHub/Vercel integration does not publish one, follow [PREMERGE_PREVIEW_CHECKLIST.md](./PREMERGE_PREVIEW_CHECKLIST.md) using a Vercel preview with non-production database and test-mode integrations.
+- **Preview URL:** Vercel reported the preview deployment completed successfully. GitHub exposed the deployment dashboard at `https://vercel.com/zachery-dante-fregolis-projects/shutterbug/hagwQPXD6co6HNznNxUUUo47BMRd`, but did not expose the public `vercel.app` alias. Copy the public alias from that deployment page, then follow [PREMERGE_PREVIEW_CHECKLIST.md](./PREMERGE_PREVIEW_CHECKLIST.md) using non-production database and test-mode integrations.
 - **Production blockers:** Apply and verify the additive watchlist migration; complete preview visual/authenticated QA; verify preview/production secrets; resolve only owner decisions that change live claims; run preview Lighthouse and production smoke checks. Do not merge or deploy until these gates are accepted.
 
 ### Recommended deployment order
