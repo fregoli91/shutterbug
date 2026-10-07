@@ -75,13 +75,13 @@ export async function Header() {
       <div className="mx-auto hidden max-w-7xl items-center gap-5 px-8 py-3 lg:flex">
         <Link href="/" className="flex shrink-0 items-center" aria-label="Shutterbug Camera Shop home">
           <Image
-            src="/shutterbug-header-logo-transparent.png"
+            src="/shutterbug-header-logo-desktop.png"
             alt="Shutterbug Camera Shop"
-            width={288}
-            height={64}
+            width={224}
+            height={56}
             priority
-            sizes="15rem"
-            className="h-14 w-60 object-contain object-center"
+            sizes="14rem"
+            className="h-14 w-56 object-contain object-center"
           />
         </Link>
 
