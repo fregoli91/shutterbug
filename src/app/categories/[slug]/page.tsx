@@ -46,6 +46,12 @@ const categoryHeroImages: Record<string, { src: string; alt: string; width: numb
     width: 1448,
     height: 1086
   },
+  'dslr-cameras': {
+    src: '/shutterbug-dslr-cameras-page.png',
+    alt: 'DSLR camera bodies, lenses, batteries, memory cards, strap, and charger displayed at Shutterbug Camera Shop',
+    width: 1448,
+    height: 1086
+  },
   'canon-powershot-cameras': {
     src: '/shutterbug-canon-powershot-page.png',
     alt: 'Canon cameras, lenses, printer, camera bag, and photo prints displayed at Shutterbug Camera Shop',
