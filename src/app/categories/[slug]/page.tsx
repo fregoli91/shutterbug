@@ -174,7 +174,7 @@ export default async function CategoryPage({ params }: Props) {
               alt={categoryHeroImage.alt}
               fill
               sizes="(min-width: 1280px) 80rem, 100vw"
-              className="object-contain object-center sm:object-cover"
+              className="object-contain object-center"
             />
           </div>
         ) : null}

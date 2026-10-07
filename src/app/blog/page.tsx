@@ -112,7 +112,7 @@ export default function BlogPage() {
                 height={featuredPost.image.height}
                 priority
                 sizes="(min-width: 1024px) 58vw, 100vw"
-                className="h-auto w-full bg-sand object-cover transition duration-300 group-hover:scale-[1.01] lg:h-full"
+                className="h-auto w-full bg-sand object-contain lg:h-full"
               />
               <div className="flex flex-col justify-center p-6 sm:p-8 lg:p-10">
                 <div className="flex flex-wrap items-center gap-x-3 gap-y-1 text-xs font-bold uppercase tracking-[0.16em] text-moss">
@@ -149,7 +149,7 @@ export default function BlogPage() {
                       width={post.image.width}
                       height={post.image.height}
                       sizes="(min-width: 1024px) 30vw, (min-width: 768px) 46vw, 100vw"
-                      className="aspect-[4/3] w-full bg-sand object-cover"
+                      className="aspect-[4/3] w-full bg-sand object-contain"
                     />
                     <div className="p-5 sm:p-6">
                       <div className="flex flex-wrap items-center gap-2 text-xs font-bold uppercase tracking-[0.14em] text-moss">

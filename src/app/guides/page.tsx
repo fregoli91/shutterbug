@@ -68,7 +68,7 @@ export default function GuidesPage() {
                   width={guide.image.width}
                   height={guide.image.height}
                   sizes="(min-width: 1024px) 33vw, 100vw"
-                  className="aspect-[16/10] w-full bg-sand object-cover transition duration-300 group-hover:scale-[1.02]"
+                  className="aspect-[16/10] w-full bg-sand object-contain"
                 />
                 <div className="p-5 sm:p-6">
                   <p className="text-xs font-bold uppercase tracking-[0.2em] text-moss">Equipment guide</p>

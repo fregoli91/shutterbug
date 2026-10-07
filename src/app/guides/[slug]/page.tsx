@@ -83,7 +83,7 @@ export default async function GuidePage({ params }: Props) {
           height={guide.image.height}
           priority
           sizes="(min-width: 1024px) 64rem, 100vw"
-          className="mt-8 aspect-[16/9] w-full rounded-lg border border-ink/10 bg-sand object-cover shadow-sm"
+          className="mt-8 aspect-[16/9] w-full rounded-lg border border-ink/10 bg-sand object-contain shadow-sm"
         />
 
         <div className="mx-auto mt-10 max-w-3xl">

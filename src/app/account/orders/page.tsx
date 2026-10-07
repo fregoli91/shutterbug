@@ -65,7 +65,7 @@ export default async function AccountOrdersPage() {
                         height={64}
                         sizes="4rem"
                         unoptimized={item.imageUrl.endsWith('.svg') || item.imageUrl.startsWith('http')}
-                        className="h-16 w-16 rounded-md bg-white object-cover object-center"
+                        className="h-16 w-16 rounded-md bg-white object-contain object-center"
                       />
                     ) : (
                       <div className="h-16 w-16 rounded-md bg-sand" />
@@ -118,7 +118,7 @@ export default async function AccountOrdersPage() {
             width={640}
             height={480}
             sizes="(min-width: 640px) 24rem, 100vw"
-            className="mx-auto aspect-[4/3] w-full max-w-sm rounded-lg bg-cream object-cover object-center"
+            className="mx-auto aspect-[4/3] w-full max-w-sm rounded-lg bg-cream object-contain object-center"
           />
           <p className="mt-5 font-serif text-3xl font-bold text-ink">No orders yet</p>
           <p className="mx-auto mt-3 max-w-xl text-sm leading-6 text-ink/65">

@@ -103,7 +103,7 @@ export async function Header() {
             width={56}
             height={56}
             sizes="3.5rem"
-            className="h-full w-full object-cover transition-transform group-hover:scale-105"
+            className="h-full w-full object-contain transition-transform group-hover:scale-105"
           />
         </Link>
         <CartLink />

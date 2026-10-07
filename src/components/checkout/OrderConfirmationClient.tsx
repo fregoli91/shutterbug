@@ -110,7 +110,7 @@ export function OrderConfirmationClient({ sessionId, accessToken, initialConfirm
             {confirmation.items.map((item) => (
               <div key={item.id} className="grid grid-cols-[4rem_1fr_auto] items-center gap-3 border-t border-ink/10 pt-3">
                 <div className="relative aspect-square overflow-hidden rounded-md bg-sand">
-                  <Image src={item.imageUrl || '/shutterbug-product-placeholder.png'} alt="" fill sizes="64px" className="object-cover" />
+                  <Image src={item.imageUrl || '/shutterbug-product-placeholder.png'} alt="" fill sizes="64px" className="object-contain" />
                 </div>
                 <div className="min-w-0">
                   <p className="font-semibold text-ink">{item.title}</p>

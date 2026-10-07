@@ -67,7 +67,7 @@ export default async function AccountOrderDetailPage({ params }: Props) {
                     height={64}
                     sizes="4rem"
                     unoptimized={item.imageUrl.endsWith('.svg') || item.imageUrl.startsWith('http')}
-                    className="h-16 w-16 rounded-md bg-white object-cover object-center"
+                    className="h-16 w-16 rounded-md bg-white object-contain object-center"
                   />
                 ) : (
                   <div className="h-16 w-16 rounded-md bg-sand" />

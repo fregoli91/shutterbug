@@ -126,8 +126,8 @@ function LoggedOutHome({
             <Image
               src="/shutterbug-shelf-cameras-display.png"
               alt="Shutterbug shelf display of cameras, lenses, bags, and accessories"
-              width={1600}
-              height={1000}
+              width={1672}
+              height={941}
               sizes="(min-width: 1024px) 58vw, 100vw"
               className="h-full w-full object-cover object-center transition duration-500 group-hover:scale-[1.02]"
             />
@@ -167,7 +167,7 @@ function LoggedOutHome({
                     height={320}
                     sizes="4.5rem"
                     unoptimized={product.heroImage.endsWith('.svg')}
-                    className="aspect-square w-full rounded-md bg-cream object-cover object-center"
+                    className="aspect-square w-full rounded-md bg-cream object-contain object-center"
                   />
                   <div className="min-w-0">
                     <p className="text-xs font-bold uppercase tracking-[0.12em] text-moss">{product.brand}</p>
@@ -210,7 +210,7 @@ function LoggedOutHome({
                   width={900}
                   height={675}
                   sizes="(min-width: 1024px) 20vw, (min-width: 640px) 50vw, 100vw"
-                  className="aspect-[4/3] w-full bg-sand object-cover object-center transition duration-500 group-hover:scale-[1.03]"
+                  className="aspect-[4/3] w-full bg-sand object-contain object-center"
                 />
                 <div className="p-4 text-center">
                   <p className="font-serif text-xl font-bold text-ink">{card.title}</p>
@@ -460,7 +460,7 @@ function DirectStoreCallout() {
       width={2172}
       height={724}
       sizes="(min-width: 1024px) 44vw, 100vw"
-      className="aspect-[3/1] w-full bg-cream object-cover object-center"
+      className="aspect-[3/1] w-full bg-cream object-contain object-center"
     />
   );
 
@@ -532,7 +532,7 @@ function CategoryPills({ title, showPopularBrandsImage = false }: { title: strin
               width={1672}
               height={941}
               sizes="(min-width: 1280px) 80rem, 100vw"
-              className="aspect-[1672/941] w-full bg-sand object-cover object-center transition duration-500 group-hover:scale-[1.02]"
+              className="aspect-[1672/941] w-full bg-sand object-contain object-center"
             />
           </Link>
         ) : null}
@@ -661,7 +661,7 @@ function PrinterCallout() {
             width={1450}
             height={1086}
             sizes="(min-width: 1024px) 38vw, 100vw"
-            className="aspect-[4/3] h-full w-full bg-sand object-cover object-center transition duration-500 group-hover:scale-[1.02]"
+            className="aspect-[4/3] h-full w-full bg-sand object-contain object-center"
           />
         </Link>
       </div>
@@ -708,7 +708,7 @@ function FeaturedProducts({
             width={1448}
             height={1086}
             sizes="100vw"
-            className="mt-6 aspect-[16/7] w-full rounded-lg border border-ink/10 bg-sand object-cover object-center shadow-sm sm:mt-8"
+            className="mt-6 aspect-[16/7] w-full rounded-lg border border-ink/10 bg-sand object-contain object-center shadow-sm sm:mt-8"
           />
         ) : null}
         {!products.length ? <div className="mt-6"><EmptyShelf /></div> : null}
@@ -822,7 +822,7 @@ function TestingProcessCallout() {
             width={1672}
             height={941}
             sizes="(min-width: 1024px) 44vw, 100vw"
-            className="aspect-[16/9] w-full bg-cream object-cover object-center transition duration-500 group-hover:scale-[1.02]"
+            className="aspect-[16/9] w-full bg-cream object-contain object-center"
           />
         </Link>
       </div>

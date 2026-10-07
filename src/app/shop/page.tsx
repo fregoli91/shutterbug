@@ -326,10 +326,10 @@ export default async function ShopPage({ searchParams }: Props) {
             <Image
               src="/shutterbug-shop-cameras-page.png"
               alt="Camera display inside Shutterbug Camera Shop"
-              width={1600}
-              height={900}
+              width={1448}
+              height={1086}
               sizes="(min-width: 1024px) 32rem, 100vw"
-              className="aspect-[16/9] w-full rounded-lg border border-ink/10 bg-sand object-cover object-center shadow-sm"
+              className="aspect-[4/3] w-full rounded-lg border border-ink/10 bg-sand object-contain object-center shadow-sm"
             />
 
             <form action="/shop" className="border-t border-ink/10 pt-4">

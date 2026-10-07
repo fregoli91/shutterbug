@@ -203,16 +203,14 @@ export function HomePromotionalCarousel({ promotions }: HomePromotionalCarouselP
                     </>
                   ) : (
                     <>
-                      {promotion.id === 'canon-powershot' ? (
-                        <Image
-                          src={promotion.desktopImage}
-                          alt=""
-                          fill
-                          sizes="(min-width: 1280px) 1280px, (min-width: 640px) calc(100vw - 3rem), calc(100vw - 2rem)"
-                          className="scale-110 object-cover opacity-25 blur-xl"
-                          aria-hidden="true"
-                        />
-                      ) : null}
+                      <Image
+                        src={promotion.desktopImage}
+                        alt=""
+                        fill
+                        sizes="(min-width: 1280px) 1280px, (min-width: 640px) calc(100vw - 3rem), calc(100vw - 2rem)"
+                        className="scale-110 object-cover opacity-25 blur-xl"
+                        aria-hidden="true"
+                      />
                       <Image
                         src={promotion.desktopImage}
                         alt=""
@@ -220,7 +218,7 @@ export function HomePromotionalCarousel({ promotions }: HomePromotionalCarouselP
                         loading={index === 0 ? 'eager' : 'lazy'}
                         fetchPriority={index === 0 ? 'high' : undefined}
                         sizes="(min-width: 1280px) 1280px, (min-width: 640px) calc(100vw - 3rem), calc(100vw - 2rem)"
-                        className={promotion.embeddedCopy ? 'object-contain' : 'object-cover'}
+                        className="object-contain"
                       />
                     </>
                   )}

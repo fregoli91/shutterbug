@@ -42,10 +42,10 @@ export default async function CheckoutSuccessPage({ searchParams }: Props) {
         <Image
           src="/shutterbug-checkout-success.png"
           alt="Shutterbug order complete celebration"
-          width={640}
-          height={768}
+          width={1448}
+          height={1086}
           sizes="(min-width: 1024px) 20rem, 100vw"
-          className="h-full min-h-72 w-full bg-sand object-cover object-center"
+          className="h-full min-h-72 w-full bg-sand object-contain object-center"
         />
         <OrderConfirmationClient
           sessionId={sessionId}

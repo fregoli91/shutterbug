@@ -12,10 +12,10 @@ export default function CheckoutCancelPage() {
         <Image
           src="/shutterbug-checkout.png"
           alt="Shutterbug character waiting with a camera checkout order"
-          width={480}
-          height={640}
+          width={1448}
+          height={1086}
           sizes="(min-width: 1024px) 18rem, 100vw"
-          className="h-full min-h-64 w-full bg-sand object-cover object-center"
+          className="h-full min-h-64 w-full bg-sand object-contain object-center"
         />
         <div className="p-8">
           <p className="text-sm font-bold uppercase tracking-[0.22em] text-moss">Checkout</p>
