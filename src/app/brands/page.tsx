@@ -57,7 +57,7 @@ export default async function BrandsPage() {
               width={1672}
               height={941}
               sizes="(min-width: 1280px) 80rem, 100vw"
-              className="aspect-[16/9] w-full bg-sand object-cover object-center"
+              className="aspect-[16/9] w-full bg-sand object-contain object-center"
             />
             <div className="p-5 text-center sm:p-6">
               <p className="font-serif text-2xl font-bold text-ink">Camera-first browsing</p>

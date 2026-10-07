@@ -93,7 +93,7 @@ export default async function BrandPage({ params }: Props) {
               alt={brandHeroImage.alt}
               fill
               sizes="(min-width: 1280px) 80rem, (min-width: 768px) calc(100vw - 3rem), calc(100vw - 2rem)"
-              className="object-contain object-center sm:object-cover"
+              className="object-contain object-center"
             />
           </div>
         ) : null}
