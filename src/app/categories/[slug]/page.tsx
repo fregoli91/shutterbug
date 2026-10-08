@@ -46,9 +46,21 @@ const categoryHeroImages: Record<string, { src: string; alt: string; width: numb
     width: 1448,
     height: 1086
   },
+  'point-and-shoot-cameras': {
+    src: '/shutterbug-point-and-shoot-cameras-page.png',
+    alt: 'Nikon, Olympus, Fujifilm, Canon, and Sony point-and-shoot cameras with cases, memory cards, and batteries displayed at Shutterbug Camera Shop',
+    width: 1448,
+    height: 1086
+  },
   'dslr-cameras': {
     src: '/shutterbug-dslr-cameras-page.png',
     alt: 'DSLR camera bodies, lenses, batteries, memory cards, strap, and charger displayed at Shutterbug Camera Shop',
+    width: 1448,
+    height: 1086
+  },
+  'mirrorless-cameras': {
+    src: '/shutterbug-mirrorless-cameras-page.png',
+    alt: 'Sony, Panasonic Lumix, Fujifilm, and Canon mirrorless cameras with lenses and accessories displayed at Shutterbug Camera Shop',
     width: 1448,
     height: 1086
   },
