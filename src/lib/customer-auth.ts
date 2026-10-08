@@ -5,19 +5,18 @@ import { redirect } from 'next/navigation';
 import { getPrisma, requirePrisma } from '@/lib/prisma';
 
 const scrypt = promisify(scryptCallback);
-const COOKIE_NAME = 'shutterbug_customer';
+const COOKIE_NAME = process.env.NODE_ENV === 'production' ? '__Host-shutterbug_customer' : 'shutterbug_customer';
 const SESSION_TTL_SECONDS = 60 * 60 * 24 * 30;
 const EMAIL_VERIFICATION_TTL_HOURS = 24;
 
 type SessionPayload = {
   id: string;
-  email: string;
 };
 
 function getSecret() {
   const secret = process.env.CUSTOMER_SESSION_SECRET;
-  if (!secret && process.env.NODE_ENV === 'production') {
-    throw new Error('CUSTOMER_SESSION_SECRET is required in production.');
+  if (process.env.NODE_ENV === 'production' && (!secret || Buffer.byteLength(secret, 'utf8') < 32)) {
+    throw new Error('CUSTOMER_SESSION_SECRET must be at least 32 bytes in production.');
   }
   return secret || 'development-only-customer-secret';
 }
@@ -43,8 +42,8 @@ function encodePayload(payload: SessionPayload) {
 function decodePayload(value: string): SessionPayload | null {
   try {
     const parsed = JSON.parse(Buffer.from(value, 'base64url').toString('utf8')) as SessionPayload;
-    if (!parsed.id || !parsed.email) return null;
-    return parsed;
+    if (typeof parsed.id !== 'string' || !parsed.id || parsed.id.length > 128) return null;
+    return { id: parsed.id };
   } catch {
     return null;
   }

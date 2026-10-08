@@ -55,8 +55,9 @@ Blocker if missing: Cloudinary env vars must be configured before relying on adm
 
 - Admin routes call `requireAdmin()` or `getAdminSession()`.
 - Admin image uploads are protected by session auth.
-- Admin session cookies require `ADMIN_SESSION_SECRET` or `NEXTAUTH_SECRET` in production.
-- Customer session cookies require `CUSTOMER_SESSION_SECRET`, `ADMIN_SESSION_SECRET`, or `NEXTAUTH_SECRET` in production.
+- Admin session cookies require a unique `ADMIN_SESSION_SECRET` of at least 32 bytes in production.
+- Customer session cookies require a unique `CUSTOMER_SESSION_SECRET` of at least 32 bytes in production.
+- Production session cookies are HTTP-only, secure, same-site, and host-bound.
 - Stripe webhook uses `stripe.webhooks.constructEvent()` with `STRIPE_WEBHOOK_SECRET`.
 - Public order pages do not render `adminNotes`.
 

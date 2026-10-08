@@ -1,4 +1,4 @@
-import { safeJsonLd } from '@/lib/security';
+import { JsonLd } from '@/components/JsonLd';
 import Link from 'next/link';
 import Image from 'next/image';
 import { notFound } from 'next/navigation';
@@ -181,7 +181,7 @@ export default async function CategoryPage({ params }: Props) {
 
   return (
     <section className="px-4 py-14 sm:px-6 lg:px-8">
-      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: safeJsonLd(structuredData) }} />
+      <JsonLd data={structuredData} />
       <div className="mx-auto max-w-7xl">
         <header className="max-w-4xl">
           <p className="text-sm font-bold uppercase tracking-[0.28em] text-moss">

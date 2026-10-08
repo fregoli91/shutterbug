@@ -41,6 +41,6 @@ export async function loginAction(formData: FormData) {
     );
   }
 
-  await createCustomerSession({ id: customer.id, email: customer.email });
+  await createCustomerSession({ id: customer.id });
   redirect(redirectTo);
 }

@@ -1,5 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
+import { readFileSync } from 'node:fs';
 import {
   cleanInternalRedirect,
   isSameOriginRequest,
@@ -61,4 +62,22 @@ test('Stripe snapshot validation rejects amount, currency, state, and mode misma
   assert.match(validateStripePaymentSnapshot({ ...valid, currency: 'cad' }, 1000, 'USD', 'sk_test_example'), /currency/i);
   assert.match(validateStripePaymentSnapshot({ ...valid, paymentStatus: 'unpaid' }, 1000, 'USD', 'sk_test_example'), /not paid/i);
   assert.match(validateStripePaymentSnapshot({ ...valid, livemode: true }, 1000, 'USD', 'sk_test_example'), /mode/i);
+});
+
+test('session cookies minimize identity data and browser scripts require a nonce', () => {
+  const customerAuth = readFileSync(new URL('../src/lib/customer-auth.ts', import.meta.url), 'utf8');
+  const proxy = readFileSync(new URL('../src/proxy.ts', import.meta.url), 'utf8');
+  const nextConfig = readFileSync(new URL('../next.config.mjs', import.meta.url), 'utf8');
+  const rateLimit = readFileSync(new URL('../src/lib/rate-limit.ts', import.meta.url), 'utf8');
+  const signupAction = readFileSync(new URL('../src/app/signup/actions.ts', import.meta.url), 'utf8');
+
+  assert.match(customerAuth, /type SessionPayload = \{\s*id: string;\s*\}/);
+  assert.match(customerAuth, /must be at least 32 bytes in production/);
+  assert.match(customerAuth, /__Host-shutterbug_customer/);
+  assert.match(proxy, /'nonce-\$\{nonce\}' 'strict-dynamic'/);
+  assert.doesNotMatch(proxy, /script-src[^\n]*unsafe-inline/);
+  assert.match(nextConfig, /poweredByHeader:\s*false/);
+  assert.match(rateLimit, /const MAX_BUCKETS = 10_000/);
+  assert.match(rateLimit, /while \(buckets\.size >= MAX_BUCKETS\)/);
+  assert.doesNotMatch(signupAction, /error=exists|existingCustomer/);
 });

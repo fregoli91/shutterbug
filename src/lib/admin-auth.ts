@@ -2,13 +2,13 @@ import { createHmac, timingSafeEqual } from 'node:crypto';
 import { cookies } from 'next/headers';
 import { redirect } from 'next/navigation';
 
-const COOKIE_NAME = 'shutterbug_admin';
+const COOKIE_NAME = process.env.NODE_ENV === 'production' ? '__Host-shutterbug_admin' : 'shutterbug_admin';
 const SESSION_TTL_SECONDS = 60 * 60 * 12;
 
 function getSecret() {
   const secret = process.env.ADMIN_SESSION_SECRET;
-  if (!secret && process.env.NODE_ENV === 'production') {
-    throw new Error('ADMIN_SESSION_SECRET is required in production.');
+  if (process.env.NODE_ENV === 'production' && (!secret || Buffer.byteLength(secret, 'utf8') < 32)) {
+    throw new Error('ADMIN_SESSION_SECRET must be at least 32 bytes in production.');
   }
   return secret || 'development-only-admin-secret';
 }
@@ -36,7 +36,8 @@ export function validateAdminCredentials(username: string, password: string) {
 
 export async function createAdminSession(username: string) {
   const expires = Math.floor(Date.now() / 1000) + SESSION_TTL_SECONDS;
-  const payload = `${username}.${expires}`;
+  const encodedUsername = Buffer.from(username, 'utf8').toString('base64url');
+  const payload = `${encodedUsername}.${expires}`;
   const token = `${payload}.${sign(payload)}`;
   const cookieStore = await cookies();
   cookieStore.set(COOKIE_NAME, token, {
@@ -68,12 +69,18 @@ export async function getAdminSession() {
   const parts = token.split('.');
   if (parts.length !== 3) return null;
 
-  const [username, expires, signature] = parts;
-  const payload = `${username}.${expires}`;
+  const [encodedUsername, expires, signature] = parts;
+  const payload = `${encodedUsername}.${expires}`;
   if (!safeEqual(signature, sign(payload))) return null;
   if (Number(expires) < Math.floor(Date.now() / 1000)) return null;
 
-  return { username };
+  try {
+    const username = Buffer.from(encodedUsername, 'base64url').toString('utf8');
+    if (!username || username.length > 254) return null;
+    return { username };
+  } catch {
+    return null;
+  }
 }
 
 export async function requireAdmin() {

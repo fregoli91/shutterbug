@@ -12,7 +12,7 @@ export async function GET(request: Request) {
   const result = await verifyCustomerEmailToken(token);
 
   if (result.status === 'verified') {
-    await createCustomerSession({ id: result.customer.id, email: result.customer.email });
+    await createCustomerSession({ id: result.customer.id });
     return NextResponse.redirect(new URL('/account?status=verified', request.url));
   }
 

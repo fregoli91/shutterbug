@@ -1,5 +1,5 @@
 import { isPrinter } from '@/lib/catalog-seo';
-import { safeJsonLd } from '@/lib/security';
+import { JsonLd } from '@/components/JsonLd';
 import Link from 'next/link';
 import Image from 'next/image';
 import { notFound } from 'next/navigation';
@@ -78,7 +78,7 @@ export default async function BrandPage({ params }: Props) {
 
   return (
     <section className="bg-cream px-4 py-8 sm:py-12 sm:px-6 lg:px-8">
-      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: safeJsonLd(structuredData) }} />
+      <JsonLd data={structuredData} />
       <div className="mx-auto max-w-7xl">
         <header className="mx-auto max-w-4xl text-center">
           <p className="text-sm font-bold uppercase tracking-[0.28em] text-moss">Used gear by brand</p>

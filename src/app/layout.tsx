@@ -1,4 +1,4 @@
-import { safeJsonLd } from '@/lib/security';
+import { JsonLd } from '@/components/JsonLd';
 import type { Metadata, Viewport } from 'next';
 import './globals.css';
 import { Header } from '@/components/Header';
@@ -83,7 +83,7 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
   return (
     <html lang="en">
       <body className="min-h-screen bg-cream text-ink">
-        <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: safeJsonLd(structuredData) }} />
+        <JsonLd data={structuredData} />
         <CartProvider>
           <a href="#main-content" className="sr-only z-[100] rounded-md bg-white px-4 py-3 font-semibold text-forest shadow-lg focus:not-sr-only focus:fixed focus:left-4 focus:top-4">Skip to content</a>
           <Header />

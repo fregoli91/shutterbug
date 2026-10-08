@@ -9,7 +9,6 @@ import {
   normalizeEmail
 } from '@/lib/customer-auth';
 import { getPublicSiteUrl, sendCustomerVerificationEmail } from '@/lib/email';
-import { getPrisma } from '@/lib/prisma';
 import { validateCustomerPassword } from '@/lib/password-policy';
 import { consumeRateLimit } from '@/lib/rate-limit';
 import { requestClientIdentifier } from '@/lib/request-context';
@@ -51,14 +50,7 @@ export async function signupAction(formData: FormData) {
     customer = await createCustomerAccount({ email, name, password });
   } catch (error) {
     if (error instanceof Prisma.PrismaClientKnownRequestError && error.code === 'P2002') {
-      const prisma = getPrisma();
-      const existingCustomer = prisma
-        ? await prisma.customer.findUnique({ where: { email }, select: { email: true, emailVerifiedAt: true } })
-        : null;
-      if (existingCustomer && !existingCustomer.emailVerifiedAt) {
-        redirectToCheckEmail(existingCustomer.email, 'unverified', redirectTo);
-      }
-      redirect(`/signup?error=exists&redirect=${encodeURIComponent(redirectTo)}`);
+      redirectToCheckEmail(email, 'sent', redirectTo);
     }
     if (error instanceof Error && error.message.includes('DATABASE_URL')) {
       redirect(`/signup?error=config&redirect=${encodeURIComponent(redirectTo)}`);

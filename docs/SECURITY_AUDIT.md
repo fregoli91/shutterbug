@@ -1,7 +1,7 @@
 # Shutterbug Security Audit
 
-Date: 2026-08-23
-Branch: `codex/security-hardening`
+Date: 2026-10-08
+Branch: `codex/sitewide-storefront-polish`
 
 ## Scope
 
@@ -45,13 +45,18 @@ Reviewed customer/admin authentication, product administration, cart validation,
 5. Product deletion now archives records to preserve order history.
 6. Production no longer silently displays demo inventory when database access fails.
 7. Transactional emails now use provider idempotency keys in addition to database send claims.
-8. Direct production dependencies were patched to Next.js 16.3.2, Prisma runtime 7.9.1, and PostCSS 8.5.26. The production-only dependency audit reports zero vulnerabilities.
+8. Next.js was upgraded from 16.3.2 to 16.4.0 to remove the critical and high-severity advisories affecting the previous runtime. Prisma runtime packages were upgraded to 7.10.0 and all direct dependency versions are locked exactly.
+9. Script execution now uses a per-request CSP nonce with `strict-dynamic`; production no longer permits arbitrary inline scripts. JSON-LD scripts receive the same request nonce.
+10. Signed customer sessions now carry only the internal customer ID, production signing secrets must be at least 32 bytes, and production session cookies use the `__Host-` prefix.
+11. Sensitive account, admin, checkout, order, login, signup, and bag responses explicitly disable caching.
+12. The in-memory rate-limit store prunes expired entries and is capped to prevent identifier-flood memory growth.
+13. Signup responses no longer disclose whether an email already belongs to a verified account.
 
 ## Intentional constraints / blockers
 
 - Refunds are intentionally disabled until a Stripe-backed, audited refund flow is explicitly approved.
 - In-memory rate limiting is best-effort on serverless instances. Add a shared Redis/KV limiter before high-volume or hostile traffic.
 - Inventory reservations require the included migration to be deployed before the hardened checkout is enabled in production.
-- Security headers should be checked against all production third-party scripts before deployment.
+- The enforced nonce-based security policy was exercised against a production build; it permits only same-origin application connections and Cloudinary image/media assets.
 - No production migrations, payments, refunds, emails, or database mutations were run by this audit.
-- The Prisma CLI remains build-only in devDependencies and currently carries three high-severity advisories through @prisma/config/deepmerge-ts; upstream offers no non-breaking Prisma 7 fix. It is excluded from the deployed runtime and must be upgraded when a compatible patch is released.
+- `npm audit` reports no critical advisories. It still attributes four high advisories to the Prisma CLI's unused MySQL/config tooling paths and nine moderate/high advisories to lint/CSS build tooling. The storefront uses PostgreSQL and none of those vulnerable parsers or the MySQL client handle user requests. The available automated fixes require incompatible Prisma downgrades or a Tailwind major migration; upgrade them when compatible upstream releases are available.

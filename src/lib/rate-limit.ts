@@ -2,9 +2,29 @@ import { hashedSecurityKey } from "@/lib/security";
 
 type Bucket = { count: number; resetAt: number };
 const buckets = new Map<string, Bucket>();
+const MAX_BUCKETS = 10_000;
+const PRUNE_INTERVAL = 250;
+let operationsSincePrune = 0;
+
+function pruneBuckets(now: number) {
+  operationsSincePrune += 1;
+  if (operationsSincePrune < PRUNE_INTERVAL && buckets.size < MAX_BUCKETS) return;
+
+  operationsSincePrune = 0;
+  for (const [key, bucket] of buckets) {
+    if (bucket.resetAt <= now) buckets.delete(key);
+  }
+
+  while (buckets.size >= MAX_BUCKETS) {
+    const oldestKey = buckets.keys().next().value as string | undefined;
+    if (!oldestKey) break;
+    buckets.delete(oldestKey);
+  }
+}
 
 function takeRateLimitResult(key: string, limit: number, windowMs: number) {
   const now = Date.now();
+  pruneBuckets(now);
   const safeKey = hashedSecurityKey(key);
   const current = buckets.get(safeKey);
 
@@ -41,4 +61,5 @@ export function consumeRateLimit({
 
 export function clearRateLimitsForTests(): void {
   buckets.clear();
+  operationsSincePrune = 0;
 }

@@ -1,4 +1,4 @@
-import { safeJsonLd } from '@/lib/security';
+import { JsonLd } from '@/components/JsonLd';
 import Image from 'next/image';
 import Link from 'next/link';
 import type { Metadata } from 'next';
@@ -46,7 +46,7 @@ export default async function SellYourCameraPage() {
   ]);
 
   return <div className="pb-16">
-    <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: safeJsonLd(structuredData) }} />
+    <JsonLd data={structuredData} />
     <section className="bg-cream px-4 py-8 sm:px-6 sm:py-14 lg:px-8">
       <div className="mx-auto grid max-w-7xl items-center gap-9 lg:grid-cols-[1.05fr_.95fr]">
         <div className="text-center">
