@@ -52,6 +52,12 @@ const categoryHeroImages: Record<string, { src: string; alt: string; width: numb
     width: 1448,
     height: 1086
   },
+  'instant-cameras': {
+    src: '/shutterbug-instant-cameras-page.png',
+    alt: 'Instant cameras, film packs, photo prints, strap, case, and close-up lenses displayed at Shutterbug Camera Shop',
+    width: 1448,
+    height: 1086
+  },
   'canon-powershot-cameras': {
     src: '/shutterbug-canon-powershot-page.png',
     alt: 'Canon cameras, lenses, printer, camera bag, and photo prints displayed at Shutterbug Camera Shop',
