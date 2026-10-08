@@ -87,6 +87,7 @@ export function buildOrganizationJsonLd(): JsonLdNode {
     '@type': 'OnlineStore',
     '@id': `${site.domain}/#organization`,
     name: site.name,
+    alternateName: 'Shutterbug',
     url: site.domain,
     logo: imageUrl('/shutterbug-icon-512.png'),
     image: imageUrl('/shutterbug-trust-banner.png'),
@@ -98,6 +99,17 @@ export function buildOrganizationJsonLd(): JsonLdNode {
     areaServed: {
       '@type': 'Country',
       name: 'United States'
+    },
+    hasOfferCatalog: {
+      '@type': 'OfferCatalog',
+      name: 'Shutterbug Camera Shop catalog',
+      itemListElement: [
+        { '@type': 'OfferCatalog', name: 'Used and vintage cameras', url: absoluteUrl('/shop') },
+        { '@type': 'OfferCatalog', name: 'Vintage digital cameras', url: absoluteUrl('/categories/vintage-digital-cameras') },
+        { '@type': 'OfferCatalog', name: 'Film cameras', url: absoluteUrl('/categories/film-cameras') },
+        { '@type': 'OfferCatalog', name: 'Used camera lenses', url: absoluteUrl('/categories/lenses') },
+        { '@type': 'OfferCatalog', name: 'Used printers', url: absoluteUrl('/categories/printers') }
+      ]
     }
   };
 }
@@ -107,6 +119,7 @@ export function buildWebSiteJsonLd(): JsonLdNode {
     '@type': 'WebSite',
     '@id': `${site.domain}/#website`,
     name: site.name,
+    alternateName: 'Shutterbug',
     url: site.domain,
     publisher: { '@id': `${site.domain}/#organization` },
     potentialAction: {

@@ -18,6 +18,17 @@ export const metadata: Metadata = {
   creator: site.name,
   publisher: site.name,
   category: 'shopping',
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      'max-image-preview': 'large',
+      'max-snippet': -1,
+      'max-video-preview': -1
+    }
+  },
   manifest: '/manifest.webmanifest',
   appleWebApp: {
     capable: true,
@@ -49,6 +60,12 @@ export const metadata: Metadata = {
     siteName: site.name,
     type: 'website',
     images: [{ url: '/shutterbug-icon-512.png', width: 512, height: 512, alt: site.name }]
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: site.name,
+    description: site.description,
+    images: ['/shutterbug-icon-512.png']
   }
 };
 

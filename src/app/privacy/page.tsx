@@ -4,7 +4,8 @@ import { site } from '@/lib/seo';
 
 export const metadata = {
   title: 'Privacy Policy',
-  description: 'Privacy policy for Shutterbug Camera Shop customer accounts, orders, and support.'
+  description: 'Privacy policy for Shutterbug Camera Shop customer accounts, orders, and support.',
+  alternates: { canonical: '/privacy' }
 };
 
 const dataSections = [

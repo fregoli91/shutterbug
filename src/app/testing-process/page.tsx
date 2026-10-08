@@ -3,7 +3,8 @@ import Image from 'next/image';
 export const metadata = {
   title: 'Camera Testing Process',
   description:
-    'How Shutterbug Camera Shop tests and grades used vintage digital cameras, film cameras, and camera gear.'
+    'How Shutterbug Camera Shop tests and grades used vintage digital cameras, film cameras, and camera gear.',
+  alternates: { canonical: '/testing-process' }
 };
 
 const digitalTests = [

@@ -3,7 +3,8 @@ import { site } from '@/lib/seo';
 
 export const metadata = {
   title: 'Contact Customer Service',
-  description: 'Contact Shutterbug Camera Shop about camera orders, trade-ins, condition notes, and vintage camera inventory.'
+  description: 'Contact Shutterbug Camera Shop about camera orders, trade-ins, condition notes, and vintage camera inventory.',
+  alternates: { canonical: '/contact' }
 };
 
 export default function ContactPage() {

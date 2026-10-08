@@ -15,7 +15,29 @@ import { formatPrice, getCatalogProducts, isActiveProduct, type Product } from '
 import { site } from '@/lib/seo';
 
 export const metadata: Metadata = {
-  alternates: { canonical: '/' }
+  title: { absolute: 'Used Cameras & Vintage Digital Cameras | Shutterbug Camera Shop' },
+  description:
+    'Shop tested used cameras, vintage digital cameras, film cameras, lenses, printers, and gear from Shutterbug Camera Shop, online and through our Amazon storefront.',
+  alternates: { canonical: '/' },
+  openGraph: {
+    title: 'Used Cameras & Vintage Digital Cameras | Shutterbug Camera Shop',
+    description:
+      'Browse tested used cameras and gear with real product photos, clear condition notes, and exact included accessories.',
+    url: site.domain,
+    type: 'website',
+    images: [{
+      url: '/shutterbug-shelf-cameras-display.png',
+      width: 1672,
+      height: 941,
+      alt: 'Used cameras, lenses, and accessories at Shutterbug Camera Shop'
+    }]
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'Used Cameras & Vintage Digital Cameras | Shutterbug Camera Shop',
+    description: 'Tested used cameras and gear with real photos, condition notes, and clear availability.',
+    images: ['/shutterbug-shelf-cameras-display.png']
+  }
 };
 
 type CustomerSession = NonNullable<Awaited<ReturnType<typeof getCustomerSession>>>;
@@ -263,10 +285,10 @@ function HomepageShopIntro({ headingLevel = 'h2' }: { headingLevel?: 'h1' | 'h2'
         <div className="mx-auto max-w-2xl">
           <p className="text-[0.68rem] font-bold uppercase tracking-[0.2em] text-moss">Shutterbug Camera Shop</p>
           <Heading className="mt-1.5 font-serif text-2xl font-bold leading-tight text-ink sm:text-3xl">
-            Tested cameras, ready for their next story.
+            Tested used and vintage cameras, ready for their next story.
           </Heading>
           <p className="mt-1.5 text-sm leading-6 text-ink/65">
-            Real photos, clear condition notes, and friendly support.
+            Shop digital and film cameras, lenses, printers, and gear with real photos and clear condition notes.
           </p>
         </div>
 
@@ -509,6 +531,12 @@ function DirectStoreCallout() {
                 Ask what is available
               </Link>
             )}
+            <Link
+              href="/amazon"
+              className="inline-flex min-h-11 items-center justify-center px-3 text-sm font-semibold text-moss transition hover:text-ink hover:underline"
+            >
+              About Shutterbug on Amazon
+            </Link>
           </div>
         </div>
       </div>

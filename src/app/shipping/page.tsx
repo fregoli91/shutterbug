@@ -3,7 +3,8 @@ import Image from 'next/image';
 
 export const metadata = {
   title: 'Shipping Policy',
-  description: 'Shipping, packing, and delivery information for Shutterbug Camera Shop orders.'
+  description: 'Shipping, packing, and delivery information for Shutterbug Camera Shop orders.',
+  alternates: { canonical: '/shipping' }
 };
 
 const packingPromises = [

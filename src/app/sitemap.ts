@@ -7,6 +7,7 @@ import { isIndexableProduct } from '@/lib/catalog-seo';
 import { guides } from '@/lib/guides';
 import { blogPosts } from '@/lib/blog';
 import { isPriorityBrand, isPriorityCategory } from '@/lib/seo-content';
+import { imageUrl } from '@/lib/seo-utils';
 
 export const dynamic = 'force-dynamic';
 
@@ -31,7 +32,8 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     '/terms'
   ].map((path) => ({
     url: `${site.domain}${path}`,
-    lastModified: undefined
+    lastModified: undefined,
+    ...(path === '' ? { images: [imageUrl('/shutterbug-shelf-cameras-display.png')] } : {})
   }));
 
   const categoryRoutes = categories
@@ -55,6 +57,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     .filter(isIndexableProduct)
     .map((product) => ({
       url: `${site.domain}/shop/${product.slug}`,
+      images: Array.from(new Set([product.heroImage, ...product.gallery])).map((image) => imageUrl(image)),
       ...(product.updatedAt ? { lastModified: new Date(product.updatedAt) } : {})
     }));
 

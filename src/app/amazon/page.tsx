@@ -6,18 +6,51 @@ import { site } from '@/lib/seo';
 import { buildBreadcrumbJsonLd, jsonLdGraph } from '@/lib/seo-utils';
 
 export const metadata: Metadata = {
-  title: 'Shutterbug Camera Shop on Amazon',
+  title: { absolute: 'Shutterbug Camera Shop on Amazon | Used Cameras & Gear' },
   description:
-    'Find Shutterbug Camera Shop on Amazon or browse tested used cameras and gear directly at ShutterbugCameraShop.com.',
+    'Find the official Shutterbug Camera Shop Amazon storefront, or shop tested used cameras, vintage digital cameras, printers, and gear directly from Shutterbug.',
   alternates: { canonical: '/amazon' },
   openGraph: {
-    title: 'Shutterbug Camera Shop on Amazon',
-    description: 'Visit the established Shutterbug Amazon storefront or browse current inventory on our own shop.',
+    title: 'Shutterbug Camera Shop on Amazon | Used Cameras & Gear',
+    description: 'Use the verified Shutterbug Amazon store link or browse current used camera and printer inventory directly.',
     url: `${site.domain}/amazon`,
     type: 'website',
     images: [{ url: '/shutterbug-amazon-store-banner.png', width: 2048, height: 682, alt: 'Visit Shutterbug Camera Shop on Amazon' }]
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'Shutterbug Camera Shop on Amazon',
+    description: 'Find the verified Shutterbug Amazon storefront and browse tested used cameras and gear.',
+    images: ['/shutterbug-amazon-store-banner.png']
   }
 };
+
+const popularCollections = [
+  ['Vintage digital cameras', '/categories/vintage-digital-cameras'],
+  ['Point-and-shoot cameras', '/categories/point-and-shoot-cameras'],
+  ['Film cameras', '/categories/film-cameras'],
+  ['Camera lenses', '/categories/lenses'],
+  ['Used printers', '/categories/printers'],
+  ['Shop all inventory', '/shop']
+];
+
+const amazonFaqs = [
+  {
+    question: 'Does Shutterbug Camera Shop sell on Amazon?',
+    answer:
+      'Yes. Shutterbug Camera Shop maintains an Amazon storefront in addition to this website. Use the verified link on this page to avoid similarly named stores.'
+  },
+  {
+    question: 'Is the same inventory available on Amazon and ShutterbugCameraShop.com?',
+    answer:
+      'Not always. Used cameras and gear are often one-of-a-kind, and listings can differ between sales channels. Check both storefronts when looking for a particular model.'
+  },
+  {
+    question: 'What does Shutterbug Camera Shop sell?',
+    answer:
+      'Shutterbug specializes in used and vintage digital cameras, film cameras, lenses, accessories, printers, and clearly labeled parts or repair gear.'
+  }
+];
 
 export default function AmazonPage() {
   const structuredData = jsonLdGraph([
@@ -27,12 +60,22 @@ export default function AmazonPage() {
       description: metadata.description,
       url: `${site.domain}/amazon`,
       isPartOf: { '@id': `${site.domain}/#website` },
-      about: { '@id': `${site.domain}/#organization` }
+      about: { '@id': `${site.domain}/#organization` },
+      sameAs: site.amazonStoreUrl,
+      relatedLink: site.amazonStoreUrl
     },
     buildBreadcrumbJsonLd([
       { name: 'Home', url: '/' },
       { name: 'Shutterbug on Amazon', url: '/amazon' }
-    ])
+    ]),
+    {
+      '@type': 'FAQPage',
+      mainEntity: amazonFaqs.map((faq) => ({
+        '@type': 'Question',
+        name: faq.question,
+        acceptedAnswer: { '@type': 'Answer', text: faq.answer }
+      }))
+    }
   ]);
 
   return (
@@ -66,7 +109,7 @@ export default function AmazonPage() {
               Shutterbug Camera Shop is an independent business and is not owned or operated by Amazon.
             </p>
             {site.amazonStoreUrl ? (
-              <a href={site.amazonStoreUrl} target="_blank" rel="noopener noreferrer" className="mt-5 inline-flex min-h-12 items-center rounded-full bg-forest px-6 py-3 font-semibold text-white hover:bg-moss">
+              <a href={site.amazonStoreUrl} target="_blank" rel="noopener noreferrer external" aria-label="Visit the official Shutterbug Camera Shop storefront on Amazon" className="mt-5 inline-flex min-h-12 items-center rounded-full bg-forest px-6 py-3 font-semibold text-white hover:bg-moss">
                 Visit Shutterbug on Amazon
               </a>
             ) : null}
@@ -82,6 +125,39 @@ export default function AmazonPage() {
             </Link>
           </section>
         </div>
+
+        <section className="mt-8 rounded-lg border border-ink/10 bg-white p-6 text-center shadow-sm sm:p-8">
+          <p className="text-sm font-bold uppercase tracking-[0.22em] text-moss">Browse Shutterbug directly</p>
+          <h2 className="mt-3 font-serif text-3xl font-bold text-ink">Popular used camera and gear collections</h2>
+          <p className="mx-auto mt-3 max-w-3xl text-sm leading-7 text-ink/68">
+            These collection pages show current Shutterbug inventory with exact-item photos, testing notes, included
+            accessories, and disclosed flaws whenever those details apply.
+          </p>
+          <nav className="mt-6 flex flex-wrap justify-center gap-2" aria-label="Popular Shutterbug collections">
+            {popularCollections.map(([label, href]) => (
+              <Link key={href} href={href} className="rounded-full border border-ink/15 bg-cream px-4 py-2 text-sm font-semibold text-ink transition hover:border-moss hover:text-moss">
+                {label}
+              </Link>
+            ))}
+          </nav>
+        </section>
+
+        <section className="mt-8" aria-labelledby="amazon-shopping-questions">
+          <div className="text-center">
+            <p className="text-sm font-bold uppercase tracking-[0.22em] text-moss">Shopping questions</p>
+            <h2 id="amazon-shopping-questions" className="mt-3 font-serif text-3xl font-bold text-ink">
+              Shutterbug and Amazon
+            </h2>
+          </div>
+          <div className="mt-6 grid gap-4 lg:grid-cols-3">
+            {amazonFaqs.map((faq) => (
+              <article key={faq.question} className="rounded-lg border border-ink/10 bg-cream p-6 text-center">
+                <h3 className="font-serif text-xl font-bold text-ink">{faq.question}</h3>
+                <p className="mt-3 text-sm leading-7 text-ink/68">{faq.answer}</p>
+              </article>
+            ))}
+          </div>
+        </section>
       </div>
     </div>
   );

@@ -3,7 +3,8 @@ import Image from 'next/image';
 export const metadata = {
   title: 'About Shutterbug Camera Shop',
   description:
-    'Learn about Shutterbug Camera Shop, a focused used camera store started in 2012 and built around tested vintage digital cameras and camera gear.'
+    'Learn about Shutterbug Camera Shop, a focused used camera store started in 2012 and built around tested vintage digital cameras and camera gear.',
+  alternates: { canonical: '/about' }
 };
 
 export default function AboutPage() {

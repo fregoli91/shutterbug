@@ -4,7 +4,8 @@ import { site } from '@/lib/seo';
 
 export const metadata = {
   title: 'Terms of Service',
-  description: 'Terms of service for shopping with Shutterbug Camera Shop.'
+  description: 'Terms of service for shopping with Shutterbug Camera Shop.',
+  alternates: { canonical: '/terms' }
 };
 
 const termCards = [

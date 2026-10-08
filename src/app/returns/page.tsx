@@ -3,7 +3,8 @@ import Image from 'next/image';
 
 export const metadata = {
   title: 'Returns & Warranty',
-  description: 'Return and condition policy for Shutterbug Camera Shop orders.'
+  description: 'Return and condition policy for Shutterbug Camera Shop orders.',
+  alternates: { canonical: '/returns' }
 };
 
 const returnSteps = [
