@@ -313,14 +313,24 @@ export default async function ShopPage({ searchParams }: Props) {
     <section className="px-4 py-8 sm:px-6 sm:py-12 lg:px-8">
       <JsonLd data={structuredData} />
       <div className="mx-auto max-w-7xl">
-        <div className="grid gap-6 lg:grid-cols-[1fr_32rem] lg:items-center">
-          <div className="max-w-3xl">
-            <p className="text-sm font-bold uppercase tracking-[0.28em] text-moss">Shop inventory</p>
-            <h1 className="mt-3 font-serif text-3xl font-bold text-ink sm:text-4xl">Cameras, printers & gear</h1>
-            <p className="mt-4 text-base leading-7 text-ink/70 sm:mt-5 sm:text-lg sm:leading-8">
-              Vintage digital cameras, film cameras, printers, lenses, and more with clear condition notes and real product photos.
-            </p>
-          </div>
+        <header className="max-w-3xl">
+          <p className="text-sm font-bold uppercase tracking-[0.28em] text-moss">Shop inventory</p>
+          <h1 className="mt-3 font-serif text-3xl font-bold text-ink sm:text-4xl">Cameras, printers & gear</h1>
+          <p className="mt-4 text-base leading-7 text-ink/70 sm:mt-5 sm:text-lg sm:leading-8">
+            Vintage digital cameras, film cameras, printers, lenses, and more with clear condition notes and real product photos.
+          </p>
+        </header>
+
+        <div className="mt-7 grid gap-4 lg:grid-cols-[minmax(0,1.45fr)_minmax(20rem,0.75fr)] lg:items-start">
+          <Image
+            src="/shutterbug-shop-camera-gear-still-life.webp"
+            alt="Warm display of Canon, Olympus, and Sony cameras, lenses, batteries, memory cards, and camera accessories"
+            width={1672}
+            height={941}
+            sizes="(min-width: 1280px) 52rem, (min-width: 1024px) 65vw, 100vw"
+            priority
+            className="aspect-[16/9] w-full rounded-lg border border-ink/10 bg-sand object-cover object-center shadow-sm"
+          />
 
           <div className="grid gap-4">
             <Image
@@ -328,7 +338,7 @@ export default async function ShopPage({ searchParams }: Props) {
               alt="Camera display inside Shutterbug Camera Shop"
               width={1448}
               height={1086}
-              sizes="(min-width: 1024px) 32rem, 100vw"
+              sizes="(min-width: 1280px) 27rem, (min-width: 1024px) 35vw, 100vw"
               className="aspect-[4/3] w-full rounded-lg border border-ink/10 bg-sand object-contain object-center shadow-sm"
             />
 
