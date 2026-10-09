@@ -182,8 +182,8 @@ export default async function CategoryPage({ params }: Props) {
   return (
     <section className="px-4 py-14 sm:px-6 lg:px-8">
       <JsonLd data={structuredData} />
-      <div className="mx-auto max-w-7xl">
-        <header className="max-w-4xl">
+      <div className="mx-auto max-w-7xl text-center">
+        <header className="mx-auto max-w-4xl">
           <p className="text-sm font-bold uppercase tracking-[0.28em] text-moss">
             {isPrinterCategory ? 'Printer category' : 'Used camera category'}
           </p>
@@ -192,18 +192,19 @@ export default async function CategoryPage({ params }: Props) {
         </header>
 
         {categoryHeroImage ? (
-          <div className="relative mt-7 aspect-[4/3] max-h-[30rem] overflow-hidden rounded-lg border border-ink/10 bg-sand shadow-sm sm:aspect-[16/7]">
+          <div className="mt-7 flex justify-center">
             <Image
               src={categoryHeroImage.src}
               alt={categoryHeroImage.alt}
-              fill
-              sizes="(min-width: 1280px) 80rem, 100vw"
-              className="object-contain object-center"
+              width={categoryHeroImage.width}
+              height={categoryHeroImage.height}
+              sizes="(min-width: 1024px) 54rem, (min-width: 640px) 75vw, calc(100vw - 2rem)"
+              className="h-auto max-h-[30rem] w-full rounded-lg border border-ink/10 bg-sand object-contain object-center shadow-sm sm:w-auto sm:max-w-full"
             />
           </div>
         ) : null}
 
-        <div className="mt-5 flex flex-wrap gap-2" aria-label="Shutterbug listing standards">
+        <div className="mt-5 flex flex-wrap justify-center gap-2" aria-label="Shutterbug listing standards">
           {trustItems.map((item) => (
             <span key={item} className="rounded-full border border-moss/15 bg-white px-4 py-2 text-sm font-semibold text-ink/70 shadow-sm">
               {item}
@@ -211,7 +212,7 @@ export default async function CategoryPage({ params }: Props) {
           ))}
         </div>
 
-        <nav className="mt-8 flex flex-wrap gap-2" aria-label={`Explore ${category.name}`}>
+        <nav className="mt-8 flex flex-wrap justify-center gap-2" aria-label={`Explore ${category.name}`}>
           {discoveryLinks.map((link) => (
             <Link
               key={link.href}
@@ -223,7 +224,7 @@ export default async function CategoryPage({ params }: Props) {
           ))}
         </nav>
 
-        <div className="mt-12 grid grid-cols-2 gap-3 sm:gap-6 lg:grid-cols-3">
+        <div className="mx-auto mt-12 grid max-w-6xl grid-cols-2 gap-3 text-left sm:gap-6 lg:grid-cols-3">
           {categoryProducts.length > 0 ? (
             categoryProducts.map((product) => (
               <ProductCard
@@ -239,7 +240,7 @@ export default async function CategoryPage({ params }: Props) {
         </div>
 
         {profile ? (
-          <section className="mt-14 grid gap-6 border-t border-ink/10 pt-10 lg:grid-cols-[1.2fr_0.8fr]" aria-labelledby="category-buying-heading">
+          <section className="mx-auto mt-14 grid max-w-6xl gap-6 border-t border-ink/10 pt-10 lg:grid-cols-[1.2fr_0.8fr]" aria-labelledby="category-buying-heading">
             <div>
               <h2 id="category-buying-heading" className="font-serif text-3xl font-bold text-ink sm:text-4xl">
                 {profile.supportingHeading}
@@ -250,7 +251,7 @@ export default async function CategoryPage({ params }: Props) {
             </div>
             <div className="rounded-lg border border-ink/10 bg-mint p-6">
               <h2 className="font-serif text-2xl font-bold text-ink">Before you buy</h2>
-              <ul className="mt-4 grid list-disc gap-3 pl-5 text-sm leading-6 text-ink/72">
+              <ul className="mx-auto mt-4 grid max-w-lg list-disc gap-3 pl-5 text-left text-sm leading-6 text-ink/72">
                 {profile.buyerTips.map((tip) => <li key={tip}>{tip}</li>)}
               </ul>
               <Link href={isPrinterCategory ? '/guides/how-we-test-used-printers' : '/testing-process'} className="mt-5 inline-flex min-h-11 items-center font-semibold text-moss hover:text-ink">
@@ -260,9 +261,9 @@ export default async function CategoryPage({ params }: Props) {
           </section>
         ) : null}
 
-        <div className="mt-14 rounded-lg border border-ink/10 bg-mint p-6">
+        <div className="mx-auto mt-14 max-w-6xl rounded-lg border border-ink/10 bg-mint p-6">
           <p className="text-sm font-bold uppercase tracking-[0.24em] text-moss">Related categories</p>
-          <div className="mt-4 flex flex-wrap gap-2">
+          <div className="mt-4 flex flex-wrap justify-center gap-2">
             {relatedCategories.map((related) => (
               <Link
                 key={related.slug}

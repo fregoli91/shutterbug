@@ -38,7 +38,7 @@ export default async function BrandsPage() {
   return (
     <section className="bg-cream px-4 py-14 sm:px-6 lg:px-8">
       <JsonLd data={structuredData} />
-      <div className="mx-auto max-w-7xl">
+      <div className="mx-auto max-w-7xl text-center">
         <div className="grid gap-8">
           <div className="mx-auto max-w-3xl text-center">
             <p className="text-sm font-bold uppercase tracking-[0.28em] text-moss">Shop by brand</p>
@@ -50,7 +50,7 @@ export default async function BrandsPage() {
               around real availability, clear condition notes, included accessories, and testing details.
             </p>
           </div>
-          <div className="overflow-hidden rounded-lg border border-ink/10 bg-white shadow-sm">
+          <div className="mx-auto max-w-6xl overflow-hidden rounded-lg border border-ink/10 bg-white shadow-sm">
             <Image
               src="/shutterbug-shop-by-brand-page.png"
               alt="Shop by brand with Canon, Nikon, Sony, Olympus, Fujifilm, Kodak, and Epson used camera shelves"
@@ -69,7 +69,7 @@ export default async function BrandsPage() {
           </div>
         </div>
 
-        <div className="mt-10 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+        <div className="mx-auto mt-10 grid max-w-6xl gap-4 sm:grid-cols-2 lg:grid-cols-3">
           {brands.map((brand) => (
             <Link
               key={brand.slug}

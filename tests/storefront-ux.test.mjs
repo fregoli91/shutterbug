@@ -29,13 +29,15 @@ test('removing one multi-select filter preserves its siblings', () => {
   assert.deepEqual(url.searchParams.getAll('brand'), ['Nikon']);
 });
 
-test('the approved carousel order remains stable without the retired summer bonus', () => {
+test('the restored carousel artwork remains stable without the retired summer bonus', () => {
   assert.deepEqual(homePromotions.map((item) => item.id), [
     'canon-powershot', 'olympus-stylus', 'nikon-cameras', 'sell-your-camera'
   ]);
   assert.equal(homePromotions.some((item) => /30%|20%|free shipping|since 2008|authentic|warranty/i.test(`${item.title} ${item.description}`)), false);
-  assert.equal(homePromotions.some((item) => item.desktopImage.startsWith('/carousel-')), false);
-  assert.equal(homePromotions.every((item) => item.embeddedCopy === false), true);
+  assert.deepEqual(homePromotions.map((item) => item.desktopImage), [
+    '/carousel-canon.png', '/carousel-olympus.png', '/carousel-nikon.png', '/carousel-trade-in.png'
+  ]);
+  assert.equal(homePromotions.every((item) => item.embeddedCopy === true), true);
 
   const homepage = fs.readFileSync('src/app/page.tsx', 'utf8');
   assert.doesNotMatch(homepage, /shutterbug-summer-sale-banner\.png/);

@@ -79,7 +79,7 @@ export default async function BrandPage({ params }: Props) {
   return (
     <section className="bg-cream px-4 py-8 sm:py-12 sm:px-6 lg:px-8">
       <JsonLd data={structuredData} />
-      <div className="mx-auto max-w-7xl">
+      <div className="mx-auto max-w-7xl text-center">
         <header className="mx-auto max-w-4xl text-center">
           <p className="text-sm font-bold uppercase tracking-[0.28em] text-moss">Used gear by brand</p>
           <h1 className="mt-3 font-serif text-3xl font-bold text-ink sm:text-5xl">{heading}</h1>
@@ -87,28 +87,29 @@ export default async function BrandPage({ params }: Props) {
         </header>
 
         {brandHeroImage ? (
-          <div className="relative mt-7 aspect-[4/3] max-h-[30rem] overflow-hidden rounded-lg border border-ink/10 bg-sand shadow-sm sm:aspect-[16/7]">
+          <div className="mt-7 flex justify-center">
             <Image
               src={brandHeroImage.src}
               alt={brandHeroImage.alt}
-              fill
-              sizes="(min-width: 1280px) 80rem, (min-width: 768px) calc(100vw - 3rem), calc(100vw - 2rem)"
-              className="object-contain object-center"
+              width={brandHeroImage.width}
+              height={brandHeroImage.height}
+              sizes="(min-width: 1024px) 54rem, (min-width: 640px) 75vw, calc(100vw - 2rem)"
+              className="h-auto max-h-[30rem] w-full rounded-lg border border-ink/10 bg-sand object-contain object-center shadow-sm sm:w-auto sm:max-w-full"
             />
           </div>
         ) : null}
 
         {profile ? (
-          <div className="mt-8 grid gap-6 lg:grid-cols-2">
+          <div className="mx-auto mt-8 grid max-w-5xl gap-6 lg:grid-cols-2">
             <section className="rounded-lg border border-ink/10 bg-white p-6 text-center shadow-sm">
               <h2 className="font-serif text-2xl font-bold text-ink">What {brand.name} is known for</h2>
-              <ul className="mt-4 grid list-disc gap-3 pl-5 text-left text-sm leading-6 text-ink/70">
+              <ul className="mx-auto mt-4 grid max-w-xl list-disc gap-3 pl-5 text-left text-sm leading-6 text-ink/70">
                 {profile.knownFor.map((item) => <li key={item}>{item}</li>)}
               </ul>
             </section>
             <section className="rounded-lg border border-ink/10 bg-mint p-6 text-center">
               <h2 className="font-serif text-2xl font-bold text-ink">Used {brand.name} buying notes</h2>
-              <ul className="mt-4 grid list-disc gap-3 pl-5 text-left text-sm leading-6 text-ink/70">
+              <ul className="mx-auto mt-4 grid max-w-xl list-disc gap-3 pl-5 text-left text-sm leading-6 text-ink/70">
                 {profile.buyingAdvice.map((item) => <li key={item}>{item}</li>)}
               </ul>
             </section>
@@ -125,7 +126,7 @@ export default async function BrandPage({ params }: Props) {
           </nav>
         ) : null}
 
-        {brand.products.length > 0 ? <div className="mt-8 flex flex-col items-center gap-5 rounded-lg border border-ink/10 bg-white p-5 text-center shadow-sm">
+        {brand.products.length > 0 ? <div className="mx-auto mt-8 flex max-w-4xl flex-col items-center gap-5 rounded-lg border border-ink/10 bg-white p-5 text-center shadow-sm">
           <div className="max-w-3xl">
             <p className="font-serif text-2xl font-bold text-ink">
               {brand.products.length ? 'Current Shutterbug listings' : 'Looking for this brand?'}
@@ -152,20 +153,20 @@ export default async function BrandPage({ params }: Props) {
           </div>
         </div> : null}
 
-        {slug === 'canon' || printerBrand ? <nav id="printer-shopping" aria-label="Printer shopping" className="mt-8 rounded-lg bg-mint p-6">
+        {slug === 'canon' || printerBrand ? <nav id="printer-shopping" aria-label="Printer shopping" className="mx-auto mt-8 max-w-4xl rounded-lg bg-mint p-6 text-center">
           <h2 className="font-serif text-2xl font-bold">{brand.name} printers</h2>
           <p className="mt-3 text-sm leading-6">Check the full model number, recorded tests, included supplies, cable connections, and condition on each printer listing. Camera accessories and printer supplies are not interchangeable.</p>
           <Link href="/categories/printers" className="mt-3 inline-block font-semibold text-moss">Browse all used printers</Link>
-          {brand.products.some(isPrinter) ? <div className="mt-4 flex flex-wrap gap-3">{brand.products.filter(isPrinter).map((product) => <Link key={product.id} href={`/shop/${product.slug}`} className="font-semibold text-moss">{product.title}</Link>)}</div> : null}
+          {brand.products.some(isPrinter) ? <div className="mt-4 flex flex-wrap justify-center gap-3">{brand.products.filter(isPrinter).map((product) => <Link key={product.id} href={`/shop/${product.slug}`} className="font-semibold text-moss">{product.title}</Link>)}</div> : null}
         </nav> : null}
         {brand.products.length ? (
-          <div id="current-listings" className="mt-10 grid scroll-mt-32 grid-cols-2 gap-3 sm:gap-6 lg:grid-cols-4">
+          <div id="current-listings" className="mx-auto mt-10 grid max-w-6xl scroll-mt-32 grid-cols-2 justify-center gap-3 sm:gap-6 lg:grid-cols-4">
             {brand.products.map((product) => (
               <ProductCard key={product.id} product={product} liked={likedProductIds.has(product.id)} signedIn={Boolean(customer)} />
             ))}
           </div>
         ) : (
-          printerBrand ? <div className="mt-8 rounded-lg bg-mint p-6 text-center"><h2 className="font-serif text-2xl font-bold">No {brand.name} printers are listed right now.</h2><Link href="/categories/printers" className="mt-3 inline-block font-semibold text-moss">Browse used printers</Link></div> : <div className="mt-8"><EmptyShelf title={`No ${brand.name} cameras are available right now.`} description="Our inventory changes as cameras arrive and sell. Explore another collection or tell us about a camera you would like to sell." sellLabel={`Sell a ${brand.name} camera`} /></div>
+          printerBrand ? <div className="mx-auto mt-8 max-w-4xl rounded-lg bg-mint p-6 text-center"><h2 className="font-serif text-2xl font-bold">No {brand.name} printers are listed right now.</h2><Link href="/categories/printers" className="mt-3 inline-block font-semibold text-moss">Browse used printers</Link></div> : <div className="mx-auto mt-8 max-w-4xl"><EmptyShelf title={`No ${brand.name} cameras are available right now.`} description="Our inventory changes as cameras arrive and sell. Explore another collection or tell us about a camera you would like to sell." sellLabel={`Sell a ${brand.name} camera`} /></div>
         )}
       </div>
     </section>
