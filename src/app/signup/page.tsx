@@ -4,6 +4,7 @@ import { redirect } from 'next/navigation';
 import { signupAction } from './actions';
 import { getAdminSession } from '@/lib/admin-auth';
 import { getCustomerSession } from '@/lib/customer-auth';
+import { DEFAULT_CUSTOMER_PROFILE_IMAGE } from '@/lib/customer-profile';
 import { PASSWORD_MAX_LENGTH, PASSWORD_MIN_LENGTH } from '@/lib/password-policy';
 
 type Props = {
@@ -75,11 +76,19 @@ export default async function SignupPage({ searchParams }: Props) {
       <div className="mx-auto grid max-w-6xl gap-6 lg:grid-cols-[0.9fr_1.1fr] lg:items-start">
         <aside className="rounded-lg border border-ink/10 bg-white p-5 shadow-sm sm:p-7 lg:sticky lg:top-32">
           <div className="grid gap-5 md:grid-cols-[minmax(0,1fr)_minmax(15rem,0.9fr)] md:items-center lg:grid-cols-1">
-            <div className="text-center md:text-left">
+            <div className="text-center">
               <p className="text-sm font-bold uppercase tracking-[0.22em] text-moss">New customer</p>
               <h1 className="mt-3 font-serif text-4xl font-bold leading-tight text-ink sm:text-5xl">
                 New to Shutterbug?
               </h1>
+              <Image
+                src={DEFAULT_CUSTOMER_PROFILE_IMAGE}
+                alt="Shutterbug ladybug mascot holding a camera"
+                width={112}
+                height={112}
+                sizes="7rem"
+                className="mx-auto mt-5 h-28 w-28 rounded-full border border-forest/15 bg-sand object-cover shadow-sm"
+              />
               <p className="mt-4 leading-7 text-ink/70">
                 Create an account to keep your orders, saved items, and support history in one place.
               </p>
