@@ -174,7 +174,7 @@ export function HomePromotionalCarousel({ promotions }: HomePromotionalCarouselP
               >
                 <Link
                   href={promotion.href}
-                  className="group/slide relative block aspect-[4/3] w-full overflow-hidden bg-cream sm:aspect-[2/1]"
+                  className="group/slide relative block aspect-square w-full overflow-hidden bg-cream sm:aspect-[2/1]"
                   tabIndex={index === activeIndex ? 0 : -1}
                   onClick={(event) => {
                     if (swiped.current) {
@@ -218,11 +218,19 @@ export function HomePromotionalCarousel({ promotions }: HomePromotionalCarouselP
                         loading={index === 0 ? 'eager' : 'lazy'}
                         fetchPriority={index === 0 ? 'high' : undefined}
                         sizes="(min-width: 1280px) 1280px, (min-width: 640px) calc(100vw - 3rem), calc(100vw - 2rem)"
-                        className={promotion.embeddedCopy ? 'scale-[0.82] object-contain sm:scale-100' : 'object-contain'}
+                        className={promotion.embeddedCopy ? 'object-cover object-right sm:object-contain sm:object-center' : 'object-contain'}
                       />
                     </>
                   )}
-                  {!promotion.embeddedCopy ? (
+                  {promotion.embeddedCopy ? (
+                    <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-ink/90 via-ink/60 to-transparent px-4 pb-4 pt-14 text-white sm:hidden">
+                      <p className="text-[0.65rem] font-bold uppercase tracking-[0.16em] text-sage">{promotion.eyebrow}</p>
+                      <h2 className="mt-1 max-w-xs font-serif text-xl font-bold leading-tight">{promotion.title}</h2>
+                      <span className="mt-3 inline-flex min-h-10 items-center rounded-full bg-cream px-4 text-xs font-bold text-forest shadow-sm">
+                        {promotion.ctaLabel}
+                      </span>
+                    </div>
+                  ) : (
                     <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-ink/90 via-ink/65 to-transparent px-5 pb-5 pt-16 text-white sm:px-8 sm:pb-8 sm:pt-24">
                       <p className="text-[0.68rem] font-bold uppercase tracking-[0.16em] text-sage sm:text-xs sm:tracking-[0.2em]">{promotion.eyebrow}</p>
                       <h2 className="mt-1.5 max-w-2xl font-serif text-xl font-bold leading-tight sm:mt-2 sm:text-4xl">{promotion.title}</h2>
@@ -231,7 +239,7 @@ export function HomePromotionalCarousel({ promotions }: HomePromotionalCarouselP
                         {promotion.ctaLabel}
                       </span>
                     </div>
-                  ) : null}
+                  )}
                   <span className="sr-only">{promotion.alt}</span>
                 </Link>
               </article>

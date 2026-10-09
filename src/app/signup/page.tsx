@@ -131,7 +131,7 @@ export default async function SignupPage({ searchParams }: Props) {
           <div className="text-center lg:text-left">
             <div className="flex items-center justify-center gap-3 lg:justify-start">
               <Image
-                src="/shutterbug-account-badge.png"
+                src="/shutterbug-signup-account-badge-alt.webp"
                 alt=""
                 width={56}
                 height={56}
