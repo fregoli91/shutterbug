@@ -28,6 +28,12 @@ const categoryHeroImages: Record<string, { src: string; alt: string; width: numb
     width: 1448,
     height: 1086
   },
+  'batteries-chargers': {
+    src: '/shutterbug-batteries-chargers-page.png',
+    alt: 'Camera batteries, charging docks, battery chargers, power adapters, and USB cables arranged at Shutterbug Camera Shop',
+    width: 1448,
+    height: 1086
+  },
   lenses: {
     src: '/shutterbug-lenses-page.png',
     alt: 'Used camera lenses displayed with condition tags and inspection details at Shutterbug Camera Shop',

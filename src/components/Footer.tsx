@@ -10,7 +10,7 @@ export function Footer() {
         <div className="col-span-2 md:col-span-2">
           <div className="flex items-center gap-3">
             <Image
-              src="/shutterbug-basic-character.png"
+              src="/shutterbug-footer-mascot.webp"
               alt=""
               width={64}
               height={64}
