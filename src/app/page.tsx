@@ -555,12 +555,12 @@ function CategoryPills({ title, showPopularBrandsImage = false }: { title: strin
             className="group mt-5 block overflow-hidden rounded-lg border border-ink/10 bg-white shadow-sm transition hover:-translate-y-1 hover:border-moss/30 hover:shadow-soft"
           >
             <Image
-              src="/shutterbug-popular-brands.png"
+              src="/shutterbug-popular-brands.webp"
               alt="Popular Shutterbug Camera Shop brands including Canon, Nikon, Sony, Olympus, Fujifilm, Kodak, HP, Epson, Nintendo, and Apple"
-              width={1672}
-              height={941}
+              width={1616}
+              height={973}
               sizes="(min-width: 1280px) 80rem, 100vw"
-              className="aspect-[1672/941] w-full bg-sand object-contain object-center"
+              className="aspect-[1616/973] w-full bg-sand object-contain object-center"
             />
           </Link>
         ) : null}
