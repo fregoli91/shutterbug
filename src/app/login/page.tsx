@@ -60,7 +60,7 @@ export default async function LoginPage({ searchParams }: Props) {
           <div className="w-full max-w-md text-center lg:text-left">
             <div className="flex items-center justify-center gap-3 lg:justify-start">
               <Image
-                src="/shutterbug-account-badge.png"
+                src="/shutterbug-login-account-badge.webp"
                 alt=""
                 width={80}
                 height={80}
