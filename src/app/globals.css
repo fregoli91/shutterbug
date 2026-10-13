@@ -5,6 +5,10 @@
 :root {
   color-scheme: light;
   background: #fde9cd;
+  --mobile-gutter: 0.875rem;
+  --section-gap-small: 1.25rem;
+  --section-gap: 2rem;
+  --section-gap-large: 3rem;
 }
 
 * {

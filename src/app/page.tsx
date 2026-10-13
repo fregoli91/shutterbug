@@ -58,7 +58,7 @@ const offerCards = [
     title: 'Vintage digital cameras',
     copy: 'Pocketable digital finds from Canon, Olympus, Nikon, Sony, Kodak, and more.',
     href: '/categories/vintage-digital-cameras',
-    image: '/shutterbug-category-digital.png'
+    image: '/shutterbug-category-vintage-digital.webp'
   },
   {
     title: 'Film cameras',
@@ -139,7 +139,7 @@ function LoggedOutHome({
       <HomepageShopIntro headingLevel="h1" />
       <SummerSaleBanner />
 
-      <section className="bg-[#f4f4e9] px-4 pb-8 pt-5 sm:px-6 sm:py-10 lg:bg-cream lg:px-8 lg:pb-10 lg:pt-0">
+      <section className="bg-[#f4f4e9] px-[var(--mobile-gutter)] pb-8 pt-5 sm:px-6 sm:py-10 lg:bg-cream lg:px-8 lg:pb-10 lg:pt-0">
         <div className="mx-auto grid max-w-7xl gap-5 lg:grid-cols-[1.15fr_1fr] lg:items-stretch">
           <Link
             href="/shop?sort=newest"
@@ -208,7 +208,7 @@ function LoggedOutHome({
 
       <DirectStoreCallout />
 
-      <section className="bg-cream px-4 py-12 sm:px-6 sm:py-14 lg:px-8">
+      <section className="bg-cream px-[var(--mobile-gutter)] py-[var(--section-gap)] sm:px-6 sm:py-14 lg:px-8">
         <div className="mx-auto max-w-7xl">
           <div className="flex flex-col items-center gap-4 text-center">
             <div>
@@ -256,7 +256,7 @@ function LoggedOutHome({
 
 function SummerSaleBanner() {
   return (
-    <section className="bg-cream px-4 pb-5 sm:px-6 sm:pb-7 lg:px-8">
+    <section className="bg-cream px-[var(--mobile-gutter)] pb-[var(--section-gap-small)] sm:px-6 sm:pb-7 lg:px-8">
       <div className="mx-auto max-w-7xl">
         <Link
           href="/shop?sort=featured"
@@ -280,36 +280,27 @@ function HomepageShopIntro({ headingLevel = 'h2' }: { headingLevel?: 'h1' | 'h2'
   const Heading = headingLevel;
 
   return (
-    <section className="bg-cream px-4 py-5 sm:px-6 sm:py-7 lg:px-8">
-      <div className="mx-auto flex max-w-7xl flex-col items-center gap-4 border-y border-forest/15 py-5 text-center sm:gap-5 sm:py-6">
+    <section className="bg-cream px-[var(--mobile-gutter)] pb-4 pt-2 sm:px-6 sm:py-7 lg:px-8">
+      <div className="mx-auto flex max-w-7xl flex-col items-center gap-3 border-y border-forest/15 py-4 text-center sm:gap-5 sm:py-6">
         <div className="mx-auto max-w-2xl">
-          <p className="text-[0.68rem] font-bold uppercase tracking-[0.2em] text-moss">Shutterbug Camera Shop</p>
-          <Heading className="mt-1.5 font-serif text-2xl font-bold leading-tight text-ink sm:text-3xl">
+          <p className="text-[0.7rem] font-bold uppercase tracking-[0.18em] text-moss">Shutterbug Camera Shop</p>
+          <Heading className="mx-auto mt-1.5 max-w-[22rem] font-serif text-[1.7rem] font-bold leading-[1.1] text-ink sm:max-w-2xl sm:text-3xl sm:leading-tight">
             Tested used and vintage cameras, ready for their next story.
           </Heading>
-          <p className="mt-1.5 text-sm leading-6 text-ink/65">
+          <p className="mx-auto mt-2 max-w-[21rem] text-[0.9375rem] leading-[1.5] text-ink/65 sm:max-w-2xl sm:text-sm sm:leading-6">
             Shop digital and film cameras, lenses, printers, and gear with real photos and clear condition notes.
           </p>
         </div>
 
         <nav
-          aria-label="Popular camera collections"
-          className="flex flex-wrap items-center justify-center gap-x-4 gap-y-1 text-sm font-semibold text-moss"
+          aria-label="Homepage shopping actions"
+          className="flex flex-wrap items-center justify-center gap-3 text-sm font-semibold"
         >
-          <Link href="/shop" className="inline-flex min-h-10 items-center gap-1 py-2 transition hover:text-ink">
-            Shop all <ArrowRightIcon />
+          <Link href="/shop" className="inline-flex min-h-11 items-center rounded-full bg-forest px-6 py-2 text-white shadow-sm transition hover:bg-moss">
+            Shop Cameras
           </Link>
-          <Link
-            href="/categories/vintage-digital-cameras"
-            className="inline-flex min-h-10 items-center py-2 transition hover:text-ink"
-          >
-            Vintage digital
-          </Link>
-          <Link
-            href="/categories/film-cameras"
-            className="inline-flex min-h-10 items-center py-2 transition hover:text-ink"
-          >
-            Film cameras
+          <Link href="/shop?sort=newest" className="inline-flex min-h-11 items-center gap-1 py-2 text-moss transition hover:text-ink">
+            Fresh Finds <ArrowRightIcon />
           </Link>
         </nav>
       </div>
@@ -339,7 +330,7 @@ function LoggedInHome({
       <HomepageShopIntro />
       <SummerSaleBanner />
 
-      <section className="bg-cream px-4 pb-10 pt-8 sm:px-6 sm:pb-14 lg:px-8 lg:pt-12">
+      <section className="bg-cream px-[var(--mobile-gutter)] pb-10 pt-8 sm:px-6 sm:pb-14 lg:px-8 lg:pt-12">
         <div className="mx-auto grid max-w-7xl gap-8 lg:grid-cols-[1fr_24rem] lg:items-start">
           <div>
             <p className="text-center text-sm font-bold uppercase tracking-[0.28em] text-moss">Welcome back</p>
@@ -417,7 +408,7 @@ function LoggedInHome({
       />
 
 
-      <section className="bg-cream px-4 py-12 sm:px-6 sm:py-16 lg:px-8">
+      <section className="bg-cream px-[var(--mobile-gutter)] py-[var(--section-gap)] sm:px-6 sm:py-16 lg:px-8">
         <div className="mx-auto grid max-w-7xl gap-6 rounded-lg border border-ink/10 bg-white p-6 shadow-sm lg:grid-cols-[12rem_1fr_auto] lg:items-center lg:p-8">
           <Image
             src="/shutterbug-trade-in.png"
@@ -454,7 +445,7 @@ function LoggedInHome({
 
 function FreshCameraFindsBanner() {
   return (
-    <section className="bg-cream px-4 py-8 sm:px-6 sm:py-10 lg:px-8">
+    <section className="bg-cream px-[var(--mobile-gutter)] py-[var(--section-gap)] sm:px-6 sm:py-10 lg:px-8">
       <div className="mx-auto max-w-7xl">
         <Link
           href="/shop?sort=newest"
@@ -487,7 +478,7 @@ function DirectStoreCallout() {
   );
 
   return (
-    <section className="bg-cream px-4 py-8 sm:px-6 lg:px-8">
+    <section className="bg-cream px-[var(--mobile-gutter)] py-[var(--section-gap)] sm:px-6 lg:px-8">
       <div className="mx-auto grid max-w-7xl gap-5 rounded-lg border border-ink/10 bg-white p-4 shadow-sm lg:grid-cols-[minmax(0,1fr)_minmax(24rem,0.95fr)] lg:items-center lg:p-5">
         {site.amazonStoreUrl ? (
           <a
@@ -546,7 +537,7 @@ function DirectStoreCallout() {
 
 function CategoryPills({ title, showPopularBrandsImage = false }: { title: string; showPopularBrandsImage?: boolean }) {
   return (
-    <section className="bg-cream px-4 py-8 sm:px-6 sm:py-12 lg:px-8">
+    <section className="bg-cream px-[var(--mobile-gutter)] py-[var(--section-gap)] sm:px-6 sm:py-12 lg:px-8">
       <div className="mx-auto max-w-7xl">
         <p className="text-center text-sm font-bold uppercase tracking-[0.24em] text-moss">{title}</p>
         {showPopularBrandsImage ? (
@@ -582,7 +573,7 @@ function CategoryPills({ title, showPopularBrandsImage = false }: { title: strin
 
 function CategoryGrid({ featuredCategories }: { featuredCategories: Category[] }) {
   return (
-    <section className="bg-cream px-4 py-8 sm:px-6 sm:py-12 lg:px-8">
+    <section className="bg-cream px-[var(--mobile-gutter)] py-[var(--section-gap)] sm:px-6 sm:py-12 lg:px-8">
       <div className="mx-auto max-w-7xl">
         <div className="grid gap-8 lg:grid-cols-[1fr_24rem] lg:items-end">
           <SectionHeading eyebrow="Start here" title="Shop by category">
@@ -616,7 +607,7 @@ function CategoryGrid({ featuredCategories }: { featuredCategories: Category[] }
 
 function SignupCallout() {
   return (
-    <section className="border-y border-forest/10 bg-mint/40 px-4 py-8 sm:px-6 lg:px-8">
+    <section className="border-y border-forest/10 bg-mint/40 px-[var(--mobile-gutter)] py-[var(--section-gap)] sm:px-6 lg:px-8">
       <div className="mx-auto flex max-w-4xl flex-col items-center justify-center gap-4 text-center md:flex-row md:gap-10 md:text-left">
         <div>
           <h2 className="text-xl font-semibold text-ink">Keep your finds in one place.</h2>
@@ -634,7 +625,7 @@ function PrinterCallout() {
   const printerBrands = ['Canon', 'Brother', 'HP', 'Lexmark'];
 
   return (
-    <section className="bg-cream px-4 py-12 sm:px-6 sm:py-14 lg:px-8">
+    <section className="bg-cream px-[var(--mobile-gutter)] py-[var(--section-gap)] sm:px-6 sm:py-14 lg:px-8">
       <div className="mx-auto grid max-w-7xl overflow-hidden rounded-lg border border-ink/10 bg-white shadow-sm lg:grid-cols-[minmax(0,1fr)_minmax(22rem,0.8fr)]">
         <div className="p-5 text-center sm:p-8 lg:p-10">
           <p className="text-center text-sm font-bold uppercase tracking-[0.24em] text-moss">More than cameras</p>
@@ -717,7 +708,7 @@ function FeaturedProducts({
   likedProductIds?: Set<string>;
 }) {
   return (
-    <section className="bg-cream px-4 py-8 sm:px-6 sm:py-12 lg:px-8">
+    <section className="bg-cream px-[var(--mobile-gutter)] py-[var(--section-gap)] sm:px-6 sm:py-12 lg:px-8">
       <div className="mx-auto max-w-7xl">
         <div className="flex flex-col items-center gap-4 text-center">
           <div>
@@ -757,7 +748,7 @@ function FeaturedProducts({
 
 function TrustCards() {
   return (
-    <section className="bg-cream px-4 py-8 sm:px-6 lg:px-8">
+    <section className="bg-cream px-[var(--mobile-gutter)] py-[var(--section-gap)] sm:px-6 lg:px-8">
       <div className="mx-auto max-w-7xl border-y border-forest/15 py-6 text-center">
         <h2 className="text-2xl font-semibold text-ink">The Shutterbug Standard</h2>
         <ul className="mt-5 grid grid-cols-2 gap-4 text-sm text-ink/75 lg:grid-cols-4">
@@ -770,7 +761,7 @@ function TrustCards() {
 }
 function JournalCallout() {
   return (
-    <section className="border-y border-ink/10 bg-mint px-4 py-12 sm:px-6 sm:py-14 lg:px-8">
+    <section className="border-y border-ink/10 bg-mint px-[var(--mobile-gutter)] py-[var(--section-gap)] sm:px-6 sm:py-14 lg:px-8">
       <div className="mx-auto grid max-w-7xl gap-7 lg:grid-cols-[1.1fr_0.9fr] lg:items-center">
         <Link
           href="/blog"
@@ -814,7 +805,7 @@ function JournalCallout() {
 }
 function TestingProcessCallout() {
   return (
-    <section className="bg-mint px-4 py-8 sm:px-6 sm:py-12 lg:px-8">
+    <section className="bg-mint px-[var(--mobile-gutter)] py-[var(--section-gap)] sm:px-6 sm:py-12 lg:px-8">
       <div className="mx-auto grid max-w-7xl gap-5 rounded-lg border border-ink/10 bg-white p-5 shadow-sm sm:gap-8 sm:p-6 lg:grid-cols-[minmax(0,1fr)_minmax(22rem,0.95fr)] lg:items-center lg:p-8">
         <div>
           <p className="text-center text-sm font-bold uppercase tracking-[0.24em] text-moss">How We Test</p>

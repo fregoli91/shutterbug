@@ -115,9 +115,7 @@ export function MobileHeader({
   return (
     <div className="pt-[env(safe-area-inset-top)] lg:hidden">
       <div
-        className={`flex items-center justify-between gap-2 px-3 transition-[height,padding] duration-200 ease-out sm:px-5 ${
-          compact ? 'h-14 py-1.5' : 'h-[72px] py-2'
-        }`}
+        className="flex h-14 items-center justify-between gap-2 px-[var(--mobile-gutter)] py-1.5 sm:px-5"
       >
         <Link href="/" className="flex min-w-0 shrink items-center" aria-label="Shutterbug Camera Shop home">
           <Image
@@ -126,9 +124,9 @@ export function MobileHeader({
             width={288}
             height={64}
             priority
-            sizes={compact ? '7.5rem' : '(min-width: 390px) 9rem, 8rem'}
-            className={`h-auto object-contain object-left transition-[width] duration-200 ease-out ${
-              compact ? 'w-[7.5rem]' : 'w-32 min-[390px]:w-36'
+            sizes={compact ? '6.75rem' : '(min-width: 390px) 8rem, 7.5rem'}
+            className={`h-auto object-contain object-left transition-[width] duration-200 ease-out motion-reduce:transition-none ${
+              compact ? 'w-[6.75rem]' : 'w-[7.5rem] min-[390px]:w-32'
             }`}
           />
         </Link>
@@ -141,7 +139,7 @@ export function MobileHeader({
               aria-label={searchOpen ? 'Close search' : 'Open search'}
               aria-expanded={searchOpen}
               onClick={() => setSearchOpen((current) => !current)}
-              className="flex h-11 w-11 items-center justify-center rounded-lg text-forest transition hover:bg-forest/5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-moss"
+              className="flex h-11 w-11 items-center justify-center rounded-lg border border-ink/10 bg-white/70 text-forest shadow-sm transition hover:border-moss/35 hover:bg-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-moss"
             >
               <SearchIcon />
             </button>
@@ -157,12 +155,12 @@ export function MobileHeader({
         }`}
       >
         <div className="overflow-hidden">
-          <div className="px-3 pb-2 sm:px-5">
+          <div className="px-[var(--mobile-gutter)] pb-1.5 sm:px-5 sm:pb-2">
             <form ref={searchFormRef} action="/shop" role="search" inert={!showSearchRow}>
               <label htmlFor="mobile-header-search" className="sr-only">
                 Search Shutterbug inventory
               </label>
-              <div className="relative flex h-12 items-center rounded-lg border border-forest/25 bg-mint shadow-[inset_0_2px_5px_rgba(36,84,58,0.08),0_2px_5px_rgba(35,43,32,0.08)] focus-within:border-moss focus-within:ring-2 focus-within:ring-sage">
+              <div className="relative flex h-11 items-center rounded-md border border-forest/25 bg-mint shadow-[inset_0_1px_3px_rgba(36,84,58,0.07),0_1px_3px_rgba(35,43,32,0.07)] focus-within:border-moss focus-within:ring-2 focus-within:ring-sage">
                 <input
                   id="mobile-header-search"
                   name="q"
@@ -199,10 +197,10 @@ export function MobileHeader({
           <div className="relative min-w-0 border-y border-forest bg-forest shadow-[inset_0_1px_0_rgba(255,255,255,0.08)]">
             <nav
               aria-label="Popular shopping destinations"
-              className="h-12 w-full min-w-0 touch-pan-x overflow-x-scroll overscroll-x-contain text-[0.82rem] font-semibold text-cream/90 [-webkit-overflow-scrolling:touch] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+              className="h-11 w-full min-w-0 touch-pan-x overflow-x-scroll overscroll-x-contain text-[0.78rem] font-semibold text-cream/90 [-webkit-overflow-scrolling:touch] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
               style={{ touchAction: 'pan-x' }}
             >
-              <div className="flex h-full w-max min-w-full justify-between gap-5 px-4 sm:px-6">
+              <div className="flex h-full w-max min-w-full justify-between gap-4 px-[var(--mobile-gutter)] sm:gap-5 sm:px-6">
                 {quickLinks.map((item) => (
                   <Link
                     key={item.href}

@@ -137,10 +137,10 @@ export function HomePromotionalCarousel({ promotions }: HomePromotionalCarouselP
   if (!promotions.length) return null;
 
   return (
-    <section className="bg-cream px-4 pb-4 pt-3 sm:px-6 sm:pb-6 sm:pt-4 lg:px-8" aria-label="Featured Shutterbug collections">
+    <section className="bg-cream px-[var(--mobile-gutter)] pb-1 pt-2 sm:px-6 sm:pb-6 sm:pt-4 lg:px-8" aria-label="Featured Shutterbug collections">
       <div className="mx-auto max-w-7xl">
         <div
-          className="group relative overflow-hidden rounded-lg border border-forest/15 bg-sand shadow-[0_8px_28px_rgba(35,43,32,0.10)]"
+          className="group relative overflow-hidden rounded-xl border border-forest/15 bg-sand shadow-[0_6px_20px_rgba(35,43,32,0.09)] sm:rounded-lg sm:shadow-[0_8px_28px_rgba(35,43,32,0.10)]"
           role="region"
           aria-roledescription="carousel"
           aria-label="Shutterbug promotions"
@@ -190,7 +190,7 @@ export function HomePromotionalCarousel({ promotions }: HomePromotionalCarouselP
                         src={promotion.mobileImage}
                         alt=""
                         fill
-                        sizes="(max-width: 639px) calc(100vw - 2rem), 1px"
+                        sizes="(max-width: 639px) calc(100vw - 1.75rem), 1px"
                         className="object-contain sm:hidden"
                       />
                       <Image
@@ -207,7 +207,7 @@ export function HomePromotionalCarousel({ promotions }: HomePromotionalCarouselP
                         src={promotion.desktopImage}
                         alt=""
                         fill
-                        sizes="(min-width: 1280px) 1280px, (min-width: 640px) calc(100vw - 3rem), calc(100vw - 2rem)"
+                        sizes="(min-width: 1280px) 1280px, (min-width: 640px) calc(100vw - 3rem), calc(100vw - 1.75rem)"
                         className="scale-110 object-cover opacity-25 blur-xl"
                         aria-hidden="true"
                       />
@@ -217,7 +217,7 @@ export function HomePromotionalCarousel({ promotions }: HomePromotionalCarouselP
                         fill
                         loading={index === 0 ? 'eager' : 'lazy'}
                         fetchPriority={index === 0 ? 'high' : undefined}
-                        sizes="(min-width: 1280px) 1280px, (min-width: 640px) calc(100vw - 3rem), calc(100vw - 2rem)"
+                        sizes="(min-width: 1280px) 1280px, (min-width: 640px) calc(100vw - 3rem), calc(100vw - 1.75rem)"
                         className="object-contain"
                       />
                     </>
@@ -246,19 +246,19 @@ export function HomePromotionalCarousel({ promotions }: HomePromotionalCarouselP
           ) : null}
         </div>
         {promotions.length > 1 ? (
-          <div className="flex items-center justify-center gap-1" aria-label="Promotion controls">
+          <div className="mt-1 flex h-9 items-center justify-center gap-0.5" aria-label="Promotion controls">
             {promotions.map((promotion, index) => (
               <button key={promotion.id} type="button" onClick={() => goTo(index)}
                 aria-label={`Show promotion ${index + 1}: ${promotion.eyebrow}`}
                 aria-pressed={activeIndex === index}
-                className="flex h-11 w-9 items-center justify-center rounded focus-visible:outline focus-visible:outline-2 focus-visible:outline-moss">
+                className="flex h-9 w-8 items-center justify-center rounded focus-visible:outline focus-visible:outline-2 focus-visible:outline-moss">
                 <span className={`h-1.5 rounded-full ${activeIndex === index ? 'w-5 bg-forest' : 'w-1.5 bg-forest/30'}`} />
               </button>
             ))}
             <button type="button" onClick={() => setAutoplayPaused((value) => !value)}
               aria-label={autoplayPaused ? 'Play promotions' : 'Pause promotions'}
               title={autoplayPaused ? 'Play promotions' : 'Pause promotions'}
-              className="flex h-11 w-11 items-center justify-center rounded text-forest hover:bg-mint focus-visible:outline focus-visible:outline-2 focus-visible:outline-moss">
+              className="flex h-9 w-9 items-center justify-center rounded-md text-forest hover:bg-mint focus-visible:outline focus-visible:outline-2 focus-visible:outline-moss">
               {autoplayPaused ? <Play className="h-4 w-4" aria-hidden="true" /> : <Pause className="h-4 w-4" aria-hidden="true" />}
             </button>
             <p className="sr-only" aria-live={isInteractionPaused ? 'polite' : 'off'}>{promotions[activeIndex]?.eyebrow}</p>

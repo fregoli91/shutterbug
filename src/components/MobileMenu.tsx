@@ -167,7 +167,7 @@ export function MobileMenu({
         aria-controls="mobile-navigation-drawer"
         aria-label={open ? 'Close menu' : 'Open menu'}
         onClick={open ? closeMenu : openMenu}
-        className="flex h-11 w-11 shrink-0 items-center justify-center rounded-md text-forest transition hover:bg-forest/5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-moss"
+        className="flex h-11 w-11 shrink-0 items-center justify-center rounded-lg border border-ink/10 bg-white/70 text-forest shadow-sm transition hover:border-moss/35 hover:bg-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-moss"
       >
         <Equal aria-hidden="true" className="h-6 w-6" strokeWidth={1.5} />
       </button>
