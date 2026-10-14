@@ -86,6 +86,9 @@ export default async function ProductPage({ params }: Props) {
   if (!printer && product.cameraType !== 'Accessory') {
     researchLinks.push({ label: 'How to buy a used camera', href: '/guides/how-to-buy-a-used-camera' });
     if (product.cameraType === 'Film Camera') researchLinks.push({ label: '35mm film camera buying guide', href: '/guides/35mm-film-camera-buying-guide' });
+    if (product.categorySlugs.some((categorySlug) => ['digital-cameras', 'vintage-digital-cameras', 'compact-digital-cameras', 'point-and-shoot-cameras', 'canon-powershot-cameras'].includes(categorySlug))) {
+      researchLinks.push({ label: 'Y2K digital camera buyer guide', href: '/guides/y2k-digital-cameras' });
+    }
   }
   if (printer) researchLinks.push(
     { label: 'How we test used printers', href: '/guides/how-we-test-used-printers' },

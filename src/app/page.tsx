@@ -302,6 +302,9 @@ function HomepageShopIntro({ headingLevel = 'h2' }: { headingLevel?: 'h1' | 'h2'
           <Link href="/shop?sort=newest" className="inline-flex min-h-11 items-center gap-1 py-2 text-moss transition hover:text-ink">
             Fresh Finds <ArrowRightIcon />
           </Link>
+          <Link href="/categories/digital-cameras" className="inline-flex min-h-11 items-center gap-1 py-2 text-moss transition hover:text-ink">
+            Used Digital Cameras <ArrowRightIcon />
+          </Link>
         </nav>
       </div>
     </section>

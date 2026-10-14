@@ -7,6 +7,7 @@ import { useEffect, useRef, useState } from 'react';
 const menus = {
   Cameras: [
     ['All Cameras', '/shop'],
+    ['Digital Cameras', '/categories/digital-cameras'],
     ['Vintage Digital Cameras', '/categories/vintage-digital-cameras'],
     ['Film Cameras', '/categories/film-cameras'],
     ['Point & Shoot', '/categories/point-and-shoot-cameras'],

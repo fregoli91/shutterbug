@@ -7,8 +7,10 @@ export type CategorySeoProfile = {
   intro: string;
   supportingHeading: string;
   supportingCopy: string[];
+  supportingSections?: Array<{ heading: string; paragraphs: string[] }>;
   buyerTips: string[];
   links: SeoLink[];
+  sellerCta?: string;
 };
 
 export type BrandSeoProfile = {
@@ -39,34 +41,51 @@ const categoryProfiles: Record<string, CategorySeoProfile> = {
     ]
   },
   'vintage-digital-cameras': {
-    title: 'Tested Vintage Digital Cameras for Sale',
-    heading: 'Tested vintage digital cameras.',
-    description: 'Shop tested vintage digital cameras from Canon, Olympus, Nikon, Sony, Kodak, Fujifilm, Panasonic, and Casio with honest condition notes.',
-    intro: 'Browse compact cameras from the early digital era with clear power, lens, flash, screen, storage, and battery notes. Shutterbug listings focus on the exact camera you will receive.',
-    supportingHeading: 'What to check on an older digital camera',
-    supportingCopy: ['Battery type and storage format can matter as much as megapixels. Some cameras use proprietary batteries, xD Picture Card, Memory Stick, or older SD capacities, so every useful listing should make compatibility clear.', 'A tested vintage digital camera should explain lens movement, flash, controls, display, card reading, and sample-photo results when available. Unknown functions should remain clearly identified as unknown.'],
+    title: 'Vintage Digital Cameras & Used Digicams',
+    heading: 'Vintage digital cameras and used digicams.',
+    description: 'Shop tested vintage digital cameras and used digicams from Canon, Olympus, Nikon, Sony, Kodak, Fujifilm, Panasonic, and Casio with honest condition notes.',
+    intro: 'Browse compact cameras from the 1990s and 2000s with clear power, lens, flash, screen, storage, and battery notes. Shutterbug listings focus on the exact old digital camera you will receive.',
+    supportingHeading: 'Buying a vintage digital camera',
+    supportingCopy: ['Battery type and storage format can matter as much as megapixels. Some cameras use proprietary batteries, xD Picture Card, Memory Stick, CompactFlash, or older SD capacities, so every useful listing should make compatibility clear.', 'A tested vintage digital camera should explain lens movement, flash, controls, display, card reading, and photo-capture results when available. Unknown functions remain clearly identified as unknown.'],
+    supportingSections: [
+      { heading: 'Why older digicams feel different', paragraphs: ['Early digital cameras combine small sensors, built-in lenses, direct flash, and model-specific JPEG processing. Those parts work together; age or a CCD sensor alone does not promise one particular look.', 'Many shoppers enjoy their pocketable bodies and straightforward controls. Compare complete model numbers and actual photos instead of relying only on a trend name.'] },
+      { heading: 'Power and storage can be model-specific', paragraphs: ['Older cameras may require a proprietary battery, matching charger, dock, or a media format that is less common today. Confirm what is included and whether replacement batteries, chargers, card readers, and compatible cards are practical to obtain.'] },
+      { heading: 'Condition matters on old digital cameras', paragraphs: ['Common age-related issues include lens errors, weak batteries, dim or marked LCDs, sticky controls, corrosion, unreliable card slots, and flash faults. Cosmetic wear is separate from function, so each listing should describe both.'] },
+      { heading: 'Explore Y2K-era camera families', paragraphs: ['Canon PowerShot and Digital ELPH, Nikon Coolpix, Sony Cyber-shot, Olympus Stylus, Kodak EasyShare, and Fujifilm FinePix families all include popular 2000s models. Our Y2K camera guide explains the families, formats, and checks in more detail.'] }
+    ],
     buyerTips: ['Confirm the battery and charger are included.', 'Check compatible memory-card formats.', 'Read flash, zoom, screen, and sample-photo notes.', 'Expect normal cosmetic wear on genuine used examples.'],
     links: [
       { label: 'CCD digital cameras', href: '/categories/ccd-digital-cameras' },
       { label: 'Canon PowerShot', href: '/categories/canon-powershot-cameras' },
       { label: 'Olympus digital cameras', href: '/categories/olympus-digital-cameras' },
-      { label: 'What is a CCD camera?', href: '/guides/what-is-a-ccd-camera' }
-    ]
+      { label: 'What is a CCD camera?', href: '/guides/what-is-a-ccd-camera' },
+      { label: 'Y2K digital camera guide', href: '/guides/y2k-digital-cameras' }
+    ],
+    sellerCta: 'Have an older digital camera you no longer use? Shutterbug reviews cameras for direct purchase or trade-in.'
   },
   'digital-cameras': {
     title: 'Used Digital Cameras for Sale',
-    heading: 'Used digital cameras.',
-    description: 'Shop used compact, DSLR, mirrorless, bridge, and vintage digital cameras with clear testing, condition, battery, storage, and accessory notes.',
+    heading: 'Used digital cameras for sale.',
+    description: 'Shop used digital cameras including compact, point-and-shoot, DSLR, mirrorless, bridge, and vintage models with clear testing, condition, and accessory notes.',
     intro: 'Find used digital cameras across pocketable point-and-shoot models, interchangeable-lens systems, and collectible early-digital designs. Each Shutterbug listing separates confirmed functions from anything untested.',
     supportingHeading: 'Match the camera to how you shoot',
     supportingCopy: ['Compact cameras prioritize portability, DSLRs offer optical viewfinders and broad lens choices, and mirrorless systems balance interchangeable lenses with a smaller body. Older digital cameras may trade speed for character and simplicity.', 'Review the exact listing for battery health, charger, memory format, lens and sensor notes, and accessories. Those details determine whether a used camera is ready to enjoy immediately.'],
+    supportingSections: [
+      { heading: 'Compact and point-and-shoot cameras', paragraphs: ['A compact digital camera has a built-in lens and a body designed for convenient everyday use. Point-and-shoot models emphasize simple automatic operation, while premium compacts may add larger sensors, manual controls, or brighter lenses.'] },
+      { heading: 'DSLR cameras', paragraphs: ['A DSLR uses an optical viewfinder and interchangeable lenses. Confirm the lens mount, whether the listing is body-only, shutter and sensor notes, battery and charger, and which lens or body caps are included.'] },
+      { heading: 'Mirrorless cameras', paragraphs: ['Mirrorless bodies use electronic viewing and interchangeable lenses without a DSLR mirror box. Check the exact mount, autofocus, screen or viewfinder, ports, battery condition, and included lens before comparing prices.'] },
+      { heading: 'Vintage and early digital cameras', paragraphs: ['Older used digital cameras can offer small bodies, direct flash, simple controls, and distinctive model-specific processing. They can also depend on older batteries, chargers, cables, and storage formats, so compatibility deserves close attention.'] },
+      { heading: 'How Shutterbug describes used cameras', paragraphs: ['Each individual listing separates tested functions, cosmetic condition, included accessories, disclosed flaws, and actual photos. A model reputation does not replace the condition of the exact item being sold.'] }
+    ],
     buyerTips: ['Choose compact for easy everyday carry.', 'Check lens mount before buying an interchangeable-lens camera.', 'Verify battery, charger, and storage compatibility.', 'Use the testing notes to compare individual items.'],
     links: [
       { label: 'Compact digital cameras', href: '/categories/compact-digital-cameras' },
       { label: 'DSLR cameras', href: '/categories/dslr-cameras' },
       { label: 'Mirrorless cameras', href: '/categories/mirrorless-cameras' },
-      { label: 'Vintage digital cameras', href: '/categories/vintage-digital-cameras' }
-    ]
+      { label: 'Vintage digital cameras', href: '/categories/vintage-digital-cameras' },
+      { label: 'Y2K digital camera guide', href: '/guides/y2k-digital-cameras' }
+    ],
+    sellerCta: 'Selling a digital camera? Send the model, condition, and photos to Shutterbug for a purchase or trade-in review.'
   },
   'compact-digital-cameras': {
     title: 'Used Compact Digital Cameras',
@@ -242,7 +261,28 @@ const categoryProfiles: Record<string, CategorySeoProfile> = {
 
 const cameraFamilyProfiles: Record<string, Omit<CategorySeoProfile, 'links'> & { links?: SeoLink[] }> = {
   'canon-powershot-cameras': {
-    title: 'Used Canon PowerShot Cameras', heading: 'Used Canon PowerShot cameras.', description: 'Shop used Canon PowerShot and Digital ELPH cameras with tested zoom, flash, screen, battery, charger, storage, and condition notes.', intro: 'Canon PowerShot covers pocket compacts, superzooms, and enthusiast cameras across many generations. Exact model numbers matter because batteries, chargers, and memory formats vary.', supportingHeading: 'Shopping Canon PowerShot', supportingCopy: ['Digital ELPH and PowerShot SD models are known for compact bodies, while A, G, and SX families serve different shooting needs.', 'Review the exact listing for lens movement, flash, controls, battery, charger, storage, and sample-photo notes.'], buyerTips: ['Confirm the complete model number.', 'Check battery and charger compatibility.', 'Review lens-error and flash notes.', 'Verify SD or older card support.']
+    title: 'Used Canon PowerShot Cameras',
+    heading: 'Used Canon PowerShot cameras.',
+    description: 'Shop used Canon PowerShot and Digital ELPH cameras with tested zoom, flash, screen, battery, charger, storage, actual photos, and condition notes.',
+    intro: 'Canon PowerShot covers pocket compacts, superzooms, and enthusiast cameras across many generations. Exact model numbers matter because batteries, chargers, and memory formats vary.',
+    supportingHeading: 'Shopping for a used Canon PowerShot',
+    supportingCopy: ['Digital ELPH and PowerShot SD models are known for compact bodies, while the A, G, and SX families serve different shooting needs.', 'Review the exact listing for lens movement, flash, controls, battery, charger, storage, and photo-capture notes.'],
+    supportingSections: [
+      { heading: 'PowerShot and Digital ELPH families', paragraphs: ['Digital ELPH and PowerShot SD cameras are slim pocket models associated with the 2000s. PowerShot A cameras often provide approachable controls and practical grips, while G-series models target enthusiasts and SX models emphasize longer zoom ranges.'] },
+      { heading: 'Check the exact battery and charger', paragraphs: ['Some used Canon PowerShot cameras use AA batteries, while others require a Canon NB-series battery and matching charger. Confirm the precise camera and battery model because similar-looking packs are not automatically interchangeable.'] },
+      { heading: 'Storage compatibility varies by generation', paragraphs: ['Many models use SD cards, but older Canon cameras may use CompactFlash, MultiMediaCard, or limited SD capacities. A modern high-capacity card may not work in every early model.'] },
+      { heading: 'Lens, flash, and LCD condition', paragraphs: ['Compact-camera lens errors can prevent startup or zoom operation. Read the listing for extension, zoom, focus, flash, controls, LCD aging, and card-writing checks, plus any marks or corrosion found on the exact camera.'] },
+      { heading: 'Actual-item photos and included accessories', paragraphs: ['Shutterbug product pages identify whether the photos show the exact item and list the battery, charger, card, cable, case, and other accessories that are included. Compare the complete kit rather than the camera body alone.'] }
+    ],
+    buyerTips: ['Confirm the complete model number.', 'Check battery and charger compatibility.', 'Review lens-error, flash, and LCD notes.', 'Verify SD, CompactFlash, or older card support.'],
+    links: [
+      { label: 'Canon cameras and gear', href: '/brands/canon' },
+      { label: 'Vintage digital cameras', href: '/categories/vintage-digital-cameras' },
+      { label: 'Compact digital cameras', href: '/categories/compact-digital-cameras' },
+      { label: 'Y2K digital camera guide', href: '/guides/y2k-digital-cameras' },
+      { label: 'Canon PowerShot journal guide', href: '/blog/canon-powershot-models-worth-knowing' }
+    ],
+    sellerCta: 'Have a Canon PowerShot to sell? Send the full model number, condition, accessories, and photos for a Shutterbug review.'
   },
   'nikon-coolpix-cameras': {
     title: 'Used Nikon Coolpix Cameras', heading: 'Used Nikon Coolpix cameras.', description: 'Shop used Nikon Coolpix compact, bridge, and rugged cameras with clear battery, charger, storage, zoom, flash, screen, and condition notes.', intro: 'Nikon Coolpix spans slim pocket cameras, long-zoom bridge models, and rugged compacts. Listings identify the exact model and the accessories needed to use it.', supportingHeading: 'Shopping Nikon Coolpix', supportingCopy: ['Coolpix model families vary significantly in size, zoom range, battery, and controls.', 'Prioritize a clean lens, reliable zoom, working flash, readable screen, and a practical battery and memory-card setup.'], buyerTips: ['Match the exact Coolpix model.', 'Check zoom and lens-cover operation.', 'Confirm battery, charger, and card type.', 'Review flash and screen notes.']
@@ -281,7 +321,7 @@ Object.entries(cameraFamilyProfiles).forEach(([slug, profile]) => {
 
 const brandProfiles: Record<string, BrandSeoProfile> = {
   canon: {
-    title: 'Used Canon Cameras and Lenses', heading: 'Used Canon cameras and gear.', description: 'Shop used Canon PowerShot, Digital ELPH, EOS, film cameras, lenses, and printers with clear testing and condition notes.', intro: 'Canon spans pocket PowerShot cameras, EOS film and digital systems, lenses, and photo printers. Shutterbug describes the exact used item, its tested functions, and included accessories.', knownFor: ['PowerShot and Digital ELPH compact cameras', 'EOS DSLR, mirrorless, and film systems', 'EF, EF-S, RF, and vintage lenses'], buyingAdvice: ['Match the exact battery, charger, storage format, or lens mount.', 'For PowerShot cameras, review lens movement and flash notes.', 'For EOS systems, confirm body-only versus kit contents.'], links: [{ label: 'Canon PowerShot cameras', href: '/categories/canon-powershot-cameras' }, { label: 'DSLR cameras', href: '/categories/dslr-cameras' }, { label: 'Mirrorless cameras', href: '/categories/mirrorless-cameras' }, { label: 'Camera lenses', href: '/categories/lenses' }], heroImage: { src: '/shutterbug-canon-powershot-page.png', alt: 'Canon cameras, lenses, and printer displayed at Shutterbug Camera Shop', width: 1672, height: 941 }
+    title: 'Used Canon Cameras and Gear', heading: 'Used Canon cameras and gear.', description: 'Shop used Canon cameras including PowerShot, Digital ELPH, EOS, film cameras, lenses, and printers with clear testing, actual photos, and condition notes.', intro: 'Canon spans pocket PowerShot cameras, EOS film and digital systems, lenses, and photo printers. Shutterbug describes the exact used Canon camera or accessory, its tested functions, and included accessories.', knownFor: ['PowerShot and Digital ELPH compact cameras', 'EOS DSLR, mirrorless, and film systems', 'EF, EF-S, RF, and vintage lenses'], buyingAdvice: ['Match the exact battery, charger, storage format, or lens mount.', 'For a used Canon PowerShot, review lens movement, flash, LCD, storage, and photo-capture notes.', 'For EOS systems, confirm body-only versus kit contents and the compatible lens mount.'], links: [{ label: 'Canon PowerShot cameras', href: '/categories/canon-powershot-cameras' }, { label: 'Used digital cameras', href: '/categories/digital-cameras' }, { label: 'Y2K digital camera guide', href: '/guides/y2k-digital-cameras' }, { label: 'DSLR cameras', href: '/categories/dslr-cameras' }, { label: 'Mirrorless cameras', href: '/categories/mirrorless-cameras' }, { label: 'Camera lenses', href: '/categories/lenses' }], heroImage: { src: '/shutterbug-canon-powershot-page.png', alt: 'Used Canon PowerShot compact cameras, EOS cameras, lenses, and photo gear displayed at Shutterbug Camera Shop', width: 1672, height: 941 }
   },
   olympus: {
     title: 'Used Olympus Cameras', heading: 'Used Olympus cameras and gear.', description: 'Shop used Olympus Stylus, mju, Tough, compact digital, film, and interchangeable-lens cameras with honest testing notes.', intro: 'Olympus is known for compact Stylus and mju cameras, rugged Tough models, film systems, and small interchangeable-lens cameras.', knownFor: ['Stylus and mju compact cameras', 'Tough rugged digital cameras', 'OM film and digital systems'], buyingAdvice: ['Check xD Picture Card or SD compatibility.', 'Confirm battery and charger model.', 'Do not assume an older rugged camera remains waterproof.'], links: [{ label: 'Olympus digital cameras', href: '/categories/olympus-digital-cameras' }, { label: 'Compact digital cameras', href: '/categories/compact-digital-cameras' }, { label: 'Film cameras', href: '/categories/film-cameras' }, { label: 'What is a CCD camera?', href: '/guides/what-is-a-ccd-camera' }], heroImage: { src: '/shutterbug-olympus-digital-cameras-page.png', alt: 'Olympus compact digital and film cameras displayed at Shutterbug Camera Shop', width: 1448, height: 1086 }

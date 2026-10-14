@@ -52,6 +52,12 @@ const categoryHeroImages: Record<string, { src: string; alt: string; width: numb
     width: 1448,
     height: 1086
   },
+  'digital-cameras': {
+    src: '/shutterbug-shop-camera-gear-still-life.webp',
+    alt: 'Used compact, DSLR, mirrorless, and vintage digital cameras with lenses and accessories at Shutterbug Camera Shop',
+    width: 1672,
+    height: 941
+  },
   'point-and-shoot-cameras': {
     src: '/shutterbug-point-and-shoot-cameras-page.png',
     alt: 'Nikon, Olympus, Fujifilm, Canon, and Sony point-and-shoot cameras with cases, memory cards, and batteries displayed at Shutterbug Camera Shop',
@@ -78,7 +84,7 @@ const categoryHeroImages: Record<string, { src: string; alt: string; width: numb
   },
   'canon-powershot-cameras': {
     src: '/shutterbug-canon-powershot-page.png',
-    alt: 'Canon cameras, lenses, printer, camera bag, and photo prints displayed at Shutterbug Camera Shop',
+    alt: 'Used Canon PowerShot and Digital ELPH compact cameras with batteries, memory cards, and accessories',
     width: 1672,
     height: 941
   },
@@ -189,6 +195,13 @@ export default async function CategoryPage({ params }: Props) {
     <section className="px-4 py-14 sm:px-6 lg:px-8">
       <JsonLd data={structuredData} />
       <div className="mx-auto max-w-7xl text-center">
+        <nav className="mx-auto flex max-w-4xl flex-wrap items-center justify-center gap-2 text-sm text-ink/60" aria-label="Breadcrumb">
+          <Link href="/" className="hover:text-moss">Home</Link>
+          <span aria-hidden="true">/</span>
+          <Link href="/shop" className="hover:text-moss">Cameras</Link>
+          <span aria-hidden="true">/</span>
+          <span aria-current="page">{category.name}</span>
+        </nav>
         <header className="mx-auto max-w-4xl">
           <p className="text-sm font-bold uppercase tracking-[0.28em] text-moss">
             {isPrinterCategory ? 'Printer category' : 'Used camera category'}
@@ -241,7 +254,19 @@ export default async function CategoryPage({ params }: Props) {
               />
             ))
           ) : (
-            <div className="col-span-full"><EmptyShelf title={`No ${category.name.toLowerCase()} are available right now.`} description={category.slug === 'printers' ? 'Printer inventory changes as individual units arrive and sell. Contact us with a model or browse the current inventory.' : undefined} printer={category.slug === 'printers'} /></div>
+            <div className="col-span-full">
+              <EmptyShelf title={`No ${category.name.toLowerCase()} are available right now.`} description={category.slug === 'printers' ? 'Printer inventory changes as individual units arrive and sell. Contact us with a model or browse the current inventory.' : undefined} printer={category.slug === 'printers'} />
+              {category.slug === 'canon-powershot-cameras' ? (
+                <div className="mx-auto mt-5 max-w-xl rounded-lg border border-ink/10 bg-white p-5 text-center shadow-sm">
+                  <p className="font-serif text-xl font-bold text-ink">Looking for a specific PowerShot?</p>
+                  <p className="mt-2 text-sm leading-6 text-ink/68">Create an account to save a Canon model to your watchlist, or contact us with the complete model name.</p>
+                  <div className="mt-4 flex flex-wrap justify-center gap-3">
+                    <Link href="/account/watchlist" className="inline-flex min-h-11 items-center rounded-full bg-forest px-5 text-sm font-semibold text-white hover:bg-moss">Open model watchlist</Link>
+                    <Link href="/contact" className="inline-flex min-h-11 items-center rounded-full border border-ink/15 bg-white px-5 text-sm font-semibold text-moss hover:text-ink">Ask about a model</Link>
+                  </div>
+                </div>
+              ) : null}
+            </div>
           )}
         </div>
 
@@ -265,6 +290,27 @@ export default async function CategoryPage({ params }: Props) {
               </Link>
             </div>
           </section>
+        ) : null}
+
+        {profile?.supportingSections?.length ? (
+          <div className="mx-auto mt-10 grid max-w-6xl gap-5 text-left sm:grid-cols-2">
+            {profile.supportingSections.map((content) => (
+              <section key={content.heading} className="rounded-lg border border-ink/10 bg-white p-6 shadow-sm">
+                <h2 className="font-serif text-2xl font-bold text-ink">{content.heading}</h2>
+                <div className="mt-3 grid gap-3 text-sm leading-7 text-ink/70">
+                  {content.paragraphs.map((paragraph) => <p key={paragraph}>{paragraph}</p>)}
+                </div>
+              </section>
+            ))}
+          </div>
+        ) : null}
+
+        {profile?.sellerCta ? (
+          <aside className="mx-auto mt-8 max-w-4xl rounded-lg border border-moss/15 bg-sand p-6" aria-label="Sell a camera to Shutterbug">
+            <h2 className="font-serif text-2xl font-bold text-ink">Selling camera gear?</h2>
+            <p className="mt-2 text-sm leading-6 text-ink/70">{profile.sellerCta}</p>
+            <Link href="/sell-your-camera" className="mt-4 inline-flex min-h-11 items-center rounded-full bg-forest px-5 text-sm font-semibold text-white hover:bg-moss">Sell your camera</Link>
+          </aside>
         ) : null}
 
         <div className="mx-auto mt-14 max-w-6xl rounded-lg border border-ink/10 bg-mint p-6">

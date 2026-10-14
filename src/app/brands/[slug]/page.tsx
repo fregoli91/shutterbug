@@ -80,6 +80,13 @@ export default async function BrandPage({ params }: Props) {
     <section className="bg-cream px-4 py-8 sm:py-12 sm:px-6 lg:px-8">
       <JsonLd data={structuredData} />
       <div className="mx-auto max-w-7xl text-center">
+        <nav className="mx-auto flex max-w-4xl flex-wrap items-center justify-center gap-2 text-sm text-ink/60" aria-label="Breadcrumb">
+          <Link href="/" className="hover:text-moss">Home</Link>
+          <span aria-hidden="true">/</span>
+          <Link href="/brands" className="hover:text-moss">Brands</Link>
+          <span aria-hidden="true">/</span>
+          <span aria-current="page">{brand.name}</span>
+        </nav>
         <header className="mx-auto max-w-4xl text-center">
           <p className="text-sm font-bold uppercase tracking-[0.28em] text-moss">Used gear by brand</p>
           <h1 className="mt-3 font-serif text-3xl font-bold text-ink sm:text-5xl">{heading}</h1>

@@ -307,6 +307,90 @@ export const guides: Guide[] = [
       { label: 'General testing process', href: '/testing-process' },
       { label: 'Contact Shutterbug', href: '/contact' }
     ]
+  },
+  {
+    slug: 'y2k-digital-cameras',
+    title: 'Y2K Digital Cameras: A Practical Buyer Guide',
+    seoTitle: 'Y2K Digital Cameras: Used 2000s Digicam Buyer Guide',
+    description:
+      'Learn how to choose tested Y2K and 2000s digital cameras, compare popular Canon PowerShot and other camera families, and check batteries, storage, flash, lenses, LCDs, and accessories.',
+    summary:
+      'The best Y2K camera is a model you enjoy carrying with a practical battery, compatible storage, and honest test results for the exact item.',
+    image: {
+      src: '/shutterbug-vintage-digital-cameras-page.png',
+      alt: 'Y2K-era compact digital cameras with memory cards, strap, case, and accessories',
+      width: 1448,
+      height: 1086
+    },
+    publishedAt: '2026-10-14',
+    updatedAt: '2026-10-14',
+    sections: [
+      {
+        heading: 'What people mean by Y2K cameras',
+        paragraphs: [
+          "Y2K cameras usually means compact digital models associated with the late 1990s and 2000s. Searches for 2000's cameras, 2000s cameras, and millennium cameras often describe the same broad period, even though the cameras span several generations of sensor, lens, storage, and battery technology.",
+          'People seek y2k cameras for pocketable bodies, built-in zoom lenses, direct flash, simple controls, lower-resolution files, and the experience of using a dedicated camera. The exact model matters more than a trend label because two cameras from the same year can behave and render photographs very differently.'
+        ]
+      },
+      {
+        heading: 'Popular camera families from the era',
+        paragraphs: [
+          'Canon PowerShot and Digital ELPH, Nikon Coolpix, Sony Cyber-shot, Olympus Stylus and mju, Kodak EasyShare, Fujifilm FinePix, Panasonic Lumix, and Casio Exilim are useful starting points. Each family includes basic pocket cameras, longer zoom models, and sometimes enthusiast designs with more controls.',
+          'A shopper looking for a used Canon camera should record the full model name. Used Canon PowerShot searches can cover slim SD-series ELPHs, AA-powered A-series models, long-zoom SX cameras, and premium G-series cameras with very different accessories and handling.'
+        ]
+      },
+      {
+        heading: 'CCD versus CMOS does not decide the whole look',
+        paragraphs: [
+          'Many early compact cameras use CCD sensors, while others use CMOS. Sensor technology contributes to an image, but the lens, exposure, flash, white balance, in-camera processing, compression, and viewing method also shape the result.',
+          'Do not treat CCD as a guarantee of one color palette or aesthetic. Confirm the sensor type from reliable specifications when it matters, then compare real results and the condition of the camera you are considering.'
+        ]
+      },
+      {
+        heading: 'Check batteries, chargers, and storage first',
+        paragraphs: [
+          'Some cameras use AA batteries; others require a proprietary pack and matching charger, dock, or cable. An old battery may power a camera while holding much less charge than it did when new. Confirm the battery model, charging method, and what the seller includes.',
+          'Storage formats include SD and MultiMediaCard, CompactFlash, Sony Memory Stick, Olympus and Fujifilm xD Picture Card, and built-in memory. Early cameras may reject modern high-capacity cards, so check the manual for the exact model and plan for a compatible card reader.'
+        ],
+        bullets: [
+          'Match the exact battery and charger model.',
+          'Check whether a dock or proprietary cable is required.',
+          'Confirm the media format and supported capacities.',
+          'Budget for a card reader when the camera cannot transfer by a standard cable.'
+        ]
+      },
+      {
+        heading: 'Test the lens, flash, LCD, controls, and card writing',
+        paragraphs: [
+          'Compact-camera lens mechanisms can stick, grind, extend unevenly, or show a lens error after a drop or years of storage. A useful test checks startup, extension, zoom, focus, shutter release, image capture, and shutdown. Scratches, haze, fungus, dust, or impact damage should be described separately.',
+          'The built-in flash is central to the direct-flash style many shoppers want, so confirm that it charges and fires. LCDs can dim, discolor, scratch, lose pixels, or fail while the camera still takes photographs. Buttons, dials, battery doors, card slots, date retention, and actual card writing also deserve attention.'
+        ]
+      },
+      {
+        heading: 'Condition and accessories change the real value',
+        paragraphs: [
+          'Used digital cameras with the same model number can have different histories. Actual-item photos, clear cosmetic notes, a working battery and charger, compatible media, and recorded tests are more useful than a generic grade or stock image.',
+          'Y2K used cameras may need a case, strap, card reader, cable, replacement battery, or adapter before they fit your routine. Compare complete kits and disclosed faults instead of judging value from the body price alone.'
+        ]
+      },
+      {
+        heading: 'How to choose your first 2000s digicam',
+        paragraphs: [
+          'Start with size, zoom range, flash behavior, battery convenience, and storage you can actually use. If you want a simple pocket camera, prioritize reliable automatic operation. If you want manual exposure or RAW files, research enthusiast compact or interchangeable-lens options.',
+          'Browse used digital cameras by category, open the full listing, and check the exact photos, testing notes, included accessories, and return information. A tested camera with a practical power and storage setup is usually a better first choice than an untested collectible with uncertain faults.'
+        ]
+      }
+    ],
+    relatedLinks: [
+      { label: 'Shop used digital cameras', href: '/categories/digital-cameras' },
+      { label: 'Vintage digital cameras', href: '/categories/vintage-digital-cameras' },
+      { label: 'Used Canon cameras', href: '/brands/canon' },
+      { label: 'Canon PowerShot cameras', href: '/categories/canon-powershot-cameras' },
+      { label: 'Compact digital cameras', href: '/categories/compact-digital-cameras' },
+      { label: 'Point-and-shoot cameras', href: '/categories/point-and-shoot-cameras' },
+      { label: 'What is a CCD camera?', href: '/guides/what-is-a-ccd-camera' },
+      { label: 'Sell your camera', href: '/sell-your-camera' }
+    ]
   }
 ];
 

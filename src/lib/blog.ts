@@ -338,6 +338,8 @@ export const blogPosts: BlogPost[] = [
       }
     ],
     relatedLinks: [
+      { label: 'Y2K Digital Camera Buyer Guide', href: '/guides/y2k-digital-cameras' },
+      { label: 'Used Digital Cameras', href: '/categories/digital-cameras' },
       { label: 'Vintage Digital Cameras', href: '/categories/vintage-digital-cameras' },
       { label: 'Film Cameras', href: '/categories/film-cameras' },
       { label: 'Shop Cameras', href: '/shop' },
@@ -1127,6 +1129,8 @@ export const blogPosts: BlogPost[] = [
       }
     ],
     relatedLinks: [
+      { label: 'Y2K Digital Camera Buyer Guide', href: '/guides/y2k-digital-cameras' },
+      { label: 'Used Canon Cameras', href: '/brands/canon' },
       { label: 'Shop Canon PowerShot Cameras', href: '/categories/canon-powershot-cameras' },
       { label: 'Vintage Digital Cameras', href: '/categories/vintage-digital-cameras' },
       { label: 'Point-and-Shoot Cameras', href: '/categories/point-and-shoot-cameras' },
