@@ -8,11 +8,11 @@ Remote branch: `origin/codex/soft-launch-inventory-strategy`
 
 ## Preview deployment
 
-GitHub reported a successful Vercel deployment for the initial preview commit. The authenticated deployment dashboard is:
+GitHub reported successful Vercel deployments for the initial preview and for branch commit `a188110` (the audited `cb66f4c` implementation plus this readiness report). The latest authenticated deployment dashboard checked during the audit is:
 
-`https://vercel.com/zachery-dante-fregolis-projects/shutterbug/ESL5fqUHCSpp3JezpDQNQgv8p66U`
+`https://vercel.com/zachery-dante-fregolis-projects/shutterbug/9MBk7X89LBW9mJyARjujEtZeDopZ`
 
-The public preview hostname could not be retrieved without an authenticated Vercel session. The final `cb66f4c` commit still needs to be pushed and its replacement preview must finish before deployed-preview approval. Production was not deployed and `main` was not changed.
+The public preview hostname could not be retrieved without an authenticated Vercel session, so the successful deployment could not be used for public deployed-preview QA. Production was not deployed and `main` was not changed.
 
 ## Soft-launch UX
 
@@ -158,7 +158,7 @@ Validation of the audited implementation:
 - `npm run build`: passed on Next.js 16.4.0; TypeScript passed; 127 static pages generated.
 - `git diff --check`: passed.
 
-The report commit and final push must be followed by the same test/lint/build checks from a clean branch head.
+These commands were rerun after committing the implementation and report. The subsequent report-only status update does not change runtime source.
 
 ## Migrations and environment
 
