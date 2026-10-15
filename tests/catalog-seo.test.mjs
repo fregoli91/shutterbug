@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { availableRelatedProducts, hasRealProductImage, isIndexableProduct, isPrinter, isStorefrontReadyProduct } from '../src/lib/catalog-seo.ts';
+import { availableRelatedProducts, hasRealProductImage, isConfirmedProductPhotoUrl, isIndexableProduct, isPrinter, isStorefrontReadyProduct } from '../src/lib/catalog-seo.ts';
 
 const unit = (overrides = {}) => ({
   id: 'camera', brand: 'Canon', model: 'PowerShot SD1000', categorySlug: 'vintage-digital-cameras',
@@ -21,7 +21,10 @@ test('sold and zero-quantity units require useful original unit content to remai
 test('placeholder and unconfirmed photos never qualify as real merchant photographs', () => {
   assert.equal(hasRealProductImage(unit()), true);
   assert.equal(hasRealProductImage(unit({ heroImage: '/shutterbug-product-placeholder.png' })), false);
+  assert.equal(hasRealProductImage(unit({ heroImage: '/shutterbug-category-digital.png' })), false);
   assert.equal(hasRealProductImage(unit({ actualPhotos: false })), false);
+  assert.equal(isConfirmedProductPhotoUrl('https://example.com/item.jpg'), false);
+  assert.equal(isConfirmedProductPhotoUrl('https://res.cloudinary.com/demo/image/upload/v1/shutterbug-products/item.jpg'), true);
 });
 
 test('active storefront inventory requires a real offer and prepared exact-item listing', () => {
@@ -32,6 +35,7 @@ test('active storefront inventory requires a real offer and prepared exact-item 
   assert.equal(isStorefrontReadyProduct(unit({ tested: [] })), false);
   assert.equal(isStorefrontReadyProduct(unit({ included: [] })), false);
   assert.equal(isStorefrontReadyProduct(unit({ status: 'sold_out' })), false);
+  assert.equal(isIndexableProduct(unit({ tested: [] })), false);
 });
 
 test('sold Canon printer suggests available printers, not same-brand cameras or sold stock', () => {

@@ -31,6 +31,21 @@ test('sample inventory is empty and the Merchant feed accepts prepared active it
   assert.equal(templateRows.length, 1);
   assert.match(feed, /isActiveProduct\(product\)/);
   assert.match(feed, /isStorefrontReadyProduct\(product\)/);
+  assert.match(feed, /isConfirmedProductPhotoUrl\(image\)/);
+});
+
+test('all private account pages inherit an explicit noindex policy', () => {
+  const layout = fs.readFileSync('src/app/account/layout.tsx', 'utf8');
+  assert.match(layout, /robots:\s*\{\s*index:\s*false,\s*follow:\s*false\s*\}/);
+});
+
+test('the admin editor explains every storefront publishing requirement', () => {
+  const form = fs.readFileSync('src/components/admin/ProductForm.tsx', 'utf8');
+  assert.match(form, /Publishing readiness/);
+  assert.match(form, /Confirmed real product photos/);
+  assert.match(form, /Testing notes/);
+  assert.match(form, /Included-item details/);
+  assert.match(form, /stay off the public storefront and Merchant feed until every check passes/);
 });
 
 test('sold item pages distinguish verified model reference from available inventory', () => {

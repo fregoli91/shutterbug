@@ -6,9 +6,18 @@ export function isPrinter(product: Product) {
     /\bprinters?\b/i.test(product.productType ?? '');
 }
 
+export function isConfirmedProductPhotoUrl(value: string) {
+  try {
+    const url = new URL(value);
+    return url.protocol === 'https:' && url.hostname === 'res.cloudinary.com' &&
+      /\/image\/upload\//i.test(url.pathname) && !/placeholder|\.svg(?:$|[?#])/i.test(url.pathname);
+  } catch {
+    return false;
+  }
+}
+
 export function hasRealProductImage(product: Product) {
-  return product.actualPhotos && Boolean(product.heroImage) &&
-    !/placeholder|\.svg(?:\?|$)/i.test(product.heroImage);
+  return product.actualPhotos && isConfirmedProductPhotoUrl(product.heroImage);
 }
 
 export function isStorefrontReadyProduct(product: Product) {
@@ -18,8 +27,8 @@ export function isStorefrontReadyProduct(product: Product) {
 }
 
 export function isIndexableProduct(product: Product) {
-  if (product.status === 'active' && (product.quantity ?? 1) > 0) return true;
-  if (product.status !== 'sold_out' && product.status !== 'active') return false;
+  if (product.status === 'active') return isStorefrontReadyProduct(product);
+  if (product.status !== 'sold_out') return false;
   return hasRealProductImage(product) && Boolean(product.model.trim()) &&
     Boolean(product.shortDescription.trim()) && Boolean(product.conditionSummary.trim()) &&
     product.tested.length + product.functionalNotes.length + product.flaws.length > 0;

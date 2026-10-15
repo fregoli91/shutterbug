@@ -166,7 +166,7 @@ export function CheckoutFormClient({ defaultName = '', defaultEmail = '', error 
           <p className="flex justify-between gap-4 text-sm text-ink/70">
             Subtotal <span className="font-bold text-ink">{formatCents(validation?.subtotalCents ?? 0)}</span>
           </p>
-          <p className="mt-2 text-xs leading-5 text-ink/55">Shipping and tax are placeholders until payment is wired.</p>
+          <p className="mt-2 text-xs leading-5 text-ink/55">The secure payment total is based on the merchandise subtotal shown here.</p>
         </div>
 
         <button

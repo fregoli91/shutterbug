@@ -9,7 +9,7 @@ import {
   productTypePath
 } from '@/lib/seo-utils';
 import { site } from '@/lib/seo';
-import { hasRealProductImage, isStorefrontReadyProduct } from '@/lib/catalog-seo';
+import { hasRealProductImage, isConfirmedProductPhotoUrl, isStorefrontReadyProduct } from '@/lib/catalog-seo';
 
 export const dynamic = 'force-dynamic';
 
@@ -39,7 +39,7 @@ function productDescription(product: Product) {
 
 function additionalImageLinks(product: Product) {
   return Array.from(new Set(product.gallery))
-    .filter((image) => image && image !== product.heroImage && !image.includes('shutterbug-product-placeholder.png'))
+    .filter((image) => image !== product.heroImage && isConfirmedProductPhotoUrl(image))
     .slice(0, 10)
     .map((image) => `      <g:additional_image_link>${escapeXml(imageUrl(image))}</g:additional_image_link>`)
     .join('\n');

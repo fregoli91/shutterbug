@@ -13,6 +13,7 @@ import {
   PRODUCT_TYPES,
   STORAGE_TYPES
 } from '@/lib/catalog';
+import { isConfirmedProductPhotoUrl } from '@/lib/catalog-seo';
 import { categories } from '@/lib/categories';
 import { AdminProductImageManager } from './AdminProductImageManager';
 
@@ -163,6 +164,17 @@ export function ProductForm({ action, product, submitLabel }: Props) {
     : 'Canon';
   const customBrand = selectedBrand === 'Other / Unlisted Brand' ? product?.brand : '';
   const categoryOptions = categories.map((category) => ({ value: category.slug, label: category.name }));
+  const readinessChecks = [
+    { label: 'Status set to Active', ready: product?.status === ProductStatus.ACTIVE },
+    { label: 'Positive price', ready: (product?.priceCents ?? 0) > 0 },
+    { label: 'Positive quantity', ready: (product?.quantity ?? 0) > 0 },
+    { label: 'Confirmed real product photos', ready: Boolean(product?.actualPhotos && isConfirmedProductPhotoUrl(heroImage)) },
+    { label: 'Condition notes', ready: Boolean(product?.conditionSummary.trim()) },
+    { label: 'Short description', ready: Boolean(product?.shortDescription.trim()) },
+    { label: 'Testing notes', ready: Boolean(product?.tested.length) },
+    { label: 'Included-item details', ready: Boolean(product?.included.length) }
+  ];
+  const readyToPublish = readinessChecks.every((check) => check.ready);
 
   return (
     <form action={action} className="grid gap-6">
@@ -300,6 +312,30 @@ export function ProductForm({ action, product, submitLabel }: Props) {
         <Checkbox label="Featured" name="featured" defaultChecked={product?.featured} />
         <Checkbox label="New arrival" name="newArrival" defaultChecked={product?.newArrival} />
       </div>
+
+      <section className="rounded-lg border border-ink/10 bg-mint/50 p-5 shadow-sm" aria-labelledby="publishing-readiness-heading">
+        <div className="flex flex-wrap items-center justify-between gap-2">
+          <h2 id="publishing-readiness-heading" className="font-serif text-2xl font-bold text-ink">Publishing readiness</h2>
+          <span className={`rounded-full px-3 py-1 text-xs font-bold uppercase tracking-[0.12em] ${readyToPublish ? 'bg-forest text-white' : 'bg-sand text-ink'}`}>
+            {readyToPublish ? 'Ready to publish' : 'Needs attention'}
+          </span>
+        </div>
+        <p className="mt-2 text-sm leading-6 text-ink/65">
+          This checklist reflects the currently saved product. Save your changes to refresh it. Active items stay off the public storefront and Merchant feed until every check passes.
+        </p>
+        <ul className="mt-4 grid gap-2 sm:grid-cols-2" aria-label="Product publishing requirements">
+          {readinessChecks.map((check) => (
+            <li key={check.label} className="flex items-center gap-2 text-sm font-semibold text-ink">
+              <span aria-hidden="true" className={check.ready ? 'text-forest' : 'text-[#9b3d2e]'}>{check.ready ? '✓' : '✕'}</span>
+              <span>{check.label}</span>
+              <span className="sr-only">{check.ready ? 'complete' : 'missing'}</span>
+            </li>
+          ))}
+        </ul>
+        <p className="mt-4 text-xs leading-5 text-ink/60">
+          Testing and included-item notes apply to cameras, lenses, accessories, and printers. When a check cannot be performed or no accessory is included, record that limitation plainly instead of leaving the field blank.
+        </p>
+      </section>
 
       <button className="min-h-12 rounded-full bg-forest px-6 py-3 text-sm font-semibold text-white transition hover:bg-moss">
         {submitLabel}
