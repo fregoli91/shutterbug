@@ -30,8 +30,9 @@ export function ProductCard({ product, liked = false, signedIn = false }: {
         <p className="mt-2 text-xs leading-5 text-ink/70">{product.condition}</p>
         {product.functionalStatus ? <p className="text-xs leading-5 text-ink/60">{product.functionalStatus}</p> : null}
         <div className="mt-auto pt-3">
+          {!purchasable ? <p className="text-[0.68rem] font-semibold uppercase tracking-[0.12em] text-ink/50">Last listed price</p> : null}
           <p className="text-lg font-bold text-ink sm:text-xl">{formatPrice(product.price)}</p>
-          <p className="mt-1 text-xs text-ink/65">{purchasable ? 'In stock' : 'Currently unavailable'}</p>
+          <p className="mt-1 text-xs text-ink/65">{purchasable ? 'Available now' : product.status === 'sold_out' ? 'Sold — model library' : 'Currently unavailable'}</p>
           <div className="mt-3 grid gap-1">
             {purchasable ? <AddToCartButton productId={product.id} className="flex min-h-11 items-center justify-center rounded-md bg-forest px-2 py-2 text-sm font-semibold text-white hover:bg-moss focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-moss" /> : null}
             <Link href={productHref} className="inline-flex min-h-11 items-center justify-center rounded-md text-sm font-semibold text-forest hover:bg-mint focus-visible:outline focus-visible:outline-2 focus-visible:outline-moss">View details</Link>

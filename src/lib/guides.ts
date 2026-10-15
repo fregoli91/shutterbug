@@ -388,6 +388,8 @@ export const guides: Guide[] = [
       { label: 'Canon PowerShot cameras', href: '/categories/canon-powershot-cameras' },
       { label: 'Compact digital cameras', href: '/categories/compact-digital-cameras' },
       { label: 'Point-and-shoot cameras', href: '/categories/point-and-shoot-cameras' },
+      { label: 'Casio Exilim cameras', href: '/categories/casio-exilim-cameras' },
+      { label: 'Pentax Optio cameras', href: '/categories/pentax-optio-cameras' },
       { label: 'What is a CCD camera?', href: '/guides/what-is-a-ccd-camera' },
       { label: 'Sell your camera', href: '/sell-your-camera' }
     ]

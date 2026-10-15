@@ -55,6 +55,12 @@ const brandLinks = [
 
 const offerCards = [
   {
+    title: 'Digital cameras',
+    copy: 'Used compact, DSLR, mirrorless, bridge, and early-digital cameras.',
+    href: '/categories/digital-cameras',
+    image: '/shutterbug-shop-camera-gear-still-life.webp'
+  },
+  {
     title: 'Vintage digital cameras',
     copy: 'Pocketable digital finds from Canon, Olympus, Nikon, Sony, Kodak, and more.',
     href: '/categories/vintage-digital-cameras',
@@ -67,22 +73,34 @@ const offerCards = [
     image: '/shutterbug-category-film.png'
   },
   {
-    title: 'Accessories',
-    copy: 'Chargers, batteries, cards, straps, bags, filters, and useful add-ons.',
-    href: '/categories/camera-accessories',
-    image: '/shutterbug-category-accessories-hero.png'
+    title: 'DSLR cameras',
+    copy: 'Interchangeable-lens cameras with clear body, sensor, and mount notes.',
+    href: '/categories/dslr-cameras',
+    image: '/shutterbug-dslr-cameras-page.png'
   },
   {
-    title: 'Parts and repair',
-    copy: 'As-is repair projects kept clearly separate from ready-to-shoot cameras.',
-    href: '/categories/parts-repair',
-    image: '/shutterbug-category-parts-repair.png'
+    title: 'Mirrorless cameras',
+    copy: 'Compact interchangeable-lens systems with exact compatibility details.',
+    href: '/categories/mirrorless-cameras',
+    image: '/shutterbug-mirrorless-cameras-page.png'
   },
   {
-    title: 'Sell or trade in',
-    copy: 'Send your camera details for a buyout or trade-in review.',
-    href: '/sell-your-camera',
-    image: '/shutterbug-category-trade-in.png'
+    title: 'Instant cameras',
+    copy: 'Polaroid, Fujifilm, and other instant systems with film compatibility notes.',
+    href: '/categories/instant-cameras',
+    image: '/shutterbug-instant-cameras-page.png'
+  },
+  {
+    title: 'Point-and-shoot cameras',
+    copy: 'Approachable digital and film cameras built for simple everyday use.',
+    href: '/categories/point-and-shoot-cameras',
+    image: '/shutterbug-point-and-shoot-cameras-page.png'
+  },
+  {
+    title: 'Printers',
+    copy: 'Used Canon, Brother, HP, and Lexmark printers with inspection details.',
+    href: '/categories/printers',
+    image: '/used-printers-shutterbug.png'
   }
 ];
 
@@ -169,7 +187,13 @@ function LoggedOutHome({
                 View all <ArrowRightIcon />
               </Link>
             </div>
-            {!shelfProducts.length ? <EmptyShelf /> : null}
+            {!shelfProducts.length ? (
+              <EmptyShelf
+                title="Fresh camera finds are being prepared."
+                description="We’re photographing, testing, and documenting new inventory now. Real product cards will appear here as each item is ready."
+                showWatchlist
+              />
+            ) : null}
             <div className="grid grid-cols-2 gap-3 lg:hidden">
               {shelfProducts.slice(0, 2).map((product) => (
                 <ProductCard key={product.id} product={product} />
@@ -219,7 +243,7 @@ function LoggedOutHome({
               Shop all cameras &rarr;
             </Link>
           </div>
-          <div className="mt-6 grid gap-3 sm:mt-8 sm:grid-cols-2 sm:gap-4 lg:grid-cols-5">
+          <div className="mt-6 grid gap-3 sm:mt-8 sm:grid-cols-2 sm:gap-4 lg:grid-cols-4">
             {offerCards.map((card) => (
               <Link
                 key={card.title}
@@ -289,6 +313,9 @@ function HomepageShopIntro({ headingLevel = 'h2' }: { headingLevel?: 'h1' | 'h2'
           </Heading>
           <p className="mx-auto mt-2 max-w-[21rem] text-[0.9375rem] leading-[1.5] text-ink/65 sm:max-w-2xl sm:text-sm sm:leading-6">
             Shop digital and film cameras, lenses, printers, and gear with real photos and clear condition notes.
+          </p>
+          <p className="mx-auto mt-2 max-w-2xl text-xs leading-5 text-ink/60 sm:text-sm">
+            Shutterbug’s standalone shop is live, with fresh used gear added as inventory is photographed, tested, and documented.
           </p>
         </div>
 

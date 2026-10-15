@@ -27,6 +27,10 @@ export default function AboutPage() {
                 buyers need before checkout: actual photos, included accessories, condition grade, functional notes,
                 cosmetic notes, and honest flaw disclosure.
               </p>
+              <p>
+                Shutterbug’s standalone shop is rolling out inventory gradually as existing stock is photographed,
+                tested, and cataloged. The store is live, and each real item appears only after its listing details are ready.
+              </p>
             </div>
           </div>
           <Image

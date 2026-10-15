@@ -173,7 +173,18 @@ export default async function BrandPage({ params }: Props) {
             ))}
           </div>
         ) : (
-          printerBrand ? <div className="mx-auto mt-8 max-w-4xl rounded-lg bg-mint p-6 text-center"><h2 className="font-serif text-2xl font-bold">No {brand.name} printers are listed right now.</h2><Link href="/categories/printers" className="mt-3 inline-block font-semibold text-moss">Browse used printers</Link></div> : <div className="mx-auto mt-8 max-w-4xl"><EmptyShelf title={`No ${brand.name} cameras are available right now.`} description="Our inventory changes as cameras arrive and sell. Explore another collection or tell us about a camera you would like to sell." sellLabel={`Sell a ${brand.name} camera`} /></div>
+          <div className="mx-auto mt-8 max-w-4xl">
+            <EmptyShelf
+              title={printerBrand ? `More ${brand.name} printers are being inspected for the shelf.` : `Fresh ${brand.name} cameras are being tested and photographed.`}
+              description={printerBrand
+                ? 'Each printer is listed with inspected condition, included accessories, and verified functions once it is ready.'
+                : `Shutterbug is preparing ${brand.name} inventory now. Every item is photographed individually and listed with clear condition notes once it is ready.`}
+              sellLabel={`Sell a ${brand.name} camera`}
+              printer={printerBrand}
+              showWatchlist={!printerBrand}
+              guidesHref={printerBrand ? '/guides/how-we-test-used-printers' : '/guides'}
+            />
+          </div>
         )}
       </div>
     </section>

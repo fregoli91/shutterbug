@@ -17,7 +17,7 @@ import {
 } from '@/lib/catalog';
 import { getPrisma } from '@/lib/prisma';
 import { safeProductImageUrl } from '@/lib/security';
-import { availableRelatedProducts, isPrinter } from '@/lib/catalog-seo';
+import { availableRelatedProducts, isIndexableProduct, isPrinter, isStorefrontReadyProduct } from '@/lib/catalog-seo';
 
 export type ProductStatus = 'draft' | 'active' | 'sold_out' | 'archived';
 export type ProductCondition =
@@ -97,152 +97,7 @@ export type Product = {
 
 type ProductWithImages = Prisma.ProductGetPayload<{ include: { images: true } }>;
 
-export const products: Product[] = [
-  {
-    id: 'canon-sd1000-silver-001',
-    slug: 'canon-powershot-sd1000-silver-tested',
-    sku: 'SB-CANON-SD1000-001',
-    title: 'Canon PowerShot SD1000 Silver - Tested Vintage Digital Camera',
-    brand: 'Canon',
-    model: 'PowerShot SD1000',
-    categorySlug: 'vintage-digital-cameras',
-    categorySlugs: ['vintage-digital-cameras', 'canon-powershot-cameras'],
-    cameraType: 'Vintage Digital',
-    format: 'Digital',
-    condition: 'Used - Excellent',
-    conditionSummary: 'Clean body, bright screen, light normal wear.',
-    price: 344.99,
-    status: 'active',
-    heroImage: '/shutterbug-product-placeholder.png',
-    gallery: ['/shutterbug-product-placeholder.png'],
-    shortDescription:
-      'A clean Canon PowerShot SD1000 with the classic compact digital camera look. Tested, photographed, and ready to shoot.',
-    seoDescription:
-      'Tested Canon PowerShot SD1000 vintage digital camera with battery, charger, clear condition notes, and ready-to-shoot compact digital character.',
-    badges: ['Tested', 'Actual photos', 'Ready to shoot'],
-    includesBattery: true,
-    includesCharger: true,
-    actualPhotos: true,
-    goodFor: ['Y2K-style photos', 'Travel snapshots', 'Collectors', 'Everyday compact carry'],
-    included: ['Canon PowerShot SD1000 camera body', 'Battery', 'Charger', 'Wrist strap'],
-    tested: ['Powers on', 'Zoom works', 'Flash fires', 'Screen works', 'Buttons respond', 'Photos save to SD card'],
-    cosmeticNotes: ['Light marks from normal use', 'Lens ring and buttons present well', 'Screen has minor surface wear'],
-    functionalNotes: ['Starts quickly', 'Zoom and shutter respond normally', 'Sample photos save to SD card'],
-    flaws: ['Minor cosmetic wear from normal use'],
-    notes: ['Actual sample images should be added before final publishing'],
-    shippingNote: 'Ships from Shutterbug Camera Shop with protective packing.',
-    returnsNote: 'Return eligible if the item arrives not as described.',
-    checkoutUrl: '#'
-  },
-  {
-    id: 'olympus-fe340-001',
-    slug: 'olympus-fe-340-tested-vintage-digital-camera',
-    sku: 'SB-OLY-FE340-001',
-    title: 'Olympus FE-340 - Tested Vintage Digital Camera',
-    brand: 'Olympus',
-    model: 'FE-340',
-    categorySlug: 'vintage-digital-cameras',
-    categorySlugs: ['vintage-digital-cameras', 'olympus-digital-cameras'],
-    cameraType: 'Vintage Digital',
-    format: 'Digital',
-    condition: 'Used - Good',
-    conditionSummary: 'Fully tested with light body wear.',
-    price: 179.99,
-    status: 'active',
-    heroImage: '/shutterbug-product-placeholder.png',
-    gallery: ['/shutterbug-product-placeholder.png'],
-    shortDescription:
-      'A compact Olympus digital camera with a simple point-and-shoot feel and nostalgic photo character.',
-    seoDescription:
-      'Tested Olympus FE-340 vintage digital camera with battery, clear function checks, and honest cosmetic condition notes.',
-    badges: ['Tested', 'Compact', 'Nostalgic look'],
-    includesBattery: true,
-    includesCharger: false,
-    actualPhotos: true,
-    goodFor: ['Casual photos', 'Nostalgic digital look', 'Beginner point-and-shoot use'],
-    included: ['Olympus FE-340 camera body', 'Battery', 'USB cable'],
-    tested: ['Powers on', 'Lens extends', 'Screen works', 'Menu responds', 'Photos save to memory card'],
-    cosmeticNotes: ['Light body wear', 'Clean lens glass at inspection', 'Normal handling marks'],
-    functionalNotes: ['Power and lens extension tested', 'Menu and buttons respond', 'Photo capture checked'],
-    flaws: ['Charger details should be confirmed before final publishing'],
-    notes: ['Great starter compact for vintage digital photos'],
-    shippingNote: 'Ships from Shutterbug Camera Shop with battery protected in transit.',
-    returnsNote: 'Return eligible if testing notes do not match the camera received.',
-    checkoutUrl: '#'
-  },
-  {
-    id: 'nikon-coolpix-s220-001',
-    slug: 'nikon-coolpix-s220-tested-digital-camera',
-    sku: 'SB-NIKON-S220-001',
-    title: 'Nikon Coolpix S220 - Tested Compact Digital Camera',
-    brand: 'Nikon',
-    model: 'Coolpix S220',
-    categorySlug: 'vintage-digital-cameras',
-    categorySlugs: ['vintage-digital-cameras', 'nikon-coolpix-cameras'],
-    cameraType: 'Vintage Digital',
-    format: 'Digital',
-    condition: 'Used - Good',
-    conditionSummary: 'Slim pocket camera, final testing pending before sale.',
-    price: 149.99,
-    status: 'archived',
-    heroImage: '/shutterbug-product-placeholder.png',
-    gallery: ['/shutterbug-product-placeholder.png'],
-    shortDescription:
-      'Slim Nikon Coolpix compact camera. Final photos, testing details, and checkout will be added before sale.',
-    seoDescription:
-      'Nikon Coolpix S220 compact digital camera listing for vintage digital camera buyers looking for a pocket-friendly point-and-shoot.',
-    badges: ['Coming soon', 'Pocket compact'],
-    includesBattery: false,
-    includesCharger: false,
-    actualPhotos: false,
-    goodFor: ['Pocket carry', 'Vintage digital photos', 'Affordable starter camera'],
-    included: ['Nikon Coolpix S220 camera body'],
-    tested: ['Testing pending'],
-    cosmeticNotes: ['Coming soon listing with final photos and grading pending'],
-    functionalNotes: ['Full Shutterbug testing checklist will be completed before sale'],
-    flaws: ['Final battery and charger status pending'],
-    notes: ['Coming soon listing with final photos and testing details pending'],
-    shippingNote: 'Shipping details will be confirmed once the listing is finalized.',
-    returnsNote: 'Final return eligibility will be shown once the item is available.',
-    checkoutUrl: '#'
-  },
-  {
-    id: 'sony-dsc-w120-001',
-    slug: 'sony-cyber-shot-dsc-w120-tested-camera',
-    sku: 'SB-SONY-W120-001',
-    title: 'Sony Cyber-shot DSC-W120 - Tested Digital Camera',
-    brand: 'Sony',
-    model: 'Cyber-shot DSC-W120',
-    categorySlug: 'vintage-digital-cameras',
-    categorySlugs: ['vintage-digital-cameras', 'sony-cyber-shot-cameras'],
-    cameraType: 'Vintage Digital',
-    format: 'Digital',
-    condition: 'Used - Excellent',
-    conditionSummary: 'Sold example page for a high-demand compact model.',
-    price: 199.99,
-    status: 'sold_out',
-    heroImage: '/shutterbug-product-placeholder.png',
-    gallery: ['/shutterbug-product-placeholder.png'],
-    shortDescription:
-      'Sold-out Sony Cyber-shot model page example. Keep these pages indexed and collect restock interest for high-demand cameras.',
-    seoDescription:
-      'Sony Cyber-shot DSC-W120 compact digital camera sold listing with testing language, condition notes, and restock interest path.',
-    badges: ['Sold out', 'Restock interest'],
-    includesBattery: true,
-    includesCharger: true,
-    actualPhotos: true,
-    goodFor: ['Restock alerts', 'SEO model pages', 'Collector demand capture'],
-    included: ['Sold-out example listing'],
-    tested: ['Previously tested unit sold'],
-    cosmeticNotes: ['Sold-out listing retained for model demand'],
-    functionalNotes: ['Previously tested unit sold'],
-    flaws: ['No active unit available right now'],
-    notes: ['Use sold-out model pages to rank and capture emails'],
-    shippingNote: 'Sold-out item. Similar cameras ship from Shutterbug Camera Shop when available.',
-    returnsNote: 'Returns apply to active inventory only.',
-    checkoutUrl: '#'
-  }
-];
+export const products: Product[] = [];
 
 export const brands = Array.from(new Set(products.map((product) => product.brand))).sort();
 export const cameraTypes = Array.from(new Set(products.map((product) => product.cameraType)));
@@ -412,7 +267,9 @@ async function readDbProducts() {
       include: { images: true },
       orderBy: [{ featured: 'desc' }, { createdAt: 'desc' }]
     });
-    return dbProducts.map(dbProductToProduct);
+    return dbProducts
+      .map(dbProductToProduct)
+      .filter((product) => product.status === 'active' ? isStorefrontReadyProduct(product) : isIndexableProduct(product));
   } catch {
     console.error('Product database read failed.');
     return null;
@@ -442,7 +299,10 @@ export async function getProductBySlug(slug: string) {
         dbProduct &&
         (dbProduct.status === DbProductStatus.ACTIVE || dbProduct.status === DbProductStatus.SOLD_OUT)
       ) {
-        return dbProductToProduct(dbProduct);
+        const product = dbProductToProduct(dbProduct);
+        if (product.status === 'active' && !isStorefrontReadyProduct(product)) return undefined;
+        if (product.status === 'sold_out' && !isIndexableProduct(product)) return undefined;
+        return product;
       }
     } catch {
       console.error('Product database lookup failed.');

@@ -1,13 +1,13 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { availableRelatedProducts, hasRealProductImage, isIndexableProduct, isPrinter } from '../src/lib/catalog-seo.ts';
+import { availableRelatedProducts, hasRealProductImage, isIndexableProduct, isPrinter, isStorefrontReadyProduct } from '../src/lib/catalog-seo.ts';
 
 const unit = (overrides = {}) => ({
   id: 'camera', brand: 'Canon', model: 'PowerShot SD1000', categorySlug: 'vintage-digital-cameras',
   categorySlugs: ['vintage-digital-cameras'], status: 'active', quantity: 1,
   actualPhotos: true, heroImage: 'https://res.cloudinary.com/example/image/upload/unit.jpg',
   shortDescription: 'Silver unit with a marked body.', conditionSummary: 'Wear on the corner.',
-  tested: ['Power and capture checked'], functionalNotes: [], flaws: [], ...overrides
+  price: 199, included: ['Battery'], tested: ['Power and capture checked'], functionalNotes: [], flaws: [], ...overrides
 });
 
 test('sold and zero-quantity units require useful original unit content to remain indexable', () => {
@@ -22,6 +22,16 @@ test('placeholder and unconfirmed photos never qualify as real merchant photogra
   assert.equal(hasRealProductImage(unit()), true);
   assert.equal(hasRealProductImage(unit({ heroImage: '/shutterbug-product-placeholder.png' })), false);
   assert.equal(hasRealProductImage(unit({ actualPhotos: false })), false);
+});
+
+test('active storefront inventory requires a real offer and prepared exact-item listing', () => {
+  assert.equal(isStorefrontReadyProduct(unit()), true);
+  assert.equal(isStorefrontReadyProduct(unit({ heroImage: '/shutterbug-product-placeholder.png' })), false);
+  assert.equal(isStorefrontReadyProduct(unit({ actualPhotos: false })), false);
+  assert.equal(isStorefrontReadyProduct(unit({ price: 0 })), false);
+  assert.equal(isStorefrontReadyProduct(unit({ tested: [] })), false);
+  assert.equal(isStorefrontReadyProduct(unit({ included: [] })), false);
+  assert.equal(isStorefrontReadyProduct(unit({ status: 'sold_out' })), false);
 });
 
 test('sold Canon printer suggests available printers, not same-brand cameras or sold stock', () => {

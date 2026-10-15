@@ -231,18 +231,6 @@ export default async function CategoryPage({ params }: Props) {
           ))}
         </div>
 
-        <nav className="mt-8 flex flex-wrap justify-center gap-2" aria-label={`Explore ${category.name}`}>
-          {discoveryLinks.map((link) => (
-            <Link
-              key={link.href}
-              href={link.href}
-              className="rounded-full border border-ink/10 bg-white px-4 py-2 text-sm font-semibold text-ink/70 shadow-sm transition hover:border-moss/40 hover:text-moss"
-            >
-              {link.label}
-            </Link>
-          ))}
-        </nav>
-
         <div className="mx-auto mt-12 grid max-w-6xl grid-cols-2 gap-3 text-left sm:gap-6 lg:grid-cols-3">
           {categoryProducts.length > 0 ? (
             categoryProducts.map((product) => (
@@ -255,20 +243,30 @@ export default async function CategoryPage({ params }: Props) {
             ))
           ) : (
             <div className="col-span-full">
-              <EmptyShelf title={`No ${category.name.toLowerCase()} are available right now.`} description={category.slug === 'printers' ? 'Printer inventory changes as individual units arrive and sell. Contact us with a model or browse the current inventory.' : undefined} printer={category.slug === 'printers'} />
-              {category.slug === 'canon-powershot-cameras' ? (
-                <div className="mx-auto mt-5 max-w-xl rounded-lg border border-ink/10 bg-white p-5 text-center shadow-sm">
-                  <p className="font-serif text-xl font-bold text-ink">Looking for a specific PowerShot?</p>
-                  <p className="mt-2 text-sm leading-6 text-ink/68">Create an account to save a Canon model to your watchlist, or contact us with the complete model name.</p>
-                  <div className="mt-4 flex flex-wrap justify-center gap-3">
-                    <Link href="/account/watchlist" className="inline-flex min-h-11 items-center rounded-full bg-forest px-5 text-sm font-semibold text-white hover:bg-moss">Open model watchlist</Link>
-                    <Link href="/contact" className="inline-flex min-h-11 items-center rounded-full border border-ink/15 bg-white px-5 text-sm font-semibold text-moss hover:text-ink">Ask about a model</Link>
-                  </div>
-                </div>
-              ) : null}
+              <EmptyShelf
+                title={isPrinterCategory ? 'More printers are being inspected and prepared for the shelf.' : 'Fresh cameras are being tested and photographed.'}
+                description={isPrinterCategory
+                  ? 'Each printer is listed with its inspected condition, included accessories, and verified functions once it is ready.'
+                  : `We’re preparing inventory for ${category.name.toLowerCase()} now. Each camera is photographed individually and listed with clear condition notes once it’s ready.`}
+                printer={isPrinterCategory}
+                showWatchlist={!isPrinterCategory}
+                guidesHref={isPrinterCategory ? '/guides/how-we-test-used-printers' : '/guides'}
+              />
             </div>
           )}
         </div>
+
+        <nav className="mt-8 flex flex-wrap justify-center gap-2" aria-label={`Explore ${category.name}`}>
+          {discoveryLinks.map((link) => (
+            <Link
+              key={link.href}
+              href={link.href}
+              className="rounded-full border border-ink/10 bg-white px-4 py-2 text-sm font-semibold text-ink/70 shadow-sm transition hover:border-moss/40 hover:text-moss"
+            >
+              {link.label}
+            </Link>
+          ))}
+        </nav>
 
         {profile ? (
           <section className="mx-auto mt-14 grid max-w-6xl gap-6 border-t border-ink/10 pt-10 lg:grid-cols-[1.2fr_0.8fr]" aria-labelledby="category-buying-heading">

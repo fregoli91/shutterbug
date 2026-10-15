@@ -45,9 +45,23 @@ export default async function AccountWatchlistPage() {
           <p className="mx-auto mt-3 max-w-xl text-sm leading-6 text-ink/65">
             Open a sold product and choose <strong>Watch this model</strong> to save it here.
           </p>
-          <Link href="/shop?availability=sold_out" className="mt-6 inline-flex min-h-12 items-center rounded-full bg-forest px-6 text-sm font-semibold text-white">
-            Browse sold finds
-          </Link>
+          <div className="mt-6 flex flex-wrap justify-center gap-3">
+            <Link href="/shop?availability=sold_out" className="inline-flex min-h-12 items-center rounded-full bg-forest px-6 text-sm font-semibold text-white">
+              Browse sold finds
+            </Link>
+            <Link href="/categories/vintage-digital-cameras" className="inline-flex min-h-12 items-center rounded-full border border-ink/15 bg-cream px-6 text-sm font-semibold text-ink">
+              Explore vintage digital
+            </Link>
+          </div>
+          <div className="mx-auto mt-8 max-w-2xl border-t border-ink/10 pt-6">
+            <p className="text-xs font-bold uppercase tracking-[0.18em] text-moss">Popular model families</p>
+            <div className="mt-4 flex flex-wrap justify-center gap-2 text-sm font-semibold">
+              <Link className="rounded-full bg-mint px-4 py-2 text-forest" href="/categories/canon-powershot-cameras">Canon PowerShot</Link>
+              <Link className="rounded-full bg-mint px-4 py-2 text-forest" href="/categories/olympus-digital-cameras">Olympus Stylus</Link>
+              <Link className="rounded-full bg-mint px-4 py-2 text-forest" href="/categories/sony-cyber-shot-cameras">Sony Cyber-shot</Link>
+              <Link className="rounded-full bg-mint px-4 py-2 text-forest" href="/categories/nikon-coolpix-cameras">Nikon Coolpix</Link>
+            </div>
+          </div>
         </div>
       )}
     </AccountFeaturePage>

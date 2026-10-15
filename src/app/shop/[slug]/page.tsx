@@ -158,7 +158,7 @@ export default async function ProductPage({ params }: Props) {
               </Link>
               <span className="rounded-full bg-sage px-4 py-2 text-ink/70">{product.condition}</span>
               <span className="rounded-full bg-white px-4 py-2 text-ink/70">{product.functionalStatus || 'Not specified'}</span>
-              <span className="rounded-full bg-white px-4 py-2 text-ink/70">{purchasable ? 'In stock' : 'Out of stock'}</span>
+              <span className="rounded-full bg-white px-4 py-2 text-ink/70">{purchasable ? 'Available now' : product.status === 'sold_out' ? 'Sold · model library' : 'Unavailable'}</span>
             </div>
 
             <nav aria-label="Breadcrumb" className="mt-5 text-sm text-moss">
@@ -166,10 +166,15 @@ export default async function ProductPage({ params }: Props) {
               {category ? <><Link href={`/categories/${category.slug}`}>{category.name}</Link> / </> : null}
               <Link href={`/brands/${getBrandSlug(product.brand)}`}>{product.brand}</Link> / <span aria-current="page">{product.model || product.title}</span>
             </nav>
-            {!purchasable ? <div className="mt-5 rounded-lg bg-mint p-4">
+            {!purchasable ? <div className="mt-5 rounded-lg border border-moss/15 bg-mint p-4">
+              <p className="text-xs font-bold uppercase tracking-[0.16em] text-moss">Verified item archive</p>
               <h2 className="font-serif text-2xl font-bold">{product.status === 'sold_out' ? 'This one has sold.' : 'This item is out of stock.'}</h2>
-              <p className="mt-2 text-sm">Photos, condition, and included accessories describe this individual unit.</p>
-              <Link className="mt-3 inline-block font-semibold text-moss" href={category ? `/categories/${category.slug}` : '/shop'}>Shop similar {printer ? 'printers' : 'items'}</Link>
+              <p className="mt-2 text-sm leading-6">The real photos, verified condition, and included accessories below describe this individual unit. It is preserved as useful model reference information and is not available to purchase.</p>
+              <div className="mt-3 flex flex-wrap gap-x-4 gap-y-2 text-sm font-semibold text-moss">
+                <Link href={category ? `/categories/${category.slug}` : '/shop'}>Browse {category?.name ?? (printer ? 'printers' : 'similar items')}</Link>
+                <Link href={`/brands/${getBrandSlug(product.brand)}`}>More from {product.brand}</Link>
+                {!printer ? <Link href="/categories/vintage-digital-cameras">Shop vintage digital</Link> : null}
+              </div>
               {watchTarget ? (
                 <>
                   <form action={toggleModelWatchAction} className="mt-4">

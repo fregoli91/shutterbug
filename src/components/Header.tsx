@@ -6,6 +6,7 @@ import { CartLink } from '@/components/cart/CartLink';
 import { BagPanel, BagPanelProvider } from '@/components/cart/BagPanel';
 import { MobileHeader } from '@/components/MobileHeader';
 import { getCustomerSession } from '@/lib/customer-auth';
+import { SoftLaunchAnnouncement } from '@/components/SoftLaunchAnnouncement';
 
 const searchSuggestions = [
   'Canon PowerShot',
@@ -40,6 +41,7 @@ export async function Header() {
   return (
     <BagPanelProvider>
     <header className="sticky top-0 z-40 border-b border-ink/10 bg-cream/95 backdrop-blur">
+      <SoftLaunchAnnouncement />
       <div className="hidden border-b border-ink/10 bg-cream lg:block">
         <div className="mx-auto flex h-8 max-w-7xl items-center justify-between px-8 text-xs text-ink/70">
           <p className="font-medium">Tested vintage cameras | Real photos | Friendly support</p>

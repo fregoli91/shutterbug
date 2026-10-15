@@ -11,6 +11,12 @@ export function hasRealProductImage(product: Product) {
     !/placeholder|\.svg(?:\?|$)/i.test(product.heroImage);
 }
 
+export function isStorefrontReadyProduct(product: Product) {
+  return product.status === 'active' && (product.quantity ?? 1) > 0 && product.price > 0 &&
+    hasRealProductImage(product) && Boolean(product.conditionSummary.trim()) &&
+    Boolean(product.shortDescription.trim()) && product.tested.length > 0 && product.included.length > 0;
+}
+
 export function isIndexableProduct(product: Product) {
   if (product.status === 'active' && (product.quantity ?? 1) > 0) return true;
   if (product.status !== 'sold_out' && product.status !== 'active') return false;

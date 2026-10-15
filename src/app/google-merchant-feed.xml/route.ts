@@ -1,5 +1,5 @@
 import { categories, getCategory } from '@/lib/categories';
-import { getCatalogProducts, type Product } from '@/lib/products';
+import { getCatalogProducts, isActiveProduct, type Product } from '@/lib/products';
 import {
   absoluteUrl,
   googleProductCategory,
@@ -9,7 +9,7 @@ import {
   productTypePath
 } from '@/lib/seo-utils';
 import { site } from '@/lib/seo';
-import { hasRealProductImage } from '@/lib/catalog-seo';
+import { hasRealProductImage, isStorefrontReadyProduct } from '@/lib/catalog-seo';
 
 export const dynamic = 'force-dynamic';
 
@@ -77,7 +77,7 @@ ${googleProductCategory(product) ? `      <g:google_product_category>${escapeXml
 
 export async function GET() {
   const products = await getCatalogProducts();
-  const feedProducts = products.filter(hasMerchantReadyImage);
+  const feedProducts = products.filter((product) => isActiveProduct(product) && isStorefrontReadyProduct(product) && hasMerchantReadyImage(product));
   const xml = `<?xml version="1.0" encoding="UTF-8"?>
 <rss version="2.0" xmlns:g="http://base.google.com/ns/1.0">
   <channel>

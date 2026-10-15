@@ -164,6 +164,15 @@ export const categories: Category[] = [
     keywords: ['Casio Exilim camera', 'used Casio digital camera']
   }),
   category({
+    slug: 'pentax-optio-cameras',
+    name: 'Pentax Optio Cameras',
+    navLabel: 'Pentax Optio',
+    description: 'Pentax Optio compact digital cameras with model-specific battery, storage, lens, flash, and condition details.',
+    seoTitle: 'Used Pentax Optio Cameras',
+    intro: 'Pentax Optio cameras span slim pocket models, practical everyday compacts, and weather-resistant designs from the early digital era.',
+    keywords: ['Pentax Optio camera', 'used Pentax digital camera']
+  }),
+  category({
     slug: 'film-cameras',
     name: 'Film Cameras',
     navLabel: 'Film Cameras',
@@ -385,8 +394,13 @@ export const categories: Category[] = [
 ];
 
 export const featuredCategorySlugs = [
+  'digital-cameras',
   'vintage-cameras',
   'vintage-digital-cameras',
+  'point-and-shoot-cameras',
+  'dslr-cameras',
+  'mirrorless-cameras',
+  'instant-cameras',
   'canon-powershot-cameras',
   'nikon-coolpix-cameras',
   'polaroid-cameras',

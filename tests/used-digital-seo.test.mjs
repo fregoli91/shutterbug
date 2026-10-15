@@ -37,8 +37,10 @@ test('navigation, homepage, blog, products, and sitemap expose the new search pa
 
 test('priority empty categories retain substantial content and crawlable next actions', () => {
   const page = fs.readFileSync('src/app/categories/[slug]/page.tsx', 'utf8');
+  const emptyShelf = fs.readFileSync('src/components/EmptyShelf.tsx', 'utf8');
   assert.match(page, /profile\?\.supportingSections/);
-  assert.match(page, /account\/watchlist/);
-  assert.match(page, /sell-your-camera/);
+  assert.match(page, /showWatchlist/);
+  assert.match(emptyShelf, /account\/watchlist/);
+  assert.match(emptyShelf, /sell-your-camera/);
   assert.match(page, /aria-label="Breadcrumb"/);
 });

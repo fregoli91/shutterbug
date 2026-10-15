@@ -22,44 +22,24 @@ function asString(value: string | string[] | undefined) {
 
 const accountCards = [
   {
-    href: '/account/likes',
-    title: 'Liked products',
-    copy: 'Review saved cameras, open product details, or remove items from your liked list.'
-  },
-  {
-    href: '/account/watchlist',
-    title: 'Model watchlist',
-    copy: 'Keep camera and printer models saved while you wait for another unit to arrive.'
-  },
-  {
     href: '/account/orders',
     title: 'Orders',
     copy: 'View purchase history, order details, payment status, and fulfillment notes.'
   },
   {
-    href: '/account/track',
-    title: 'Track orders',
-    copy: 'Check shipment status and tracking numbers when they are available.'
+    href: '/account/likes',
+    title: 'Saved finds',
+    copy: 'Review cameras and gear you liked while they remain available.'
   },
   {
-    href: '/account/payment-methods',
-    title: 'Payment methods',
-    copy: 'Review how secure checkout and saved payment options will work.'
+    href: '/account/watchlist',
+    title: 'Model watchlist',
+    copy: 'Keep exact camera and printer models saved while you wait for another unit to reach the shop.'
   },
   {
-    href: '/account/addresses',
-    title: 'Saved addresses',
-    copy: 'Keep future checkout details organized when address saving is enabled.'
-  },
-  {
-    href: '/account/settings',
-    title: 'Account settings',
-    copy: 'Review your customer profile and sign out securely.'
-  },
-  {
-    href: '/contact',
-    title: 'Support',
-    copy: 'Contact Shutterbug about an order, camera, return, or trade-in.'
+    href: '/account/trade-ins',
+    title: 'Trade-ins',
+    copy: 'Start a camera submission and review the status of your existing trade-ins.'
   }
 ];
 
