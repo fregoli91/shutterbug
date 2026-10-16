@@ -5,12 +5,13 @@ Branch: `codex/soft-launch-inventory-strategy`
 Audited implementation commit: `cb66f4c` (`Harden soft launch publishing readiness`)  
 Initial preview commit: `35ea133` (`Refine soft launch inventory experience`)  
 Remote branch: `origin/codex/soft-launch-inventory-strategy`
+Final deployment-gate HEAD: `25d78e957f403e74970e80b977ba82689e7f898f`
 
 ## Preview deployment
 
-GitHub reported successful Vercel deployments for the initial preview and for branch commit `a188110` (the audited `cb66f4c` implementation plus this readiness report). The latest authenticated deployment dashboard checked during the audit is:
+GitHub reported successful Vercel deployments for the initial preview and subsequent readiness commits. The latest successful deployment dashboard associated with final gate HEAD `25d78e9` is:
 
-`https://vercel.com/zachery-dante-fregolis-projects/shutterbug/9MBk7X89LBW9mJyARjujEtZeDopZ`
+`https://vercel.com/zachery-dante-fregolis-projects/shutterbug/DSsRq7BbmbtyAg9QEHkspuuysgR7`
 
 The public preview hostname could not be retrieved without an authenticated Vercel session, so the successful deployment could not be used for public deployed-preview QA. Production was not deployed and `main` was not changed.
 
@@ -190,8 +191,107 @@ Before production, verify the presence and correct environment scope of site URL
 11. Request Search Console reindexing for the homepage and priority category/model-family pages.
 12. Begin loading genuine inventory through the readiness checklist.
 
+## Final production deployment gate
+
+### Preview access status
+
+**Blocked on authenticated Vercel project access.** The verified deployment dashboard URL for commit `25d78e9` redirects this audit browser to Vercel login. A dashboard login redirect does not establish whether the generated deployment hostname itself is protected; the public deployment hostname and the project's Deployment Protection configuration are not visible in the unauthenticated session.
+
+Vercel supports two scoped ways to test a protected preview without disabling protection globally: a deployment-specific shareable link for a human reviewer, or Protection Bypass for Automation for browser automation. Both must be created by an authenticated project member and must be treated as access credentials. No public preview, bypass secret, protection exception, production deployment, or global security change was created during this audit.
+
+To finish safely, the owner should log into Vercel, open the successful deployment for `25d78e9`, and use **Share > Anyone with the link** for a temporary review link, or create a dedicated, revocable automation bypass under **Project Settings > Deployment Protection**. The link or bypass should be revoked after QA. Anonymous public-user behavior must remain unverified until the generated URL is tested without an existing Vercel session.
+
+### Deployed breakpoint QA
+
+**Not run; blocking.** The public or scoped preview URL was unavailable. The successful local results at 320, 360, 375, 390, 414, 430, 768, 1024, 1440, and 1920 pixels were not substituted for deployed testing. The required deployed pass still covers 320, 360, 375, 390, 414, 430, 768, 1024, 1280, 1440, and 1920 pixels across the homepage, shop, priority categories, Canon brand, printers, Sell Your Camera, login, account redirects, watchlist redirects, and Bag, plus real empty/sold states where data exists.
+
+### Lighthouse
+
+**Not run; blocking.** No deployed-preview URL could be accessed. Performance, Accessibility, Best Practices, SEO, LCP, CLS, and INP are unreported rather than inferred from localhost.
+
+### Production environment checklist
+
+Only `.env.example` is present locally. Production values and scopes require authenticated Vercel access, so no production key is marked present on inference alone.
+
+| VARIABLE NAME | REQUIRED? | PRODUCTION PRESENT? | USED BY | BLOCKING? |
+| --- | --- | --- | --- | --- |
+| `NEXT_PUBLIC_SITE_URL` | Yes for explicit production configuration | Unknown — Vercel auth required | Email links and Stripe success/cancel URLs | Yes |
+| `DATABASE_URL` | Yes | Unknown — Vercel auth required | Prisma runtime, accounts, admin, inventory, checkout, orders, trade-ins | Yes |
+| `DIRECT_URL` | Conditional; needed when the runtime pooler cannot safely run migrations | Unknown — Vercel auth required | Prisma CLI migration connection | Yes until migration path is confirmed |
+| `ADMIN_EMAIL` | One of `ADMIN_EMAIL` or `ADMIN_USERNAME` is required | Unknown — Vercel auth required | Admin login identifier and email fallbacks | Yes as a pair with `ADMIN_USERNAME` |
+| `ADMIN_USERNAME` | One of `ADMIN_EMAIL` or `ADMIN_USERNAME` is required | Unknown — Vercel auth required | Admin login identifier fallback | Yes as a pair with `ADMIN_EMAIL` |
+| `ADMIN_PASSWORD` | Yes | Unknown — Vercel auth required | Admin authentication | Yes |
+| `ADMIN_SESSION_SECRET` | Yes; at least 32 bytes in production | Unknown — Vercel auth required | Signed admin session cookies | Yes |
+| `CUSTOMER_SESSION_SECRET` | Yes; at least 32 bytes in production | Unknown — Vercel auth required | Signed customer session cookies | Yes |
+| `EMAIL_FROM` | Yes for reliable production delivery | Unknown — Vercel auth required | Transactional sender address | Yes |
+| `ADMIN_ORDER_EMAIL` | Yes for order operations | Unknown — Vercel auth required | New-order notifications | Yes |
+| `ADMIN_TRADE_IN_EMAIL` | Optional when the documented fallback is intentionally accepted | Unknown — Vercel auth required | Trade-in notifications | No if the fallback recipient is verified |
+| `RESEND_API_KEY` | Yes | Unknown — Vercel auth required | Transactional email delivery | Yes |
+| `STRIPE_SECRET_KEY` | Yes for checkout | Unknown — Vercel auth required | Checkout session creation and webhook validation | Yes |
+| `NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY` | No; not referenced by current runtime code | Unknown — Vercel auth required | Documented legacy/client configuration only | No |
+| `STRIPE_WEBHOOK_SECRET` | Yes for checkout finalization | Unknown — Vercel auth required | `/api/webhooks/stripe` signature verification | Yes |
+| `CLOUDINARY_CLOUD_NAME` | Yes for production uploads | Unknown — Vercel auth required | Product and trade-in uploads | Yes |
+| `CLOUDINARY_API_KEY` | Yes for production uploads | Unknown — Vercel auth required | Product and trade-in uploads | Yes |
+| `CLOUDINARY_API_SECRET` | Yes for production uploads | Unknown — Vercel auth required | Product and trade-in uploads | Yes |
+| `CLOUDINARY_UPLOAD_FOLDER` | No; defaults to `shutterbug-products` | Unknown — Vercel auth required | Product upload organization | No |
+| `CLOUDINARY_TRADE_IN_FOLDER` | No; defaults to `shutterbug-trade-ins` | Unknown — Vercel auth required | Trade-in upload organization | No |
+| `NEXT_PUBLIC_AMAZON_STORE_URL` | No; a production fallback is coded | Unknown — Vercel auth required | Amazon storefront links | No |
+| `TRADE_IN_PROMOTION_ENABLED` | Conditional business setting | Unknown — Vercel auth required | Trade-in offer display and valuation | Yes until the current promotion is confirmed; omission enables the default offer |
+| `TRADE_IN_PROMOTION_STARTS_AT` | No | Unknown — Vercel auth required | Optional promotion start boundary | No |
+| `TRADE_IN_PROMOTION_ENDS_AT` | No | Unknown — Vercel auth required | Optional promotion end boundary | No |
+| `TRADE_IN_PROMOTION_ID` | No; default exists | Unknown — Vercel auth required | Promotion identity stored with trade-ins | No |
+| `TRADE_IN_PROMOTION_LABEL` | No; default exists | Unknown — Vercel auth required | Customer-facing promotion label | No after business review |
+| `TRADE_IN_PROMOTION_DESCRIPTION` | No; default exists | Unknown — Vercel auth required | Customer-facing promotion explanation | No after business review |
+
+### Canonical production URL
+
+**Static code audit: pass. Production environment verification: pending.** The application expects `https://www.shutterbugcamerashop.com`. The central SEO configuration fixes that hostname for canonical URLs, WebSite and Organization schema, sitemap URLs, robots sitemap reference, and Merchant feed links. Email links and Stripe return URLs use `NEXT_PUBLIC_SITE_URL` with the same domain as their code fallback and require HTTPS in production. `NEXT_PUBLIC_SITE_URL` still must be confirmed in Vercel Production scope before merge. The canonical domain was not changed.
+
+### Database migration status
+
+**Branch status: pass. Production status: unknown and blocking.** A fresh `origin/main...HEAD` comparison contains no Prisma schema or migration changes. `npx prisma migrate status` was not run because this checkout has no authenticated, confirmed production database configuration. Pointing Prisma at an unverified or previously shared connection string would not be a safe production read. No schema operation was attempted.
+
+### Stripe configuration status
+
+**Unknown and blocking.** Static code requires `STRIPE_SECRET_KEY` for checkout and both `STRIPE_SECRET_KEY` and `STRIPE_WEBHOOK_SECRET` at `/api/webhooks/stripe`. Webhook handling verifies the signature, amount, currency, payment state, and live/test alignment. The current code does not use `NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY`. Production key presence, live-versus-test mode, webhook secret, and the configured webhook destination cannot be verified without authenticated Vercel and Stripe project access. No charge or Stripe mutation was attempted.
+
+### Resend configuration status
+
+**Unknown and blocking.** Production email requires `RESEND_API_KEY`; `EMAIL_FROM` must be a verified production sender, and `ADMIN_ORDER_EMAIL` must reach the intended operator. Their presence and sender-domain verification could not be inspected. No email was sent.
+
+### Cloudinary configuration status
+
+**Unknown and blocking.** Production uploads require the Cloudinary cloud name, API key, and API secret. The optional product and trade-in folder names have safe code defaults. The storefront readiness rule accepts a product as photographed only when `actualPhotos` is confirmed and its HTTPS hero URL is a Cloudinary image-upload URL, matching the admin upload path. Credential presence and an actual production upload still require authenticated environment and operational testing. No upload was attempted.
+
+### Secret rotation items
+
+Documentation and conversation history still require owner review and rotation before a real launch for these categories only:
+
+- database password/connection credentials;
+- admin password;
+- admin and customer session-signing secrets;
+- Stripe secret and webhook secrets if they were ever shared outside the production secret manager;
+- Resend API key if it was ever shared outside the production secret manager; and
+- Cloudinary API secret if it was ever shared outside the production secret manager.
+
+No secret was printed, retrieved, changed, or rotated during this audit.
+
+### Pre-merge deployed smoke test
+
+**Not run; blocking.** Without an accessible deployed-preview hostname, the required Home, Shop, Category, Brand, Printers, Login, Account redirect, Watchlist redirect, and Bag checks could not be performed against the deployed build. No deployed result, anonymous behavior, or absence of HTTP 500 responses is claimed.
+
+### Remaining blockers
+
+1. Authenticate to the Vercel project and obtain a scoped shareable preview URL or revocable automation bypass without weakening production protection globally.
+2. Run the complete deployed breakpoint, redirect, empty-state, sample-inventory, unsupported-claim, and no-500 smoke suite.
+3. Run deployed Lighthouse on the five required routes and record real scores and web-vital observations.
+4. Verify every blocking production environment key and its Production scope without exposing values.
+5. Confirm the intended production database and run read-only `npx prisma migrate status` against it.
+6. Confirm Stripe mode alignment and webhook destination, Resend sender/domain configuration, and Cloudinary upload configuration in their provider dashboards.
+7. Rotate all credential categories known or suspected to have been shared outside the production secret manager.
+
 ## Decision
 
-**NOT YET READY**
+**NOT READY**
 
-The local implementation and safeguards are ready for a final deployed-preview review. Merge to `main` remains blocked until the new public preview is identified, deployed responsive QA and Lighthouse are completed, and production environment keys are verified.
+The code and local validation remain ready for the final gate, but merge to `main` is blocked until deployed-preview QA, deployed Lighthouse, production environment verification, production migration status, provider configuration, and required secret rotation are completed. Production was not deployed and `main` was not changed.
