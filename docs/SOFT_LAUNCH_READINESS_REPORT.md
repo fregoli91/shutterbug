@@ -186,17 +186,18 @@ The authoritative remaining-blocker list is in the final production deployment g
 ## Final production deployment gate
 
 Gate date: 2026-10-16
-Audited and deployed branch HEAD: `4aed5fc89930385a649c1c5c67f8e7ac7e980de5` (`Contain nested shop media grid`)
-Preview deployment dashboard: `https://vercel.com/zachery-dante-fregolis-projects/shutterbug/45YYDTPv316A5ajXmwhTegUgjdBq`
-Preview hostname: `https://shutterbug-git-codex-sof-b1cb02-zachery-dante-fregolis-projects.vercel.app`
+Audited runtime source HEAD: `4aed5fc89930385a649c1c5c67f8e7ac7e980de5` (`Contain nested shop media grid`)
+Report-only deployment commit: `69ff56d9a106dfa719953983df117998b53c7133` (`Update authenticated production gate audit`)
+Preview deployment dashboard: `https://vercel.com/zachery-dante-fregolis-projects/shutterbug/CHKEdhdWLvZtfj8gmE7b8UVizWJd`
+Temporarily exempt preview hostname: `https://shutterbug-nyfwwq4kn-zachery-dante-fregolis-projects.vercel.app`
 
 Production was not deployed and `main` was not changed.
 
 ### Preview access status
 
-**Authenticated access confirmed; anonymous access remains protected.** The Vercel project uses **Vercel Authentication**, **Require Log In**, with **Standard Protection**. The deployment Share dialog is currently limited to **Only people with access**. No Protection Bypass secret or Deployment Protection Exception is configured.
+**Temporary single-deployment exception active; removal awaits owner approval.** The Vercel project still uses **Vercel Authentication**, **Require Log In**, with **Standard Protection**. With the owner's explicit approval, Deployment Protection was removed only for `shutterbug-nyfwwq4kn-zachery-dante-fregolis-projects.vercel.app`, the immutable ready deployment for report commit `69ff56d`. No automation bypass secret was created, global protection was not disabled, and a prior preview still redirects to Vercel authentication. The current branch alias resolves to the exempt deployment and is therefore reachable while that deployment remains current.
 
-Vercel offers a deployment share link and a branch-domain protection exception without disabling protection globally. Creating either changes who can access the deployment, so no access permission was changed without the owner's action-time approval. Authenticated deployed QA was completed through the current project session. Anonymous public-user behavior and command-line Lighthouse remain unverified.
+Preflight confirmed that application-level access controls remain in place: `/admin` redirects to `/admin/login`; all admin pages and mutations require the signed admin session; account pages redirect signed-out users to login; order confirmation requires customer ownership or a guest access token; trade-in data and images require customer ownership or admin authorization; protected source maps remain enabled; and the built client assets contain none of the audited server-secret variable names. The exception must be removed before merge after separate owner approval.
 
 ### Deployed breakpoint and smoke QA
 
@@ -229,7 +230,19 @@ Results:
 
 ### Lighthouse
 
-**Not run; blocking.** Lighthouse is not installed in this workspace, and the preview requires an authenticated Vercel browser session. No performance, Accessibility, Best Practices, SEO, LCP, CLS, or INP result is inferred. A scoped public branch exception or compatible automation bypass is needed before command-line Lighthouse can audit the deployed preview.
+**Run anonymously with Lighthouse 13.5.0 against the temporary deployment exception.** Mobile-mode lab results:
+
+| Route | Performance | Accessibility | Best Practices | SEO | LCP | CLS | TBT | INP |
+| --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: | --- |
+| `/` | 89 | 96 | 100 | 69 | 3.7 s | 0 | 50 ms | Not measured in this lab run |
+| `/shop` | 98 | 96 | 100 | 69 | 2.4 s | 0 | 30 ms | Not measured in this lab run |
+| `/categories/digital-cameras` | 98 | 96 | 100 | 69 | 2.2 s | 0 | 30 ms | Not measured in this lab run |
+| `/categories/printers` | 99 | 96 | 100 | 69 | 2.2 s | 0 | 30 ms | Not measured in this lab run |
+| `/brands/canon` | 99 | 96 | 100 | 69 | 2.2 s | 0 | 40 ms | Not measured in this lab run |
+
+The SEO score is capped by Vercel's expected preview-only `X-Robots-Tag: noindex`; this is not evidence that production pages are blocked. The initial digital-category run also reported a missing meta description, but the server HTML contained the correct description and a clean rerun passed that audit. Every route scored 100 for Best Practices.
+
+Two real findings remain: the homepage LCP is 3.7 seconds in this lab run, and every audited route scores 96 for Accessibility because muted text renders at a 4.11:1 contrast ratio against cream where 4.5:1 is required. The affected nodes include homepage soft-launch support copy, shop explanatory copy, and category/brand breadcrumbs.
 
 ### Validation
 
@@ -237,7 +250,11 @@ Results:
 - `npm run lint`: passed with no ESLint errors.
 - `npm run build`: passed on Next.js 16.4.0; TypeScript passed and 127 static pages were generated.
 - Final deployed `/shop` responsive matrix: 11/11 widths passed without document overflow.
-- Branch and remote HEAD match at `4aed5fc89930385a649c1c5c67f8e7ac7e980de5` before this report update.
+- Anonymous smoke test: all ten public routes returned 200; `/account` and `/account/watchlist` returned 307 redirects to their login return paths.
+- Anonymous guard test: `/admin` redirected to `/admin/login`; a private trade-in image request returned 401.
+- A nonexistent order-confirmation lookup returned an empty 500 response with no body or private details. This indicates an operational/database-path failure and is a release blocker even though it did not expose data.
+- Lighthouse 13.5.0 completed without runtime errors on all five required routes.
+- Branch and remote HEAD matched at report commit `69ff56d9a106dfa719953983df117998b53c7133` before this Lighthouse/report update; the audited runtime source remained `4aed5fc89930385a649c1c5c67f8e7ac7e980de5`.
 
 ### Production environment checklist
 
@@ -314,12 +331,15 @@ No secret value was printed, copied, changed, or rotated during this audit.
 4. Confirm the intended production database connection and run read-only `npx prisma migrate status`; configure `DIRECT_URL` when required by the provider migration path.
 5. Explicitly approve or disable the default trade-in promotion through production configuration.
 6. Complete the required credential rotation review, including the database credential previously shared outside the secret manager.
-7. Run Lighthouse on `/`, `/shop`, `/categories/digital-cameras`, `/categories/printers`, and one priority brand/model route through a scoped, revocable preview-access method.
-8. Confirm `NEXT_PUBLIC_SITE_URL` resolves exactly to `https://www.shutterbugcamerashop.com` without exposing its value in review output.
-9. Visually verify the sold-product state when a genuine sold record exists.
+7. Diagnose and fix the anonymous `/api/orders/confirmation` 500 response, then validate the production database schema/read path without using a real order.
+8. Raise the identified muted text and breadcrumb contrast from 4.11:1 to at least 4.5:1 and rerun Accessibility.
+9. Improve or explicitly accept the homepage's 3.7-second lab LCP before changing the gate to **GO FOR MERGE**.
+10. Confirm `NEXT_PUBLIC_SITE_URL` resolves exactly to `https://www.shutterbugcamerashop.com` without exposing its value in review output.
+11. Visually verify the sold-product state when a genuine sold record exists.
+12. Remove the temporary deployment exception after owner approval and verify the unique deployment and branch alias are protected again.
 
 ## Decision
 
 **NOT READY**
 
-The deployed branch passed the responsive and route smoke matrix after the narrow `/shop` containment fix, and the application code, tests, lint, and production build pass. Merge to `main` remains blocked by missing Stripe and Cloudinary production credentials, incomplete Resend sender/recipient configuration, unverified production migration status, unresolved trade-in promotion configuration, credential-rotation review, and deployed Lighthouse. Production was not deployed and `main` was not changed.
+The deployed branch passed the responsive and anonymous route smoke matrix after the narrow `/shop` containment fix, and the application code, tests, lint, and production build pass. Lighthouse is complete, but it identified a homepage LCP concern and a repeated text-contrast failure. Merge to `main` remains blocked by those findings, the anonymous order-confirmation 500, missing Stripe and Cloudinary production credentials, incomplete Resend sender/recipient configuration, unverified production migration status, unresolved trade-in promotion configuration, and credential-rotation review. Production was not deployed and `main` was not changed.
