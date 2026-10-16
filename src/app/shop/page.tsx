@@ -329,17 +329,17 @@ export default async function ShopPage({ searchParams }: Props) {
             height={941}
             sizes="(min-width: 1280px) 52rem, (min-width: 1024px) 65vw, 100vw"
             priority
-            className="aspect-[16/9] w-full rounded-lg border border-ink/10 bg-sand object-cover object-center shadow-sm"
+            className="aspect-[16/9] w-full min-w-0 max-w-full rounded-lg border border-ink/10 bg-sand object-cover object-center shadow-sm"
           />
 
-          <div className="grid gap-4">
+          <div className="grid min-w-0 gap-4">
             <Image
               src="/shutterbug-shop-cameras-page.png"
               alt="Camera display inside Shutterbug Camera Shop"
               width={1448}
               height={1086}
               sizes="(min-width: 1280px) 27rem, (min-width: 1024px) 35vw, 100vw"
-              className="aspect-[4/3] w-full rounded-lg border border-ink/10 bg-sand object-contain object-center shadow-sm"
+              className="aspect-[4/3] w-full min-w-0 max-w-full rounded-lg border border-ink/10 bg-sand object-contain object-center shadow-sm"
             />
 
             <form action="/shop" className="border-t border-ink/10 pt-4">
