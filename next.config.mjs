@@ -18,7 +18,8 @@ const nextConfig = {
   experimental: {
     serverActions: {
       bodySizeLimit: '512kb'
-    }
+    },
+    turbopackPluginRuntimeStrategy: 'workerThreads'
   },
   turbopack: {
     root: process.cwd()

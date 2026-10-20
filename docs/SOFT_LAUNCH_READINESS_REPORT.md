@@ -1,6 +1,7 @@
 # Soft Launch Readiness Report
 
 Date: 2026-10-16
+Latest evidence update: 2026-10-20
 Branch: `codex/soft-launch-inventory-strategy`  
 Audited implementation commit: `cb66f4c` (`Harden soft launch publishing readiness`)  
 Initial preview commit: `35ea133` (`Refine soft launch inventory experience`)  
@@ -268,7 +269,7 @@ The local remediation is deliberately limited to this failure path:
 - the customer-facing `/checkout/success` loader uses the same guarded lookup and renders its existing safe confirmation-pending state instead of a framework 500; and
 - the production migration remains mandatory. The reduced selection is resilience, not a substitute for applying the missing migration.
 
-Regression coverage in `tests/order-confirmation-lookup.test.mjs` verifies malformed input does not query storage, nonexistent and unauthorized results are indistinguishable, owner and guest-token access work, thrown database errors collapse to a detail-free unavailable result, and the public confirmation selection excludes `stripeRefundId`.
+Regression coverage in `tests/order-confirmation-lookup.test.mjs` verifies malformed input does not query storage, nonexistent and unauthorized results are indistinguishable, owner and guest-token access work, thrown database errors collapse to a detail-free unavailable result, and the public confirmation selection excludes `stripeRefundId`. On 2026-10-20 the complete suite passed with 62 tests and 0 failures, and ESLint completed with no errors.
 
 The post-fix anonymous probe ran locally because the user required the immutable `69ff56d` deployment to remain unchanged and prohibited a deployment:
 
@@ -290,8 +291,8 @@ Because no fixed deployment was authorized, the immutable preview still contains
 
 - `npm test`: passed, 62 tests passed, 0 failed, exit code 0.
 - `npm run lint`: passed with no ESLint errors, exit code 0.
-- `npm run build`: failed, exit code 1. Three attempts, including one outside the restricted filesystem sandbox after deleting only the verified workspace-local `.next` cache, produced the same Next.js 16.4.0 Turbopack internal error while processing `src/app/globals.css`: it could not establish a connection to a newly created worker process, which exited with code 0. No CSS parse, TypeScript, or application-code diagnostic was emitted.
-- Supplementary `next build --webpack`: passed, exit code 0. It compiled successfully, TypeScript passed, and 127 static pages were generated. This establishes that the code and types build, but it does not convert the required failing `npm run build` result into a pass.
+- `npm run build`: passed on 2026-10-20, exit code 0, after selecting Next.js 16.4.0's documented `experimental.turbopackPluginRuntimeStrategy: 'workerThreads'`. The earlier error was isolated to Turbopack's child-process PostCSS/plugin runtime on this Windows worker. The first restricted run with worker threads progressed past that failure and then correctly exposed a sandbox-only inability to create Turbopack's workspace-local Prisma junction. The same standard command outside the restricted filesystem sandbox compiled with Turbopack in 2.5 seconds, passed TypeScript, and generated all 127 static pages. No webpack fallback was used for this successful result.
+- Supplementary `next build --webpack`: passed, exit code 0. It compiled successfully, TypeScript passed, and 127 static pages were generated. This earlier fallback result independently corroborates the code and type checks; the required Turbopack command now passes as recorded above.
 - `git diff --check`: passed, exit code 0. Git emitted only the existing Windows LF-to-CRLF working-copy warning for this Markdown file.
 - Final deployed `/shop` responsive matrix: 11/11 widths passed without document overflow.
 - Anonymous smoke test: all ten public routes returned 200; `/account` and `/account/watchlist` returned 307 redirects to their login return paths.
@@ -340,7 +341,7 @@ Authenticated Vercel inspection recorded names and scopes only. No value was dis
 
 ### Database migration status
 
-**Branch status: pass. Production status: unknown and blocking.** `origin/main...HEAD` contains no Prisma schema or migration change, so this branch introduces no migration. `npx prisma migrate status` was not run because no production database connection was safely supplied to this checkout. A previously shared database credential must be treated as exposed and rotated rather than reused. No schema operation was attempted.
+**Branch status: pass. Production status: unknown and blocking.** `origin/main...HEAD` contains no Prisma schema or migration change, so this branch introduces no migration. On 2026-10-20 Neon opened to an unauthenticated login screen, so the production project, branch, database, and `_prisma_migrations` ledger could not be verified. `npx prisma migrate status` was not run because no production database connection was safely supplied to this checkout. A previously shared database credential remains treated as exposed and was not reused. No schema operation was attempted. The migration will not be applied until the intended production target and complete ledger state can be read first.
 
 ### Stripe configuration status
 
@@ -380,10 +381,9 @@ No secret value was printed, copied, changed, or rotated during this audit.
 9. Improve or explicitly accept the homepage's 3.7-second lab LCP before changing the gate to **GO FOR MERGE**.
 10. Confirm `NEXT_PUBLIC_SITE_URL` resolves exactly to `https://www.shutterbugcamerashop.com` without exposing its value in review output.
 11. Visually verify the sold-product state when a genuine sold record exists.
-12. Resolve or explicitly accept the repeatable Turbopack worker-start failure in the required `npm run build` command. The webpack production-build fallback passes, but the requested command does not.
 
 ## Decision
 
 **NOT READY**
 
-Deployed QA and all five Lighthouse runs are complete for immutable preview commit `69ff56d`, and their weak results are recorded above. The responsive/public-route checks passed, but QA also found the order-confirmation 500 and Lighthouse found a homepage LCP concern plus repeated text-contrast failure. The order-confirmation root cause is proven and a regression-tested local fix exists, but the preview is intentionally unchanged and the required database migration is unapplied. Tests and lint pass; the supplementary webpack production build passes, while the exact required `npm run build` command repeatedly fails in Turbopack worker startup. Merge to `main` remains blocked by those findings, missing Stripe and Cloudinary production credentials, incomplete Resend sender/recipient configuration, unverified production migration status, unresolved trade-in promotion configuration, and credential-rotation review. Production was not deployed, `main` was not changed, no branch was pushed, and the temporary protection exception has been removed.
+Deployed QA and all five Lighthouse runs are complete for immutable preview commit `69ff56d`, and their weak results are recorded above. The responsive/public-route checks passed, but QA also found the order-confirmation 500 and Lighthouse found a homepage LCP concern plus repeated text-contrast failure. The order-confirmation root cause is proven and a regression-tested local fix exists, but a fixed preview has not yet been verified and the required production database migration is unapplied. Tests and lint pass. The exact required `npm run build` command now also passes with Turbopack and generates all 127 static pages after moving the documented plugin runtime from child processes to worker threads; the build blocker is resolved. Merge to `main` remains blocked by the unverified production migration and deployed confirmation behavior, missing Stripe and Cloudinary production credentials, incomplete Resend sender/recipient configuration, unresolved trade-in promotion configuration, Lighthouse contrast and LCP findings, and credential-rotation review. Production was not deployed, `main` was not changed, and the temporary protection exception remains removed.

@@ -2,7 +2,31 @@ import { PaymentStatus, type Prisma } from '@/generated/prisma/client';
 import { customerOrderPath } from '@/lib/order-access';
 import { customerFulfillmentStatusLabel, customerPaymentStatusLabel } from '@/lib/order-status';
 
-type ConfirmationOrder = Prisma.OrderGetPayload<{ include: { items: true } }>;
+export const orderConfirmationSelect = {
+  id: true,
+  orderNumber: true,
+  guestAccessToken: true,
+  customerId: true,
+  customerEmail: true,
+  customerName: true,
+  shippingAddress: true,
+  paymentStatus: true,
+  fulfillmentStatus: true,
+  currency: true,
+  totalCents: true,
+  items: {
+    select: {
+      id: true,
+      productId: true,
+      productTitle: true,
+      imageUrl: true,
+      quantity: true,
+      totalPriceCents: true
+    }
+  }
+} satisfies Prisma.OrderSelect;
+
+export type ConfirmationOrder = Prisma.OrderGetPayload<{ select: typeof orderConfirmationSelect }>;
 
 export type OrderConfirmation = {
   orderNumber: string;

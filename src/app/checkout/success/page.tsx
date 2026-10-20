@@ -1,8 +1,9 @@
 import Image from 'next/image';
 import { OrderConfirmationClient } from '@/components/checkout/OrderConfirmationClient';
 import { getCustomerSession } from '@/lib/customer-auth';
+import { lookupOrderConfirmation } from '@/lib/order-confirmation-lookup';
+import { orderConfirmationSelect, toOrderConfirmation } from '@/lib/order-confirmation';
 import { guestOrderAccessMatches } from '@/lib/order-access';
-import { toOrderConfirmation } from '@/lib/order-confirmation';
 import { getPrisma } from '@/lib/prisma';
 
 type Props = {
@@ -24,17 +25,26 @@ export default async function CheckoutSuccessPage({ searchParams }: Props) {
   const sessionId = asString(params.session_id);
   const accessToken = asString(params.access);
   const prisma = getPrisma();
-  const customer = await getCustomerSession();
-  const order =
-    prisma && sessionId
-      ? await prisma.order.findFirst({
-          where: { OR: [{ stripeCheckoutSessionId: sessionId }, { providerReference: sessionId }] },
-          include: { items: true }
-        })
-      : null;
-  const isOwner = Boolean(customer && order?.customerId === customer.id);
-  const hasGuestAccess = Boolean(order && guestOrderAccessMatches(order.guestAccessToken, accessToken));
-  const initialConfirmation = order && (isOwner || hasGuestAccess) ? toOrderConfirmation(order) : null;
+  const result = await lookupOrderConfirmation({
+    sessionId,
+    access: accessToken,
+    getCustomer: getCustomerSession,
+    matchesGuestAccess: guestOrderAccessMatches,
+    findOrder: async (normalizedSessionId) => {
+      if (!prisma) throw new Error('Order confirmation storage unavailable.');
+      return prisma.order.findFirst({
+        where: {
+          OR: [
+            { stripeCheckoutSessionId: normalizedSessionId },
+            { providerReference: normalizedSessionId }
+          ]
+        },
+        select: orderConfirmationSelect
+      });
+    }
+  });
+  if (result.kind === 'unavailable') console.error('Checkout success lookup unavailable.');
+  const initialConfirmation = result.kind === 'found' ? toOrderConfirmation(result.order) : null;
 
   return (
     <section className="px-4 py-12 sm:px-6 lg:px-8">
