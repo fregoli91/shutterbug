@@ -271,7 +271,7 @@ The local remediation is deliberately limited to this failure path:
 
 Regression coverage in `tests/order-confirmation-lookup.test.mjs` verifies malformed input does not query storage, nonexistent and unauthorized results are indistinguishable, owner and guest-token access work, thrown database errors collapse to a detail-free unavailable result, and the public confirmation selection excludes `stripeRefundId`. On 2026-10-20 the complete suite passed with 62 tests and 0 failures, and ESLint completed with no errors.
 
-The post-fix anonymous probe ran locally because the user required the immutable `69ff56d` deployment to remain unchanged and prohibited a deployment:
+The post-fix route probe first ran locally without a database and was then repeated against a local application connected to the migrated rehearsal clone. The pushed fix also produced protected Vercel Preview deployment `CZDKtscdAWDp6hmXwab8TgjFQBJV` (`shutterbug-apm7a5zot-zachery-dante-fregolis-projects.vercel.app`) from commit `976fe03`; it is a Preview deployment, not Production. Anonymous access remains blocked by Vercel SSO. An authenticated inspection of that fixed preview returned the same generic 404 for both missing and synthetic nonexistent confirmation sessions, and Vercel request logs recorded 404 rather than 500.
 
 | Route | Result | Expected control |
 | --- | --- | --- |
@@ -280,24 +280,26 @@ The post-fix anonymous probe ran locally because the user required the immutable
 | `/admin` | 307 to `/admin/login` | Admin protected |
 | `/account` | 307 to `/login?returnTo=%2Faccount` | Account protected |
 | `/api/orders/confirmation` | 404 | Missing session fails without storage access |
-| `/api/orders/confirmation?session_id=nonexistent-security-check` | 503 JSON, no 500 | Local database is intentionally unconfigured; operational failure is controlled and detail-free |
+| `/api/orders/confirmation?session_id=nonexistent-security-check` | 503 JSON, no 500 | Local database intentionally unconfigured; operational failure is controlled and detail-free |
 | `/checkout/success` | 200 | Safe customer-facing pending/not-found state |
 | `/checkout/success?session_id=nonexistent-security-check` | 200 | Safe customer-facing pending state when lookup is unavailable |
 | `/api/trade-ins/images/synthetic-nonexistent-image` | 401 | Private asset protected |
 
-Because no fixed deployment was authorized, the immutable preview still contains the original 500 behavior. A new deployed regression probe must be performed after the migration and code fix are deployed to a separately approved preview.
+The migrated rehearsal application produced the stronger database-connected result: `/` and `/shop` returned 200; `/account`, `/account/watchlist`, and `/admin` redirected to their login routes; `/google-merchant-feed.xml` returned 200; missing and synthetic nonexistent confirmation requests both returned `404 {"error":"Order not found."}`; an unauthenticated trade-in collection GET returned 405 because the route intentionally exposes POST only; and a synthetic private trade-in image returned 401. No real customer identifier, order, image, or payment was used, and no write endpoint was called. The original immutable `69ff56d` preview still contains the historical 500 and remains useful only as retained evidence; the fixed `976fe03` preview is the current regression evidence.
 
 ### Validation
 
 - `npm test`: passed, 62 tests passed, 0 failed, exit code 0.
 - `npm run lint`: passed with no ESLint errors, exit code 0.
-- `npm run build`: passed on 2026-10-20, exit code 0, after selecting Next.js 16.4.0's documented `experimental.turbopackPluginRuntimeStrategy: 'workerThreads'`. The earlier error was isolated to Turbopack's child-process PostCSS/plugin runtime on this Windows worker. The first restricted run with worker threads progressed past that failure and then correctly exposed a sandbox-only inability to create Turbopack's workspace-local Prisma junction. The same standard command outside the restricted filesystem sandbox compiled with Turbopack in 2.5 seconds, passed TypeScript, and generated all 127 static pages. No webpack fallback was used for this successful result.
+- `npm run build`: passed again on 2026-10-20, exit code 0, after selecting Next.js 16.4.0's documented `experimental.turbopackPluginRuntimeStrategy: 'workerThreads'`. The earlier error was isolated to Turbopack's child-process PostCSS/plugin runtime on this Windows worker. After the temporary rehearsal dev server was stopped to release its `.next` log handle, the exact command compiled with Turbopack in 2.9 seconds, passed TypeScript in 4.2 seconds, and generated all 127 static pages. No Windows-only path or configuration was added and no webpack fallback was used for this successful result.
+- Vercel's Preview build for commit `976fe03` is Ready, completed in 40 seconds, and its build log reports `Build Completed in /vercel/output [19s]` followed by `Deployment completed`. This verifies the same checked-in worker-thread configuration in Vercel's build environment. The deployment summary reports Next.js 16.4.0, 127 static assets, and 76 functions.
+- `next-env.d.ts` is generated by Next.js. `next dev` points its route imports at `.next/dev/types`, while `next build` rewrites them to `.next/types`; the Next.js 16.4 documentation says the file is managed by Next.js and should not be edited manually. The build-only rewrite was restored and is not part of this report change.
 - Supplementary `next build --webpack`: passed, exit code 0. It compiled successfully, TypeScript passed, and 127 static pages were generated. This earlier fallback result independently corroborates the code and type checks; the required Turbopack command now passes as recorded above.
 - `git diff --check`: passed, exit code 0. Git emitted only the existing Windows LF-to-CRLF working-copy warning for this Markdown file.
 - Final deployed `/shop` responsive matrix: 11/11 widths passed without document overflow.
 - Anonymous smoke test: all ten public routes returned 200; `/account` and `/account/watchlist` returned 307 redirects to their login return paths.
 - Anonymous guard test: `/admin` redirected to `/admin/login`; a private trade-in image request returned 401.
-- The immutable-preview order-confirmation probe returned an empty 500; Vercel logs established the missing `Order.stripeRefundId` migration as the root cause. Local regression behavior is controlled as documented above, but it has not been deployed.
+- The immutable-preview order-confirmation probe returned an empty 500; Vercel logs established the missing `Order.stripeRefundId` migration as the root cause. The fixed Preview from `976fe03` is Ready and returns controlled 404s for missing/nonexistent confirmation access when inspected through the authenticated Vercel session; anonymous access is blocked by Deployment Protection.
 - Lighthouse 13.5.0 completed without runtime errors on all five required routes.
 - Branch and remote HEAD matched at report commit `69ff56d9a106dfa719953983df117998b53c7133` before this Lighthouse/report update; the audited runtime source remained `4aed5fc89930385a649c1c5c67f8e7ac7e980de5`.
 
@@ -308,8 +310,8 @@ Authenticated Vercel inspection recorded names and scopes only. No value was dis
 | VARIABLE NAME | PRODUCTION STATUS | BLOCKING? | NOTES |
 | --- | --- | --- | --- |
 | `NEXT_PUBLIC_SITE_URL` | Present | No after value/domain owner verification | Used by email and Stripe return URLs; static fallback is the intended production domain. |
-| `DATABASE_URL` | Present | No for runtime; migration audit still blocked | Used by Prisma runtime. |
-| `DIRECT_URL` | Absent | Yes until the production migration connection is confirmed | Prisma CLI falls back to `DATABASE_URL`; the provider exposes separate integration variables, but current code does not consume their names. |
+| `DATABASE_URL` | Present | No for runtime; production migration approval still required | Used by Prisma runtime. The production target and clone were verified without exposing the value. |
+| `DIRECT_URL` | Absent | No if supplied securely for the approved migration run | Prisma CLI falls back to `DATABASE_URL`; the rehearsed procedure explicitly sets a direct/session URL for migration safety. |
 | `ADMIN_EMAIL` | Present | No | Admin identifier and notification fallback. |
 | `ADMIN_USERNAME` | Present | No | Admin identifier fallback. |
 | `ADMIN_PASSWORD` | Present | No after rotation review | Required for admin authentication. |
@@ -341,7 +343,63 @@ Authenticated Vercel inspection recorded names and scopes only. No value was dis
 
 ### Database migration status
 
-**Branch status: pass. Production status: unknown and blocking.** `origin/main...HEAD` contains no Prisma schema or migration change, so this branch introduces no migration. On 2026-10-20 Neon opened to an unauthenticated login screen, so the production project, branch, database, and `_prisma_migrations` ledger could not be verified. `npx prisma migrate status` was not run because no production database connection was safely supplied to this checkout. A previously shared database credential remains treated as exposed and was not reused. No schema operation was attempted. The migration will not be applied until the intended production target and complete ledger state can be read first.
+**Rehearsal passed. Production remains unchanged and blocking pending owner approval.** Authenticated metadata inspection confirmed the production target as Neon project `shuttbug` (`flat-base-16798381`), branch `main` (`br-steep-dew-au9p5zh5`), database `neondb`, schema `public`, PostgreSQL 17. The production ledger contained 12 finished, non-rolled-back migrations and omitted exactly these three checked-in directories:
+
+1. `20260814183000_security_inventory_reservations`
+2. `20260825120000_google_merchant_identifiers`
+3. `20260918090000_trade_in_experience`
+
+The later `20260919120000_customer_model_watchlist` migration was already recorded as applied. Before rehearsal, metadata confirmed the missing columns and tables were also absent, so this was ledger and schema drift rather than an already-applied schema change with only a missing ledger record. No customer, order, or product row contents were queried.
+
+#### SQL impact and safety audit
+
+- `20260814183000_security_inventory_reservations` adds `Product.reservedQuantity INTEGER NOT NULL DEFAULT 0`; adds nullable `Order.reservationExpiresAt`, `Order.inventoryReleasedAt`, and `Order.stripeRefundId`; creates the nullable-column unique index `Order_stripeRefundId_key`; creates `StripeWebhookEvent` with its primary key, `orderId` index, and nullable `Order` foreign key using `ON DELETE SET NULL`; and adds nonnegative, stock-bound, component-total, quantity, and line-total check constraints to existing `Product`, `Order`, and `OrderItem` rows. It has no data backfill and no destructive statement. The new `NOT NULL` product field has a safe default. The important risk is validation of the new checks against existing rows; the new refund unique index cannot conflict at creation because the new column starts null for all existing rows.
+- `20260825120000_google_merchant_identifiers` adds nullable `Product.gtin` and `Product.mpn`. It creates no table, index, unique constraint, foreign key, default, `NOT NULL` change, or backfill. It is fully additive and depends only on the existing `Product` table.
+- `20260918090000_trade_in_experience` creates six trade-in enum types and four new tables: `TradeInSubmission`, `TradeInImage`, `TradeInOffer`, and `TradeInStatusEvent`. It creates the unique `TradeInSubmission.reference` index plus customer/status/image/offer/history lookup indexes. Its foreign keys reference existing `Customer` and the new submission table with `ON DELETE CASCADE`. Defaults cover draft status, text fields, quantity, arrays, offer kind/status, actor, sort order, and creation timestamps. `updatedAt` and several identity/storage fields are required without database defaults, but only on new empty tables and are supplied by the application. It performs no backfill and changes no existing column.
+
+None of the three migrations contains `DROP TABLE`, `DROP COLUMN`, `ALTER TYPE`, a required existing-table column without a default, or a data migration. The first depends on `Product`, `Order`, and `OrderItem`; the second depends on `Product`; the third depends on `Customer`. The later watchlist migration is independent. The rehearsal proves the existing production snapshot satisfies every newly validated check and foreign-key prerequisite as of clone creation.
+
+#### Migration-history gap evidence
+
+Git history shows the security migration was introduced in commit `8007f2d` on 2026-08-23, merchant identifiers in `513027d` on 2026-08-25, trade-ins in `77f625c` on 2026-09-18, and the later applied watchlist migration in `1408153` on 2026-09-19. The repository has no checked-in GitHub Actions workflow or deployment script that selectively applies migrations; its only migration command is `prisma migrate deploy`. A normal deploy from a checkout containing all 15 migrations would have applied the three gaps before the watchlist migration. A Prisma `migrate resolve --applied` for these exact migrations would also have left ledger records, which are absent. The catalogs show their schema objects were absent as well, so manual application of these migrations is not supported by the evidence. The available repository and ledger evidence therefore proves that the later migration reached production without a normal complete deploy over the current migration directory, but it does not identify whether an older deployment artifact, selective procedure, branch divergence, or another historical workflow caused it. No unsupported cause is asserted.
+
+#### Neon rehearsal
+
+A temporary Neon branch named `migration-rehearsal-20261020` (`br-calm-sea-auxtv7r5`) was created from the current production `main` branch with data and schema at the current parent LSN. It expires automatically on 2026-10-21. Its credential was held only in an ignored local env file, was not printed, and was removed after verification.
+
+Initial command and result:
+
+```text
+npx prisma migrate status
+15 migrations found; exactly the three migrations above were pending.
+```
+
+Rehearsal command and execution order:
+
+```text
+npx prisma migrate deploy
+20260814183000_security_inventory_reservations
+20260825120000_google_merchant_identifiers
+20260918090000_trade_in_experience
+All migrations have been successfully applied.
+```
+
+The post-rehearsal `npx prisma migrate status` returned `Database schema is up to date!` with exit code 0. The three ledger rows are finished, not rolled back, and each records one applied step. Metadata confirmed `Order.stripeRefundId`, reservation timestamps, `Product.reservedQuantity`, `Product.gtin`, `Product.mpn`, `StripeWebhookEvent`, all four trade-in tables, their intended indexes, foreign keys, enum-backed columns, defaults, and checks. Existing critical tables remained present: customer/auth records, verification tokens, likes, watchlist, products and images, orders and items, order events, payment identifiers, reservation fields, and webhook events. Customer sessions and admin authentication are cookie/environment based in this application rather than separate database tables; inventory reservations are represented by the new product/order fields rather than a standalone reservation table.
+
+The application was then run locally against the migrated clone. Public catalog and Merchant feed reads succeeded; account, watchlist, admin, and trade-in-image access controls behaved correctly; the confirmation route returned controlled generic 404s; and the 62-test suite covered inventory/payment lifecycle, confirmation, Merchant feed, trade-in, auth, and watchlist behavior with 62 passes and 0 failures. No real payment, write endpoint, customer identifier, order identifier, or private row content was used.
+
+#### Production migration procedure and recovery
+
+Production must not be migrated without explicit owner approval. Immediately before an approved migration:
+
+1. Create and retain a fresh Neon recovery branch from production `main`, record its branch ID and parent LSN, and confirm the target is project `flat-base-16798381`, branch `br-steep-dew-au9p5zh5`, database `neondb`, schema `public`.
+2. Supply the confirmed direct/session connection as `DIRECT_URL` and the runtime connection as `DATABASE_URL` without printing either value.
+3. Run metadata-only `npx prisma migrate status`; it must show exactly the same three pending migrations in the order above. Stop if it differs.
+4. Run `npx prisma migrate deploy`. Risk is low-to-moderate after the successful current-main rehearsal: changes are additive, but the first migration takes DDL locks and validates checks on existing tables.
+5. Immediately run `npx prisma migrate status` and require `Database schema is up to date!`; verify the same columns, tables, indexes, checks, foreign keys, and ledger states through metadata queries.
+6. Run production-safe smoke checks for storefront/catalog, login guards, Merchant feed, synthetic nonexistent confirmation, trade-in guards, admin guards, and watchlist. Do not create a payment or use a real customer/order identifier.
+
+There are no down migrations. If the approved production run fails, stop application changes and inspect Prisma's failed migration record; do not edit the ledger manually. If the schema succeeds but application verification exposes a material regression, pause affected writes and restore production from the fresh pre-migration Neon recovery branch or point-in-time restore, then re-run migration status and the metadata/smoke checks before reopening traffic. Because the changes are additive, leaving them in place while rolling application code back may be safer than immediate database restoration; the owner should choose based on the observed failure.
 
 ### Stripe configuration status
 
@@ -366,24 +424,23 @@ Rotate or verify rotation of these categories before launch when they have been 
 - Resend API key; and
 - Cloudinary API secret.
 
-No secret value was printed, copied, changed, or rotated during this audit.
+No production secret value was printed, changed, or rotated during this audit. The temporary rehearsal branch credential was copied through a loopback-only handoff into an ignored local env file, was never printed, and was deleted after the rehearsal.
 
 ### Remaining blockers
 
 1. Configure `STRIPE_SECRET_KEY` and `STRIPE_WEBHOOK_SECRET`, confirm live/test alignment, and verify the production webhook destination.
 2. Configure a verified `EMAIL_FROM` and the intended `ADMIN_ORDER_EMAIL`; verify the Resend sender domain.
 3. Configure the three required Cloudinary credentials and verify product and trade-in upload behavior without using customer data.
-4. Confirm the intended production database connection and run read-only `npx prisma migrate status`; configure `DIRECT_URL` when required by the provider migration path.
+4. Obtain explicit owner approval, create a fresh production recovery branch, and run the rehearsed three-migration production procedure. Rehearsal is complete; production `main` is unchanged.
 5. Explicitly approve or disable the default trade-in promotion through production configuration.
 6. Complete the required credential rotation review, including the database credential previously shared outside the secret manager.
-7. Apply and verify migration `20260814183000_security_inventory_reservations` in the intended production database, deploy the local confirmation fix to a separately approved preview, and rerun the anonymous confirmation probe. The root cause and local fix are complete; the immutable `69ff56d` preview remains intentionally unchanged and still returns 500.
-8. Raise the identified muted text and breadcrumb contrast from 4.11:1 to at least 4.5:1 and rerun Accessibility.
-9. Improve or explicitly accept the homepage's 3.7-second lab LCP before changing the gate to **GO FOR MERGE**.
-10. Confirm `NEXT_PUBLIC_SITE_URL` resolves exactly to `https://www.shutterbugcamerashop.com` without exposing its value in review output.
-11. Visually verify the sold-product state when a genuine sold record exists.
+7. Raise the identified muted text and breadcrumb contrast from 4.11:1 to at least 4.5:1 and rerun Accessibility.
+8. Improve or explicitly accept the homepage's 3.7-second lab LCP before changing the gate to **GO FOR MERGE**.
+9. Confirm `NEXT_PUBLIC_SITE_URL` resolves exactly to `https://www.shutterbugcamerashop.com` without exposing its value in review output.
+10. Visually verify the sold-product state when a genuine sold record exists.
 
 ## Decision
 
 **NOT READY**
 
-Deployed QA and all five Lighthouse runs are complete for immutable preview commit `69ff56d`, and their weak results are recorded above. The responsive/public-route checks passed, but QA also found the order-confirmation 500 and Lighthouse found a homepage LCP concern plus repeated text-contrast failure. The order-confirmation root cause is proven and a regression-tested local fix exists, but a fixed preview has not yet been verified and the required production database migration is unapplied. Tests and lint pass. The exact required `npm run build` command now also passes with Turbopack and generates all 127 static pages after moving the documented plugin runtime from child processes to worker threads; the build blocker is resolved. Merge to `main` remains blocked by the unverified production migration and deployed confirmation behavior, missing Stripe and Cloudinary production credentials, incomplete Resend sender/recipient configuration, unresolved trade-in promotion configuration, Lighthouse contrast and LCP findings, and credential-rotation review. Production was not deployed, `main` was not changed, and the temporary protection exception remains removed.
+Deployed QA and all five Lighthouse runs are complete for immutable preview commit `69ff56d`, and their weak results are recorded above. The order-confirmation root cause is proven; the defensive fix has five regression tests, behaves correctly against the migrated rehearsal clone, and is present in Ready protected Preview deployment `CZDKtscdAWDp6hmXwab8TgjFQBJV` from commit `976fe03`. The exact Turbopack build passes locally and in Vercel, so the build blocker is resolved. The three missing migrations also pass the exact Prisma deploy procedure on a current production clone, and post-rehearsal status is up to date. Production `main` remains deliberately unchanged pending explicit owner approval and a fresh recovery branch. Merge to `main` remains blocked by the unapplied production migrations, missing Stripe and Cloudinary production credentials, incomplete Resend sender/recipient configuration, unresolved trade-in promotion configuration, Lighthouse contrast and LCP findings, canonical production URL verification, and credential rotation. Production was not deployed, `main` was not changed, and Deployment Protection remains enabled.
