@@ -267,7 +267,7 @@ The local remediation is deliberately limited to this failure path:
 - nonexistent orders and existing-but-unauthorized orders return the same generic 404 body, so the endpoint does not reveal whether another customer's order exists;
 - database, session, or schema lookup exceptions become a generic 503 with `private, no-store` caching and the constant server log `Order confirmation lookup unavailable.`; no identifier, token, exception, SQL, or schema detail is logged by the route;
 - the customer-facing `/checkout/success` loader uses the same guarded lookup and renders its existing safe confirmation-pending state instead of a framework 500; and
-- the production migration remains mandatory. The reduced selection is resilience, not a substitute for applying the missing migration.
+- the production migration was mandatory and has now been applied. The reduced selection remains defense in depth rather than a substitute for schema consistency.
 
 Regression coverage in `tests/order-confirmation-lookup.test.mjs` verifies malformed input does not query storage, nonexistent and unauthorized results are indistinguishable, owner and guest-token access work, thrown database errors collapse to a detail-free unavailable result, and the public confirmation selection excludes `stripeRefundId`. On 2026-10-20 the complete suite passed with 62 tests and 0 failures, and ESLint completed with no errors.
 
@@ -310,8 +310,8 @@ Authenticated Vercel inspection recorded names and scopes only. No value was dis
 | VARIABLE NAME | PRODUCTION STATUS | BLOCKING? | NOTES |
 | --- | --- | --- | --- |
 | `NEXT_PUBLIC_SITE_URL` | Present | No after value/domain owner verification | Used by email and Stripe return URLs; static fallback is the intended production domain. |
-| `DATABASE_URL` | Present | No for runtime; production migration approval still required | Used by Prisma runtime. The production target and clone were verified without exposing the value. |
-| `DIRECT_URL` | Absent | No if supplied securely for the approved migration run | Prisma CLI falls back to `DATABASE_URL`; the rehearsed procedure explicitly sets a direct/session URL for migration safety. |
+| `DATABASE_URL` | Present | No for runtime | Used by Prisma runtime. The production target was migrated through a credential that was transferred without exposing its value. |
+| `DIRECT_URL` | Absent | No for runtime | Prisma CLI used the validated production connection supplied only through an ignored local file for the approved migration run. |
 | `ADMIN_EMAIL` | Present | No | Admin identifier and notification fallback. |
 | `ADMIN_USERNAME` | Present | No | Admin identifier fallback. |
 | `ADMIN_PASSWORD` | Present | No after rotation review | Required for admin authentication. |
@@ -343,7 +343,7 @@ Authenticated Vercel inspection recorded names and scopes only. No value was dis
 
 ### Database migration status
 
-**Rehearsal passed. Production remains unchanged and blocking pending owner approval.** Authenticated metadata inspection confirmed the production target as Neon project `shuttbug` (`flat-base-16798381`), branch `main` (`br-steep-dew-au9p5zh5`), database `neondb`, schema `public`, PostgreSQL 17. The production ledger contained 12 finished, non-rolled-back migrations and omitted exactly these three checked-in directories:
+**Production migration complete; schema-drift blocker closed.** Authenticated inspection confirmed the target as Neon project `shuttbug` (`flat-base-16798381`), branch `main` (`br-steep-dew-au9p5zh5`), database `neondb`, schema `public`, PostgreSQL 17. Before the approved run, the production ledger contained 12 finished, non-rolled-back migrations and omitted exactly these three checked-in directories:
 
 1. `20260814183000_security_inventory_reservations`
 2. `20260825120000_google_merchant_identifiers`
@@ -388,18 +388,37 @@ The post-rehearsal `npx prisma migrate status` returned `Database schema is up t
 
 The application was then run locally against the migrated clone. Public catalog and Merchant feed reads succeeded; account, watchlist, admin, and trade-in-image access controls behaved correctly; the confirmation route returned controlled generic 404s; and the 62-test suite covered inventory/payment lifecycle, confirmation, Merchant feed, trade-in, auth, and watchlist behavior with 62 passes and 0 failures. No real payment, write endpoint, customer identifier, order identifier, or private row content was used.
 
-#### Production migration procedure and recovery
+#### Production migration execution and recovery
 
-Production must not be migrated without explicit owner approval. Immediately before an approved migration:
+On 2026-10-21, the explicitly approved procedure was applied exactly as rehearsed. Before production was modified, a fresh Neon recovery branch named `production-recovery-pre-migration-20261020` (`br-aged-morning-auqicpal`) was created from production `main`. Its automatic deletion is set to **Never**. Keep it until the subsequent production application deployment has been verified.
 
-1. Create and retain a fresh Neon recovery branch from production `main`, record its branch ID and parent LSN, and confirm the target is project `flat-base-16798381`, branch `br-steep-dew-au9p5zh5`, database `neondb`, schema `public`.
-2. Supply the confirmed direct/session connection as `DIRECT_URL` and the runtime connection as `DATABASE_URL` without printing either value.
-3. Run metadata-only `npx prisma migrate status`; it must show exactly the same three pending migrations in the order above. Stop if it differs.
-4. Run `npx prisma migrate deploy`. Risk is low-to-moderate after the successful current-main rehearsal: changes are additive, but the first migration takes DDL locks and validates checks on existing tables.
-5. Immediately run `npx prisma migrate status` and require `Database schema is up to date!`; verify the same columns, tables, indexes, checks, foreign keys, and ledger states through metadata queries.
-6. Run production-safe smoke checks for storefront/catalog, login guards, Merchant feed, synthetic nonexistent confirmation, trade-in guards, admin guards, and watchlist. Do not create a payment or use a real customer/order identifier.
+The metadata-only production preflight reported database `neondb`, schema `public`, 15 checked-in migrations, and exactly the following pending set in this order:
 
-There are no down migrations. If the approved production run fails, stop application changes and inspect Prisma's failed migration record; do not edit the ledger manually. If the schema succeeds but application verification exposes a material regression, pause affected writes and restore production from the fresh pre-migration Neon recovery branch or point-in-time restore, then re-run migration status and the metadata/smoke checks before reopening traffic. Because the changes are additive, leaving them in place while rolling application code back may be safer than immediate database restoration; the owner should choose based on the observed failure.
+```text
+20260814183000_security_inventory_reservations
+20260825120000_google_merchant_identifiers
+20260918090000_trade_in_experience
+```
+
+`npx prisma migrate deploy` then applied those three migrations in that order and returned `All migrations have been successfully applied.` with exit code 0. No manual SQL was executed and `_prisma_migrations` was not edited. The immediate follow-up `npx prisma migrate status` returned `Database schema is up to date!` with exit code 0.
+
+Metadata-only verification passed with no missing expected objects. It confirmed the reservation/refund fields, Merchant `gtin` and `mpn`, `StripeWebhookEvent`, all seven trade-in enum types, all four trade-in tables, their indexes and foreign keys, the new financial/inventory checks, and finished ledger records for all three migrations. Existing critical customer/auth, verification-token, likes, watchlist, product/image, order/item, order-status, and migration-ledger tables remained present. No customer, order, product, or trade-in row data was queried.
+
+The application was run locally against the migrated production schema for GET-only synthetic smoke tests. Results were:
+
+| Probe | Result |
+|---|---|
+| `/` | 200 |
+| `/shop` | 200 |
+| `/google-merchant-feed.xml` | 200 XML |
+| `/account` | 307 to `/login?returnTo=%2Faccount` |
+| `/account/watchlist` | 307 to `/login?returnTo=%2Faccount%2Fwatchlist` |
+| `/admin` | 307 to `/admin/login` |
+| missing order confirmation | 404 `Order not found.` |
+| synthetic nonexistent order confirmation | 404 `Order not found.` |
+| synthetic private trade-in image | 401 `Sign in required.` |
+
+No payment was created, no write endpoint was called, no customer/order identifier was used, and no inventory or trade-in record was modified. The production database credential was transferred through a loopback-only handoff into an ignored local file without being printed. The recovery branch remains intact. There are no down migrations; if a later production application deployment reveals a material schema-related regression, use the retained recovery branch or point-in-time restore under a separately approved incident procedure.
 
 ### Stripe configuration status
 
@@ -424,23 +443,22 @@ Rotate or verify rotation of these categories before launch when they have been 
 - Resend API key; and
 - Cloudinary API secret.
 
-No production secret value was printed, changed, or rotated during this audit. The temporary rehearsal branch credential was copied through a loopback-only handoff into an ignored local env file, was never printed, and was deleted after the rehearsal.
+No production secret value was printed, changed, or rotated during this audit. The temporary rehearsal and production-migration credentials were copied through loopback-only handoffs into ignored local env files, were never printed, and were deleted immediately after their respective verification runs.
 
 ### Remaining blockers
 
 1. Configure `STRIPE_SECRET_KEY` and `STRIPE_WEBHOOK_SECRET`, confirm live/test alignment, and verify the production webhook destination.
-2. Configure a verified `EMAIL_FROM` and the intended `ADMIN_ORDER_EMAIL`; verify the Resend sender domain.
-3. Configure the three required Cloudinary credentials and verify product and trade-in upload behavior without using customer data.
-4. Obtain explicit owner approval, create a fresh production recovery branch, and run the rehearsed three-migration production procedure. Rehearsal is complete; production `main` is unchanged.
+2. Configure the three required Cloudinary credentials and verify product and trade-in upload behavior without using customer data.
+3. Configure a verified `EMAIL_FROM` and the intended `ADMIN_ORDER_EMAIL`; verify the Resend sender domain.
+4. Complete the required credential rotation review, including the database credential previously shared outside the secret manager.
 5. Explicitly approve or disable the default trade-in promotion through production configuration.
-6. Complete the required credential rotation review, including the database credential previously shared outside the secret manager.
-7. Raise the identified muted text and breadcrumb contrast from 4.11:1 to at least 4.5:1 and rerun Accessibility.
-8. Improve or explicitly accept the homepage's 3.7-second lab LCP before changing the gate to **GO FOR MERGE**.
-9. Confirm `NEXT_PUBLIC_SITE_URL` resolves exactly to `https://www.shutterbugcamerashop.com` without exposing its value in review output.
-10. Visually verify the sold-product state when a genuine sold record exists.
+6. Raise the identified muted text and breadcrumb contrast from 4.11:1 to at least 4.5:1 and rerun Accessibility.
+7. Improve or explicitly accept the homepage's 3.7-second lab LCP before changing the gate to **GO FOR MERGE**.
+8. Confirm `NEXT_PUBLIC_SITE_URL` resolves exactly to `https://www.shutterbugcamerashop.com` without exposing its value in review output.
+9. Visually verify the sold-product state when a genuine sold record exists.
 
 ## Decision
 
 **NOT READY**
 
-Deployed QA and all five Lighthouse runs are complete for immutable preview commit `69ff56d`, and their weak results are recorded above. The order-confirmation root cause is proven; the defensive fix has five regression tests, behaves correctly against the migrated rehearsal clone, and is present in Ready protected Preview deployment `CZDKtscdAWDp6hmXwab8TgjFQBJV` from commit `976fe03`. The exact Turbopack build passes locally and in Vercel, so the build blocker is resolved. The three missing migrations also pass the exact Prisma deploy procedure on a current production clone, and post-rehearsal status is up to date. Production `main` remains deliberately unchanged pending explicit owner approval and a fresh recovery branch. Merge to `main` remains blocked by the unapplied production migrations, missing Stripe and Cloudinary production credentials, incomplete Resend sender/recipient configuration, unresolved trade-in promotion configuration, Lighthouse contrast and LCP findings, canonical production URL verification, and credential rotation. Production was not deployed, `main` was not changed, and Deployment Protection remains enabled.
+Deployed QA and all five Lighthouse runs are complete for immutable preview commit `69ff56d`, and their weak results are recorded above. The order-confirmation root cause is proven; the defensive fix has five regression tests, behaves correctly against the migrated rehearsal clone, and is present in Ready protected Preview deployment `CZDKtscdAWDp6hmXwab8TgjFQBJV` from commit `976fe03`. The exact Turbopack build passes locally and in Vercel, so the build blocker is resolved. The three missing migrations were applied successfully to Neon production `main` through the exact rehearsed Prisma procedure after a retained recovery branch was created; final Prisma status, metadata verification, and read-only smoke tests all passed. The database/schema-drift blocker is closed. Merge to `main` remains blocked by missing Stripe and Cloudinary production credentials, incomplete Resend sender/recipient configuration, unresolved trade-in promotion configuration, Lighthouse contrast and LCP findings, canonical production URL verification, and credential rotation. Application production was not deployed, Git `main` was not changed, and Deployment Protection remains enabled.
