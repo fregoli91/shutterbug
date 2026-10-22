@@ -305,11 +305,11 @@ The migrated rehearsal application produced the stronger database-connected resu
 
 ### Production environment checklist
 
-Authenticated Vercel inspection recorded names and scopes only. No value was displayed or copied. Variables marked present are scoped to **Production and Preview**.
+Authenticated Vercel inspection recorded names and scopes only. Existing secret values are write-only in the Vercel editor and were not revealed. Variables marked present are scoped to **Production and Preview**.
 
 | VARIABLE NAME | PRODUCTION STATUS | BLOCKING? | NOTES |
 | --- | --- | --- | --- |
-| `NEXT_PUBLIC_SITE_URL` | Present | No after value/domain owner verification | Used by email and Stripe return URLs; static fallback is the intended production domain. |
+| `NEXT_PUBLIC_SITE_URL` | Present | Yes until exact write-only value is owner-confirmed | Used by email and Stripe return URLs. Vercel and live-output checks prove the intended domain is active, but the saved secret value cannot be revealed for comparison. |
 | `DATABASE_URL` | Present | No for runtime | Used by Prisma runtime. The production target was migrated through a credential that was transferred without exposing its value. |
 | `DIRECT_URL` | Absent | No for runtime | Prisma CLI used the validated production connection supplied only through an ignored local file for the approved migration run. |
 | `ADMIN_EMAIL` | Present | No | Admin identifier and notification fallback. |
@@ -322,7 +322,7 @@ Authenticated Vercel inspection recorded names and scopes only. No value was dis
 | `ADMIN_TRADE_IN_EMAIL` | Absent | No if the documented `ADMIN_EMAIL` fallback is intentionally accepted | Trade-in notification recipient. |
 | `RESEND_API_KEY` | Present | Yes until sender and recipient configuration is complete | No email was sent. |
 | `STRIPE_SECRET_KEY` | Absent | Yes | Required for checkout session creation. |
-| `NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY` | Absent | No | Not referenced by the current runtime. |
+| `NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY` | Absent | No for the current implementation | The current checkout creates hosted Checkout sessions server-side and never references this variable. Add a mode-matched publishable key before introducing Stripe.js client code. |
 | `STRIPE_WEBHOOK_SECRET` | Absent | Yes | Required for verified checkout finalization. |
 | `CLOUDINARY_CLOUD_NAME` | Absent | Yes | Required for production product and trade-in uploads. |
 | `CLOUDINARY_API_KEY` | Absent | Yes | Required for production uploads. |
@@ -339,7 +339,7 @@ Authenticated Vercel inspection recorded names and scopes only. No value was dis
 
 ### Canonical production URL
 
-**Static code audit: pass. Production value review: pending.** The canonical production hostname is consistently `https://www.shutterbugcamerashop.com` in the central SEO configuration, canonical tags, WebSite and Organization schema, sitemap, robots sitemap reference, and Merchant feed links. Email and Stripe return URLs use `NEXT_PUBLIC_SITE_URL`, which is present in Production and Preview scope, with the same production-domain fallback. Its value was not exposed during this audit, so the owner must confirm it equals the intended HTTPS domain.
+**Live/static host audit: pass; write-only environment value confirmation remains pending.** Vercel lists `www.shutterbugcamerashop.com` as the valid Production domain and redirects the apex domain to it with HTTP 308. Live GETs returned 200 for the homepage, robots, sitemap, and Merchant feed. The homepage canonical, Organization JSON-LD, WebSite JSON-LD and search target use `https://www.shutterbugcamerashop.com`; robots points to that sitemap; sitemap and Merchant feed URLs stay on that hostname. Source uses the same central hostname for canonical metadata and uses `NEXT_PUBLIC_SITE_URL` for Stripe success/cancel URLs and order/email links, with the central hostname as fallback. `NEXT_PUBLIC_SITE_URL` exists in Vercel Production and Preview as a write-only secret, so its exact saved value could not be compared. The owner must confirm or re-enter the expected HTTPS value before the provider gate closes.
 
 ### Database migration status
 
@@ -422,43 +422,71 @@ No payment was created, no write endpoint was called, no customer/order identifi
 
 ### Stripe configuration status
 
-**Not ready.** `STRIPE_SECRET_KEY` and `STRIPE_WEBHOOK_SECRET` are absent from Vercel Production and Preview scope. The current webhook code verifies signatures, amount, currency, payment state, and live/test alignment, but production mode and the webhook destination cannot be confirmed until the provider configuration exists. No charge or Stripe mutation was attempted.
+**BLOCKING — not configured.** Authenticated Vercel inspection found `STRIPE_SECRET_KEY`, `NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY`, and `STRIPE_WEBHOOK_SECRET` absent from Production and Preview. With no secret or publishable key, live/test mode cannot be classified and same-mode consistency cannot be verified. The absent publishable key does not break the current server-created hosted Checkout flow because the runtime does not reference it; the absent secret key does block Checkout-session creation.
+
+The application webhook route is `POST /api/webhooks/stripe`. A GET-only probe of `https://www.shutterbugcamerashop.com/api/webhooks/stripe` returned 405, confirming the route exists on the intended production hostname without sending an event. The route requires a Stripe signature and `STRIPE_WEBHOOK_SECRET`, rejects invalid signatures, validates payment amount/currency/status and event live mode, and de-duplicates recorded Stripe event IDs. Relevant handled events are:
+
+- `checkout.session.completed`;
+- `checkout.session.async_payment_succeeded`;
+- `checkout.session.expired`; and
+- `checkout.session.async_payment_failed`.
+
+The Stripe Dashboard was not authenticated in the audit browser, so provider-side endpoint registration, selected event subscriptions, and the destination URL could not be verified. The missing signing secret independently proves that the production webhook integration is not ready. No charge, Checkout session, webhook event, or Stripe mutation was created.
 
 ### Resend configuration status
 
-**Not ready.** `RESEND_API_KEY` is present, while `EMAIL_FROM` and `ADMIN_ORDER_EMAIL` are absent. The verified sender/domain and intended operations recipient therefore remain unconfirmed. No email was sent.
+**BLOCKING — partially configured.** `RESEND_API_KEY` exists in Vercel Production and Preview. `EMAIL_FROM` and `ADMIN_ORDER_EMAIL` are absent. The required sender is `Shutterbug Camera Shop <support@shutterbugcamerashop.com>`; without `EMAIL_FROM`, runtime code falls back to the general support address rather than that required identity. Without `ADMIN_ORDER_EMAIL`, paid-order notifications fall back to `ADMIN_EMAIL` or the general support address instead of an explicitly approved operations inbox.
+
+Public DNS has the common Resend DKIM, sending-subdomain MX/TXT, root TXT, and DMARC records, which is consistent with domain setup. The Resend Dashboard was not authenticated in the audit browser, so its authoritative **Verified** state, API-key account ownership, and sender authorization could not be confirmed. No email was sent. A controlled owner-only test remains prohibited until separately approved.
 
 ### Cloudinary configuration status
 
-**Not ready.** `CLOUDINARY_CLOUD_NAME`, `CLOUDINARY_API_KEY`, and `CLOUDINARY_API_SECRET` are absent. Product and trade-in uploads cannot be considered production-ready. No upload was attempted.
+**BLOCKING — not configured.** `CLOUDINARY_CLOUD_NAME`, `CLOUDINARY_API_KEY`, and `CLOUDINARY_API_SECRET` are absent from Vercel Production and Preview, so server product uploads and authenticated trade-in-image delivery cannot authenticate. Product upload code returns 503 before accepting a file when these variables are absent. The Cloudinary Dashboard was not authenticated in the audit browser, and no upload or deletion was attempted.
+
+The readiness rules remain compatible with Cloudinary-only inventory photography. A real product image must be HTTPS, hosted exactly on `res.cloudinary.com`, contain `/image/upload/`, avoid SVG/placeholder naming, and have `actualPhotos` confirmed. Local category/clay artwork, generic local images, placeholders, and arbitrary third-party URLs do not qualify. The Merchant feed applies the same rule to the hero image and additional gallery images, so decorative category artwork cannot make a product storefront- or feed-ready.
+
+The focused catalog/security regression run passed 13 of 13 tests, including placeholder rejection, Cloudinary-only real-photo qualification, safe image URL handling, and Stripe live/test mismatch rejection.
 
 ### Secret rotation items
 
-Rotate or verify rotation of these categories before launch when they have been shared outside the production secret manager:
+Repository history contains only `.env.example` and placeholder/example Stripe, webhook, and Resend forms; no real-looking tracked provider secret was found. The known production database connection string was previously shared outside the secret manager, so its credential requires rotation. Existing Vercel values were not revealed during this audit.
 
-- database password and connection credentials;
-- admin password;
-- admin and customer session-signing secrets;
-- Stripe secret and webhook secrets;
-- Resend API key; and
-- Cloudinary API secret.
+| SECRET CATEGORY | ROTATION REQUIRED? | WHY | WHERE IT MUST BE UPDATED | VERIFICATION STEP |
+|---|---|---|---|---|
+| Neon/database credentials | **Yes** | The production connection credential was previously exposed outside the secret manager. | Rotate the Neon role/password, then update `DATABASE_URL` and affected Neon integration connection variables in Vercel Production/Preview and any approved local secret store. | `prisma migrate status` metadata check plus GET-only storefront/account/order-confirmation smoke checks; keep the recovery branch until application production is verified. |
+| Stripe secret key | No current key; provision a fresh live key | Vercel has no `STRIPE_SECRET_KEY`; there is nothing active in this project to rotate. | Stripe live-mode restricted/secret key and Vercel Production. | Confirm `sk_live_` classification without displaying it, then compare mode with the publishable key and perform a separately approved non-charge configuration test. |
+| Stripe webhook signing secret | No current secret; create/configure after endpoint registration | Vercel has no `STRIPE_WEBHOOK_SECRET`, and provider-side endpoint registration is unverified. | Stripe live webhook endpoint and Vercel Production. | Confirm the destination is the intended HTTPS route and verify one separately approved signed test event without exposing the secret. |
+| Resend API key | Conditional | A production key exists and no exposure was found in repository history or this audit; account ownership/age and prior sharing remain unverified. | Resend API Keys and Vercel `RESEND_API_KEY` if provenance is uncertain or it was shared. | Confirm the replacement is active through an owner-approved inbox-only test, then revoke the prior key. |
+| `ADMIN_PASSWORD` | Conditional | Present as a write-only Vercel secret; no known exposure was found, but reuse, age, and provenance were not verifiable. | Vercel Production/Preview and the owner's password manager. | Confirm old credentials fail and approved admin login succeeds; do not expose the password. |
+| `ADMIN_SESSION_SECRET` | Conditional | Present with no known exposure; exact length and generation provenance are write-only. Rotation invalidates admin sessions. | Vercel Production/Preview. | Confirm at least 32 random bytes, redeploy only when approved, and verify existing sessions are invalidated and fresh login succeeds. |
+| `CUSTOMER_SESSION_SECRET` | Conditional | Present with no known exposure; exact length and generation provenance are write-only. Rotation invalidates customer sessions. | Vercel Production/Preview. | Confirm at least 32 random bytes, redeploy only when approved, and verify existing sessions are invalidated and fresh customer login succeeds. |
+| Cloudinary API secret | No current secret; provision fresh credentials | Vercel has no Cloudinary credentials, and no Cloudinary secret exposure was found. | Cloudinary API Keys and Vercel Production/Preview. | Use a separately approved synthetic owner-controlled upload, verify the returned HTTPS Cloudinary URL and authenticated trade-in delivery, then delete the synthetic asset only with approval. |
 
-No production secret value was printed, changed, or rotated during this audit. The temporary rehearsal and production-migration credentials were copied through loopback-only handoffs into ignored local env files, were never printed, and were deleted immediately after their respective verification runs.
+No secret was printed, changed, or rotated. Temporary migration credentials were deleted after their respective verification runs.
+
+### Local commit audit
+
+The branch was exactly two commits ahead of `origin/codex/soft-launch-inventory-strategy` before this report update:
+
+- `b640153 Document production migration rehearsal` — changes only `docs/SOFT_LAUNCH_READINESS_REPORT.md` with the production-clone rehearsal, metadata verification, safe smoke results, and migration procedure.
+- `b58117d Document production migration completion` — changes only the same report with the approved production migration, retained recovery branch, final Prisma status, metadata evidence, and read-only smoke results.
+
+The order-confirmation hardening, five regression tests, and Turbopack worker-thread configuration are in `976fe03`, which is already the remote branch HEAD and therefore is not one of the two local-only commits. No generated `next-env.d.ts` change is present.
 
 ### Remaining blockers
 
-1. Configure `STRIPE_SECRET_KEY` and `STRIPE_WEBHOOK_SECRET`, confirm live/test alignment, and verify the production webhook destination.
-2. Configure the three required Cloudinary credentials and verify product and trade-in upload behavior without using customer data.
-3. Configure a verified `EMAIL_FROM` and the intended `ADMIN_ORDER_EMAIL`; verify the Resend sender domain.
-4. Complete the required credential rotation review, including the database credential previously shared outside the secret manager.
-5. Explicitly approve or disable the default trade-in promotion through production configuration.
-6. Raise the identified muted text and breadcrumb contrast from 4.11:1 to at least 4.5:1 and rerun Accessibility.
-7. Improve or explicitly accept the homepage's 3.7-second lab LCP before changing the gate to **GO FOR MERGE**.
-8. Confirm `NEXT_PUBLIC_SITE_URL` resolves exactly to `https://www.shutterbugcamerashop.com` without exposing its value in review output.
+1. Provision live-mode `STRIPE_SECRET_KEY`, register the production webhook at `https://www.shutterbugcamerashop.com/api/webhooks/stripe`, add its signing secret, and verify key/webhook live-mode alignment. Add a mode-matched publishable key if Stripe.js client code is introduced.
+2. Configure all three Cloudinary credentials and verify owner-controlled product and private trade-in-image flows through a separately approved synthetic test.
+3. Set `EMAIL_FROM` to `Shutterbug Camera Shop <support@shutterbugcamerashop.com>`, configure the approved `ADMIN_ORDER_EMAIL`, confirm the Resend domain is Verified, and request approval before an owner-only test email.
+4. Rotate the known-exposed Neon/database credential and update every dependent Vercel/Neon integration variable; review conditional rotations in the table above.
+5. Owner-confirm or re-enter the write-only `NEXT_PUBLIC_SITE_URL` as exactly `https://www.shutterbugcamerashop.com`.
+6. Explicitly approve or disable the default trade-in promotion through production configuration.
+7. Raise the identified muted text and breadcrumb contrast from 4.11:1 to at least 4.5:1 and rerun Accessibility.
+8. Improve or explicitly accept the homepage's 3.7-second lab LCP before changing the gate to **GO FOR MERGE**.
 9. Visually verify the sold-product state when a genuine sold record exists.
 
 ## Decision
 
 **NOT READY**
 
-Deployed QA and all five Lighthouse runs are complete for immutable preview commit `69ff56d`, and their weak results are recorded above. The order-confirmation root cause is proven; the defensive fix has five regression tests, behaves correctly against the migrated rehearsal clone, and is present in Ready protected Preview deployment `CZDKtscdAWDp6hmXwab8TgjFQBJV` from commit `976fe03`. The exact Turbopack build passes locally and in Vercel, so the build blocker is resolved. The three missing migrations were applied successfully to Neon production `main` through the exact rehearsed Prisma procedure after a retained recovery branch was created; final Prisma status, metadata verification, and read-only smoke tests all passed. The database/schema-drift blocker is closed. Merge to `main` remains blocked by missing Stripe and Cloudinary production credentials, incomplete Resend sender/recipient configuration, unresolved trade-in promotion configuration, Lighthouse contrast and LCP findings, canonical production URL verification, and credential rotation. Application production was not deployed, Git `main` was not changed, and Deployment Protection remains enabled.
+Deployed QA and all five Lighthouse runs are complete for immutable preview commit `69ff56d`, and their weak results are recorded above. The order-confirmation root cause is proven; the defensive fix has five regression tests, behaves correctly against the migrated rehearsal clone, and is present in Ready protected Preview deployment `CZDKtscdAWDp6hmXwab8TgjFQBJV` from commit `976fe03`. The exact Turbopack build passes locally and in Vercel, and the production database/schema-drift blocker is closed. The provider gate is **BLOCKED**: Stripe secret/webhook configuration is absent and the provider endpoint registration cannot be verified; all required Cloudinary credentials are absent; Resend lacks the required sender and admin destination and its dashboard verification state is unconfirmed; the exposed database credential requires rotation; and the write-only `NEXT_PUBLIC_SITE_URL` still needs owner confirmation. Trade-in promotion configuration, Lighthouse contrast/LCP findings, and sold-state verification also remain. Application production was not deployed, Git `main` was not changed, and Deployment Protection remains enabled.
