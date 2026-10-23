@@ -1,6 +1,7 @@
 import Image from 'next/image';
 import Link from 'next/link';
 import { CheckoutFormClient } from '@/components/checkout/CheckoutFormClient';
+import { isCheckoutAvailable } from '@/lib/checkout-availability';
 import { getCustomerSession } from '@/lib/customer-auth';
 
 type Props = {
@@ -16,6 +17,24 @@ function asString(value: string | string[] | undefined) {
 }
 
 export default async function CheckoutPage({ searchParams }: Props) {
+  if (!isCheckoutAvailable()) {
+    return (
+      <section className="px-4 py-12 sm:px-6 lg:px-8">
+        <div className="mx-auto max-w-2xl rounded-lg border border-ink/10 bg-white p-8 text-center shadow-sm sm:p-12">
+          <p className="text-sm font-bold uppercase tracking-[0.22em] text-moss">Checkout</p>
+          <h1 className="mt-3 font-serif text-4xl font-bold text-ink">Online purchases are coming soon</h1>
+          <p className="mx-auto mt-4 max-w-xl leading-7 text-ink/65">
+            Shutterbug is still preparing secure online checkout. You can browse the store and save items to your bag in the meantime.
+          </p>
+          <div className="mt-7 flex flex-wrap justify-center gap-3">
+            <Link href="/shop" className="inline-flex min-h-12 items-center rounded-full bg-forest px-7 font-bold text-white hover:bg-moss">Browse the store</Link>
+            <Link href="/bag" className="inline-flex min-h-12 items-center rounded-full border border-ink/15 px-7 font-bold text-moss hover:bg-cream">Return to bag</Link>
+          </div>
+        </div>
+      </section>
+    );
+  }
+
   const customer = await getCustomerSession();
   const params = searchParams ? await searchParams : {};
 

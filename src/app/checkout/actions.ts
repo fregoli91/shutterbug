@@ -11,6 +11,7 @@ import {
   Prisma
 } from '@/generated/prisma/client';
 import { normalizeCartLines, validateCartLines, type CartLineInput } from '@/lib/cart-validation';
+import { isCheckoutAvailable } from '@/lib/checkout-availability';
 import { getCustomerSession, isValidEmailAddress } from '@/lib/customer-auth';
 import { getPublicSiteUrl } from '@/lib/email';
 import {
@@ -68,6 +69,8 @@ function stripeImageUrl(image: string) {
 }
 
 export async function createPendingOrderAction(formData: FormData) {
+  if (!isCheckoutAvailable()) checkoutError('stripe');
+
   const cartItems = parseCart(formData);
   if (!cartItems.length) checkoutError('empty');
 
@@ -92,8 +95,6 @@ export async function createPendingOrderAction(formData: FormData) {
   if (!name || !isValidEmailAddress(email) || !line1 || !city || !state || !postalCode || !/^[A-Z]{2}$/.test(country)) {
     checkoutError('missing');
   }
-  if (!process.env.STRIPE_SECRET_KEY) checkoutError('stripe');
-
   const prisma = requirePrisma();
   const customer = await getCustomerSession();
   const shippingAddress: Prisma.InputJsonObject = {
@@ -167,7 +168,7 @@ export async function createPendingOrderAction(formData: FormData) {
     checkoutError('config');
   }
 
-  const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
+  const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!);
   let session: Stripe.Checkout.Session;
 
   try {

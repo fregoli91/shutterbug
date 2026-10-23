@@ -18,6 +18,7 @@ test('bag panel reuses validated cart state and supports toggle and Escape behav
 test('bag page exposes real quantity, removal, checkout, and customer utilities',()=>{
  const page=fs.readFileSync('src/components/cart/CartPageClient.tsx','utf8');
  assert.match(page,/updateQuantity/);assert.match(page,/removeItem/);assert.match(page,/href="\/checkout"/);
+ assert.match(page,/checkoutAvailable/);assert.match(page,/Purchases coming soon/);
  assert.match(page,/\/account\/likes/);assert.match(page,/Browse Cameras/);assert.match(page,/Browse Printers/);
 });
 test('header, mobile menu, and bag panel expose consistent account access',()=>{
