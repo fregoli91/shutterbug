@@ -218,7 +218,8 @@ export function HomePromotionalCarousel({ promotions }: HomePromotionalCarouselP
                         loading={index === 0 ? 'eager' : 'lazy'}
                         fetchPriority={index === 0 ? 'high' : undefined}
                         sizes="(min-width: 1280px) 1280px, (min-width: 640px) calc(100vw - 3rem), calc(100vw - 1.75rem)"
-                        className="object-contain"
+                        className={promotion.imageFit === 'cover' ? 'object-cover' : 'object-contain'}
+                        style={promotion.imageFit === 'cover' ? { objectPosition: promotion.objectPosition ?? 'center' } : undefined}
                       />
                     </>
                   )}

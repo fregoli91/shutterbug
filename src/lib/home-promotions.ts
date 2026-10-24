@@ -8,6 +8,7 @@ export type HomePromotion = {
   href: string;
   ctaLabel: string;
   alt: string;
+  imageFit?: 'contain' | 'cover';
   objectPosition?: string;
   embeddedCopy?: boolean;
   startsAt?: string;
@@ -24,7 +25,8 @@ export const homePromotions: HomePromotion[] = [
     href: '/categories/canon-powershot-cameras',
     ctaLabel: 'Shop Canon',
     alt: 'A Shutterbug Canon PowerShot display featuring compact Canon digital cameras',
-    objectPosition: '72% center',
+    imageFit: 'cover',
+    objectPosition: 'center',
     embeddedCopy: true
   },
   {

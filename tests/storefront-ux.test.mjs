@@ -38,6 +38,9 @@ test('the restored carousel artwork remains stable without the retired summer bo
     '/carousel-canon.png', '/carousel-olympus.png', '/carousel-nikon.png', '/carousel-trade-in.png'
   ]);
   assert.equal(homePromotions.every((item) => item.embeddedCopy === true), true);
+  assert.equal(homePromotions[0].imageFit, 'cover');
+  assert.equal(homePromotions[0].objectPosition, 'center');
+  assert.equal(homePromotions.slice(1).every((item) => item.imageFit === undefined), true);
 
   const homepage = fs.readFileSync('src/app/page.tsx', 'utf8');
   assert.doesNotMatch(homepage, /shutterbug-summer-sale-banner\.png/);
