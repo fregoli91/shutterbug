@@ -35,7 +35,7 @@ test('the restored carousel artwork remains stable without the retired summer bo
   ]);
   assert.equal(homePromotions.some((item) => /30%|20%|free shipping|since 2008|authentic|warranty/i.test(`${item.title} ${item.description}`)), false);
   assert.deepEqual(homePromotions.map((item) => item.desktopImage), [
-    '/carousel-canon.png', '/carousel-olympus.png', '/carousel-nikon.png', '/carousel-trade-in.png'
+    '/carousel-canon.png', '/carousel-olympus.png', '/carousel-nikon.png', '/carousel-trade-in-branded.png'
   ]);
   assert.equal(homePromotions.every((item) => item.embeddedCopy === true), true);
   assert.equal(homePromotions[0].imageFit, 'cover');

@@ -58,7 +58,7 @@ export const homePromotions: HomePromotion[] = [
     eyebrow: 'Sell Your Camera',
     title: 'Give unused gear its next chapter.',
     description: 'Send us the details for a straightforward camera buyout or trade-in review.',
-    desktopImage: '/carousel-trade-in.png',
+    desktopImage: '/carousel-trade-in-branded.png',
     href: '/sell-your-camera',
     ctaLabel: 'Start a quote',
     alt: 'Shutterbug camera trade-in program with cameras ready for a new owner',
